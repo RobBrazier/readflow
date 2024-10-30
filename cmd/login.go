@@ -1,14 +1,12 @@
 package cmd
 
 import (
-	"bufio"
 	"fmt"
 	"log/slog"
-	"os"
 
+	"github.com/RobBrazier/readflow/internal/prompt"
 	"github.com/RobBrazier/readflow/target"
 	"github.com/cli/browser"
-	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -23,12 +21,8 @@ var loginCmd = &cobra.Command{
 		for _, target := range activeTargets {
 			name := target.GetName()
 			if target.HasToken() {
-				confirmPrompt := promptui.Prompt{
-					Label:     fmt.Sprintf("Token already exists in config for %s, Re-authenticate", name),
-					IsConfirm: true,
-				}
-				_, err := confirmPrompt.Run()
-				if err != nil {
+				response, err := prompt.YesNoPrompt(fmt.Sprintf("Token already exists in config for %s, Re-authenticate", name))
+				if err != nil || !response {
 					slog.Info("Skipping token update for", "target", name)
 					continue
 				}
@@ -38,20 +32,12 @@ var loginCmd = &cobra.Command{
 			cobra.CheckErr(err)
 			slog.Info(fmt.Sprintf("Please open the following URL in your browser if it hasn't already opened: %s", url))
 			browser.OpenURL(url)
-			slog.Info("Please login and paste the token shown on the website below")
-			token := getTokenInput()
+			token, err := prompt.TextPrompt("Please login and paste the token shown on the website below")
+			cobra.CheckErr(err)
 			target.SaveToken(token)
 		}
 		viper.WriteConfig()
 	},
-}
-
-func getTokenInput() string {
-	fmt.Print("> ")
-	input := bufio.NewScanner(os.Stdin)
-	input.Scan()
-	token := input.Text()
-	return token
 }
 
 func init() {
