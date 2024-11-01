@@ -1,15 +1,14 @@
 package sync
 
 import (
+	"encoding/json"
 	"log/slog"
-	"strings"
+	"sync"
 
 	"github.com/RobBrazier/readflow/source"
 	"github.com/RobBrazier/readflow/target"
-	"github.com/spf13/viper"
+	"github.com/spf13/cobra"
 )
-
-const CHAPTERS_COLUMN = "columns.chapter"
 
 type SyncResult struct {
 	Name string
@@ -20,51 +19,37 @@ type SyncAction interface {
 }
 
 type syncAction struct {
-	targets        []target.SyncTarget
-	chaptersColumn string
-	enableChapters bool
-	source         source.Source
-}
-
-func (a *syncAction) ensureChaptersColumn() {
-	// figure out the chapters column only if it's enabled
-	if a.chaptersColumn == "" && a.enableChapters {
-		column, err := a.source.GetChaptersColumn()
-		if err != nil {
-			slog.Error("Unable to find chapters column", "err", err)
-			return
-		}
-		a.chaptersColumn = column
-		viper.Set(CHAPTERS_COLUMN, column)
-		slog.Info("Stored chapters column", "column", column)
-		viper.WriteConfig()
-	}
-	slog.Debug("column", "enabled", a.enableChapters, "name", a.chaptersColumn)
-
+	targets []target.SyncTarget
+	source  source.Source
 }
 
 func (a *syncAction) Sync() ([]SyncResult, error) {
 	// if the chapters column doesn't exist in config, fetch the name and store it
-	a.ensureChaptersColumn()
+	a.source.Init()
+	recentReads, err := a.source.GetRecentReads()
+	cobra.CheckErr(err)
+	b, err := json.Marshal(recentReads)
+	cobra.CheckErr(err)
+	slog.Info(string(b))
+	var wg sync.WaitGroup
 	for _, t := range a.targets {
-		user := t.GetCurrentUser()
-		slog.Info("current user for", "target", t.GetName(), "user", user)
+		wg.Add(1)
+		go a.processTarget(t, &wg)
 	}
-	results := []SyncResult{}
-	return results, nil
+
+	wg.Wait()
+	return []SyncResult{}, nil
+}
+
+func (a *syncAction) processTarget(t target.SyncTarget, wg *sync.WaitGroup) {
+	defer wg.Done()
+	user := t.GetCurrentUser()
+	slog.Info("current user for", "target", t.GetName(), "user", user)
 }
 
 func NewSyncAction(enabledSource source.Source, targets []target.SyncTarget) SyncAction {
-	chapters := viper.GetString(CHAPTERS_COLUMN)
-	enableChapters := true
-	if strings.ToLower(chapters) == "false" {
-		enableChapters = false
-		chapters = ""
-	}
 	return &syncAction{
-		targets:        targets,
-		chaptersColumn: chapters,
-		enableChapters: enableChapters,
-		source:         enabledSource,
+		targets: targets,
+		source:  enabledSource,
 	}
 }

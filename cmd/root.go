@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/RobBrazier/readflow/internal"
 	"github.com/RobBrazier/readflow/target"
 	"github.com/adrg/xdg"
 	"github.com/spf13/cobra"
@@ -14,7 +15,7 @@ var cfgFile string
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
-	Use:   "readflow",
+	Use:   internal.NAME,
 	Short: "Track your Kobo reads on Anilist.co and Hardcover.app using Calibre-Web and Calibre databases",
 }
 

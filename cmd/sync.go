@@ -1,8 +1,11 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
+	"maps"
+	"slices"
 
 	"github.com/RobBrazier/readflow/source"
 	"github.com/RobBrazier/readflow/sync"
@@ -11,12 +14,14 @@ import (
 	"github.com/spf13/viper"
 )
 
+var availableSources []string
+
 // syncCmd represents the sync command
 var syncCmd = &cobra.Command{
 	Use:   "sync",
 	Short: "Sync latest reading states to configured targets",
 	Run: func(cmd *cobra.Command, args []string) {
-		slog.Info("sync called")
+		slog.Info("sync called", "source", viper.GetString("source"))
 		targetNames := []string{}
 		activeTargets := target.GetActiveTargets()
 		enabledSource := getEnabledSource()
@@ -25,25 +30,34 @@ var syncCmd = &cobra.Command{
 		}
 		slog.Info("target", "active", targetNames)
 		action := sync.NewSyncAction(enabledSource, activeTargets)
-		action.Sync()
+		results, err := action.Sync()
+		cobra.CheckErr(err)
+		slog.Info("sync completed", "results", results)
+	},
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		if availableSources == nil {
+			availableSources = slices.Collect(maps.Keys(source.GetSources()))
+		}
+		if slices.Contains(availableSources, viper.GetString("source")) {
+			return nil
+		}
+		return errors.New(fmt.Sprintf("Invalid source. Available sources: %v", availableSources))
 	},
 }
 
 func getEnabledSource() source.Source {
-	return source.NewCalibreSource()
+	key := viper.GetString("source")
+	sources := source.GetSources()
+	if val, ok := sources[key]; ok {
+		return val
+	}
+	return nil
 }
 
 func init() {
+
 	RootCmd.AddCommand(syncCmd)
 
-	for _, target := range target.GetTargets() {
-		name := target.GetName()
-		flagName := fmt.Sprintf("%s-token", name)
-		syncCmd.Flags().String(flagName, "", fmt.Sprintf("token for authenticating with %s (defaults to the value of [tokens.%s] in the configuration file)", target.GetHostname(), name))
-		viper.BindPFlag(fmt.Sprintf("tokens.%s", name), syncCmd.Flags().Lookup(flagName))
-	}
-	syncCmd.Flags().String("calibre-db", "", "Location of the calibre metadata.db file (defaults to value of [databases.calibre] in the configuration file)")
-	viper.BindPFlag("databases.calibre", syncCmd.Flags().Lookup("calibre-db"))
-	syncCmd.Flags().String("calibreweb-db", "", "Location of the calibre-web app.db file (defaults to value of [databases.calibreweb] in the configuration file)")
-	viper.BindPFlag("databases.calibreweb", syncCmd.Flags().Lookup("calibreweb-db"))
+	syncCmd.Flags().StringP("source", "s", "database", "Active source to retrieve reading data from")
+	viper.BindPFlag("source", syncCmd.Flags().Lookup("source"))
 }
