@@ -1,0 +1,13 @@
+schema: schema.gql
+operations:
+  - queries.gql
+generated: ../../target/hardcover/generated.go
+bindings:
+  citext:
+    type: string
+  timestamp:
+    type: time.Time
+  date:
+    type: time.Time
+  numeric:
+    type: int

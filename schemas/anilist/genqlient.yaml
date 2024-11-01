@@ -1,0 +1,4 @@
+schema: schema.gql
+operations:
+  - queries.gql
+generated: ../../target/anilist/generated.go

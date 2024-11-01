@@ -17,7 +17,6 @@ var loginCmd = &cobra.Command{
 	Short: "login latest reading states to configured targets",
 	Run: func(cmd *cobra.Command, args []string) {
 		activeTargets := target.GetActiveTargets()
-		slog.Info("login called with", "targets", activeTargets)
 		for _, target := range activeTargets {
 			name := target.GetName()
 			if target.HasToken() {
@@ -28,12 +27,15 @@ var loginCmd = &cobra.Command{
 				}
 			}
 			slog.Info("Setting authentication token for", "target", name)
+
 			url, err := target.Login()
 			cobra.CheckErr(err)
+
 			slog.Info(fmt.Sprintf("Please open the following URL in your browser if it hasn't already opened: %s", url))
 			browser.OpenURL(url)
 			token, err := prompt.TextPrompt("Please login and paste the token shown on the website below")
 			cobra.CheckErr(err)
+
 			target.SaveToken(token)
 		}
 		viper.WriteConfig()

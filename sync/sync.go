@@ -46,6 +46,10 @@ func (a *syncAction) ensureChaptersColumn() {
 func (a *syncAction) Sync() ([]SyncResult, error) {
 	// if the chapters column doesn't exist in config, fetch the name and store it
 	a.ensureChaptersColumn()
+	for _, t := range a.targets {
+		user := t.GetCurrentUser()
+		slog.Info("current user for", "target", t.GetName(), "user", user)
+	}
 	results := []SyncResult{}
 	return results, nil
 }

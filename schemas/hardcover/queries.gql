@@ -1,0 +1,29 @@
+query GetBookReviews() {
+  me {
+    user_books(
+      where: { _and: [ 
+        {has_review: {_eq: true}},
+        {status_id: {_eq: 3 }}
+      ]}
+      order_by: [
+        { date_added: desc },
+        { reviewed_at: desc }
+      ]
+    ) {
+      reviewed_at
+      date_added
+      review_raw
+      rating
+      book {
+        title
+      }
+    }
+  }
+}
+
+query GetCurrentUser {
+  me {
+    name
+    username
+  }
+}
