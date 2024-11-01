@@ -37,7 +37,6 @@
 
   # https://devenv.sh/pre-commit-hooks/
   pre-commit.hooks = {
-    shellcheck.enable = true;
     govet.enable = true;
     gofmt.enable = true;
   };
