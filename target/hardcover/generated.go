@@ -9,10 +9,350 @@ import (
 	"github.com/Khan/genqlient/graphql"
 )
 
+// FindBookByNameBooks includes the requested fields of the GraphQL type books.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "books"
+type FindBookByNameBooks struct {
+	Title            string `json:"title"`
+	Slug             string `json:"slug"`
+	Users_read_count int    `json:"users_read_count"`
+	// An array relationship
+	Contributions []FindBookByNameBooksContributions `json:"contributions"`
+	Release_date  time.Time                          `json:"release_date"`
+	// An array relationship
+	Book_series []FindBookByNameBooksBook_series `json:"book_series"`
+	// An array relationship
+	Taggings []FindBookByNameBooksTaggings `json:"taggings"`
+	// An object relationship
+	Image FindBookByNameBooksImageImages `json:"image"`
+	// An array relationship
+	Editions    []FindBookByNameBooksEditions `json:"editions"`
+	Description string                        `json:"description"`
+}
+
+// GetTitle returns FindBookByNameBooks.Title, and is useful for accessing the field via an interface.
+func (v *FindBookByNameBooks) GetTitle() string { return v.Title }
+
+// GetSlug returns FindBookByNameBooks.Slug, and is useful for accessing the field via an interface.
+func (v *FindBookByNameBooks) GetSlug() string { return v.Slug }
+
+// GetUsers_read_count returns FindBookByNameBooks.Users_read_count, and is useful for accessing the field via an interface.
+func (v *FindBookByNameBooks) GetUsers_read_count() int { return v.Users_read_count }
+
+// GetContributions returns FindBookByNameBooks.Contributions, and is useful for accessing the field via an interface.
+func (v *FindBookByNameBooks) GetContributions() []FindBookByNameBooksContributions {
+	return v.Contributions
+}
+
+// GetRelease_date returns FindBookByNameBooks.Release_date, and is useful for accessing the field via an interface.
+func (v *FindBookByNameBooks) GetRelease_date() time.Time { return v.Release_date }
+
+// GetBook_series returns FindBookByNameBooks.Book_series, and is useful for accessing the field via an interface.
+func (v *FindBookByNameBooks) GetBook_series() []FindBookByNameBooksBook_series { return v.Book_series }
+
+// GetTaggings returns FindBookByNameBooks.Taggings, and is useful for accessing the field via an interface.
+func (v *FindBookByNameBooks) GetTaggings() []FindBookByNameBooksTaggings { return v.Taggings }
+
+// GetImage returns FindBookByNameBooks.Image, and is useful for accessing the field via an interface.
+func (v *FindBookByNameBooks) GetImage() FindBookByNameBooksImageImages { return v.Image }
+
+// GetEditions returns FindBookByNameBooks.Editions, and is useful for accessing the field via an interface.
+func (v *FindBookByNameBooks) GetEditions() []FindBookByNameBooksEditions { return v.Editions }
+
+// GetDescription returns FindBookByNameBooks.Description, and is useful for accessing the field via an interface.
+func (v *FindBookByNameBooks) GetDescription() string { return v.Description }
+
+// FindBookByNameBooksBook_series includes the requested fields of the GraphQL type book_series.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "book_series"
+type FindBookByNameBooksBook_series struct {
+	// An object relationship
+	Series FindBookByNameBooksBook_seriesSeries `json:"series"`
+}
+
+// GetSeries returns FindBookByNameBooksBook_series.Series, and is useful for accessing the field via an interface.
+func (v *FindBookByNameBooksBook_series) GetSeries() FindBookByNameBooksBook_seriesSeries {
+	return v.Series
+}
+
+// FindBookByNameBooksBook_seriesSeries includes the requested fields of the GraphQL type series.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "series"
+type FindBookByNameBooksBook_seriesSeries struct {
+	Name string `json:"name"`
+}
+
+// GetName returns FindBookByNameBooksBook_seriesSeries.Name, and is useful for accessing the field via an interface.
+func (v *FindBookByNameBooksBook_seriesSeries) GetName() string { return v.Name }
+
+// FindBookByNameBooksContributions includes the requested fields of the GraphQL type contributions.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "contributions"
+type FindBookByNameBooksContributions struct {
+	// An object relationship
+	Author FindBookByNameBooksContributionsAuthorAuthors `json:"author"`
+}
+
+// GetAuthor returns FindBookByNameBooksContributions.Author, and is useful for accessing the field via an interface.
+func (v *FindBookByNameBooksContributions) GetAuthor() FindBookByNameBooksContributionsAuthorAuthors {
+	return v.Author
+}
+
+// FindBookByNameBooksContributionsAuthorAuthors includes the requested fields of the GraphQL type authors.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "authors"
+type FindBookByNameBooksContributionsAuthorAuthors struct {
+	Name string `json:"name"`
+}
+
+// GetName returns FindBookByNameBooksContributionsAuthorAuthors.Name, and is useful for accessing the field via an interface.
+func (v *FindBookByNameBooksContributionsAuthorAuthors) GetName() string { return v.Name }
+
+// FindBookByNameBooksEditions includes the requested fields of the GraphQL type editions.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "editions"
+type FindBookByNameBooksEditions struct {
+	Asin    string `json:"asin"`
+	Isbn_13 string `json:"isbn_13"`
+	Isbn_10 string `json:"isbn_10"`
+	Title   string `json:"title"`
+}
+
+// GetAsin returns FindBookByNameBooksEditions.Asin, and is useful for accessing the field via an interface.
+func (v *FindBookByNameBooksEditions) GetAsin() string { return v.Asin }
+
+// GetIsbn_13 returns FindBookByNameBooksEditions.Isbn_13, and is useful for accessing the field via an interface.
+func (v *FindBookByNameBooksEditions) GetIsbn_13() string { return v.Isbn_13 }
+
+// GetIsbn_10 returns FindBookByNameBooksEditions.Isbn_10, and is useful for accessing the field via an interface.
+func (v *FindBookByNameBooksEditions) GetIsbn_10() string { return v.Isbn_10 }
+
+// GetTitle returns FindBookByNameBooksEditions.Title, and is useful for accessing the field via an interface.
+func (v *FindBookByNameBooksEditions) GetTitle() string { return v.Title }
+
+// FindBookByNameBooksImageImages includes the requested fields of the GraphQL type images.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "images"
+type FindBookByNameBooksImageImages struct {
+	Url string `json:"url"`
+}
+
+// GetUrl returns FindBookByNameBooksImageImages.Url, and is useful for accessing the field via an interface.
+func (v *FindBookByNameBooksImageImages) GetUrl() string { return v.Url }
+
+// FindBookByNameBooksTaggings includes the requested fields of the GraphQL type taggings.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "taggings"
+type FindBookByNameBooksTaggings struct {
+	// An object relationship
+	Tag FindBookByNameBooksTaggingsTagTags `json:"tag"`
+}
+
+// GetTag returns FindBookByNameBooksTaggings.Tag, and is useful for accessing the field via an interface.
+func (v *FindBookByNameBooksTaggings) GetTag() FindBookByNameBooksTaggingsTagTags { return v.Tag }
+
+// FindBookByNameBooksTaggingsTagTags includes the requested fields of the GraphQL type tags.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "tags"
+type FindBookByNameBooksTaggingsTagTags struct {
+	Tag string `json:"tag"`
+}
+
+// GetTag returns FindBookByNameBooksTaggingsTagTags.Tag, and is useful for accessing the field via an interface.
+func (v *FindBookByNameBooksTaggingsTagTags) GetTag() string { return v.Tag }
+
+// FindBookByNameResponse is returned by FindBookByName on success.
+type FindBookByNameResponse struct {
+	// An array relationship
+	Books []FindBookByNameBooks `json:"books"`
+}
+
+// GetBooks returns FindBookByNameResponse.Books, and is useful for accessing the field via an interface.
+func (v *FindBookByNameResponse) GetBooks() []FindBookByNameBooks { return v.Books }
+
+// FindBookBySlugBooks includes the requested fields of the GraphQL type books.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "books"
+type FindBookBySlugBooks struct {
+	Title            string `json:"title"`
+	Slug             string `json:"slug"`
+	Users_read_count int    `json:"users_read_count"`
+	// An array relationship
+	Contributions []FindBookBySlugBooksContributions `json:"contributions"`
+	Release_date  time.Time                          `json:"release_date"`
+	// An array relationship
+	Book_series []FindBookBySlugBooksBook_series `json:"book_series"`
+	// An array relationship
+	Taggings []FindBookBySlugBooksTaggings `json:"taggings"`
+	// An object relationship
+	Image FindBookBySlugBooksImageImages `json:"image"`
+	// An array relationship
+	Editions    []FindBookBySlugBooksEditions `json:"editions"`
+	Description string                        `json:"description"`
+}
+
+// GetTitle returns FindBookBySlugBooks.Title, and is useful for accessing the field via an interface.
+func (v *FindBookBySlugBooks) GetTitle() string { return v.Title }
+
+// GetSlug returns FindBookBySlugBooks.Slug, and is useful for accessing the field via an interface.
+func (v *FindBookBySlugBooks) GetSlug() string { return v.Slug }
+
+// GetUsers_read_count returns FindBookBySlugBooks.Users_read_count, and is useful for accessing the field via an interface.
+func (v *FindBookBySlugBooks) GetUsers_read_count() int { return v.Users_read_count }
+
+// GetContributions returns FindBookBySlugBooks.Contributions, and is useful for accessing the field via an interface.
+func (v *FindBookBySlugBooks) GetContributions() []FindBookBySlugBooksContributions {
+	return v.Contributions
+}
+
+// GetRelease_date returns FindBookBySlugBooks.Release_date, and is useful for accessing the field via an interface.
+func (v *FindBookBySlugBooks) GetRelease_date() time.Time { return v.Release_date }
+
+// GetBook_series returns FindBookBySlugBooks.Book_series, and is useful for accessing the field via an interface.
+func (v *FindBookBySlugBooks) GetBook_series() []FindBookBySlugBooksBook_series { return v.Book_series }
+
+// GetTaggings returns FindBookBySlugBooks.Taggings, and is useful for accessing the field via an interface.
+func (v *FindBookBySlugBooks) GetTaggings() []FindBookBySlugBooksTaggings { return v.Taggings }
+
+// GetImage returns FindBookBySlugBooks.Image, and is useful for accessing the field via an interface.
+func (v *FindBookBySlugBooks) GetImage() FindBookBySlugBooksImageImages { return v.Image }
+
+// GetEditions returns FindBookBySlugBooks.Editions, and is useful for accessing the field via an interface.
+func (v *FindBookBySlugBooks) GetEditions() []FindBookBySlugBooksEditions { return v.Editions }
+
+// GetDescription returns FindBookBySlugBooks.Description, and is useful for accessing the field via an interface.
+func (v *FindBookBySlugBooks) GetDescription() string { return v.Description }
+
+// FindBookBySlugBooksBook_series includes the requested fields of the GraphQL type book_series.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "book_series"
+type FindBookBySlugBooksBook_series struct {
+	// An object relationship
+	Series FindBookBySlugBooksBook_seriesSeries `json:"series"`
+}
+
+// GetSeries returns FindBookBySlugBooksBook_series.Series, and is useful for accessing the field via an interface.
+func (v *FindBookBySlugBooksBook_series) GetSeries() FindBookBySlugBooksBook_seriesSeries {
+	return v.Series
+}
+
+// FindBookBySlugBooksBook_seriesSeries includes the requested fields of the GraphQL type series.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "series"
+type FindBookBySlugBooksBook_seriesSeries struct {
+	Name string `json:"name"`
+}
+
+// GetName returns FindBookBySlugBooksBook_seriesSeries.Name, and is useful for accessing the field via an interface.
+func (v *FindBookBySlugBooksBook_seriesSeries) GetName() string { return v.Name }
+
+// FindBookBySlugBooksContributions includes the requested fields of the GraphQL type contributions.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "contributions"
+type FindBookBySlugBooksContributions struct {
+	// An object relationship
+	Author FindBookBySlugBooksContributionsAuthorAuthors `json:"author"`
+}
+
+// GetAuthor returns FindBookBySlugBooksContributions.Author, and is useful for accessing the field via an interface.
+func (v *FindBookBySlugBooksContributions) GetAuthor() FindBookBySlugBooksContributionsAuthorAuthors {
+	return v.Author
+}
+
+// FindBookBySlugBooksContributionsAuthorAuthors includes the requested fields of the GraphQL type authors.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "authors"
+type FindBookBySlugBooksContributionsAuthorAuthors struct {
+	Name string `json:"name"`
+}
+
+// GetName returns FindBookBySlugBooksContributionsAuthorAuthors.Name, and is useful for accessing the field via an interface.
+func (v *FindBookBySlugBooksContributionsAuthorAuthors) GetName() string { return v.Name }
+
+// FindBookBySlugBooksEditions includes the requested fields of the GraphQL type editions.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "editions"
+type FindBookBySlugBooksEditions struct {
+	Asin    string `json:"asin"`
+	Isbn_13 string `json:"isbn_13"`
+	Isbn_10 string `json:"isbn_10"`
+	Title   string `json:"title"`
+}
+
+// GetAsin returns FindBookBySlugBooksEditions.Asin, and is useful for accessing the field via an interface.
+func (v *FindBookBySlugBooksEditions) GetAsin() string { return v.Asin }
+
+// GetIsbn_13 returns FindBookBySlugBooksEditions.Isbn_13, and is useful for accessing the field via an interface.
+func (v *FindBookBySlugBooksEditions) GetIsbn_13() string { return v.Isbn_13 }
+
+// GetIsbn_10 returns FindBookBySlugBooksEditions.Isbn_10, and is useful for accessing the field via an interface.
+func (v *FindBookBySlugBooksEditions) GetIsbn_10() string { return v.Isbn_10 }
+
+// GetTitle returns FindBookBySlugBooksEditions.Title, and is useful for accessing the field via an interface.
+func (v *FindBookBySlugBooksEditions) GetTitle() string { return v.Title }
+
+// FindBookBySlugBooksImageImages includes the requested fields of the GraphQL type images.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "images"
+type FindBookBySlugBooksImageImages struct {
+	Url string `json:"url"`
+}
+
+// GetUrl returns FindBookBySlugBooksImageImages.Url, and is useful for accessing the field via an interface.
+func (v *FindBookBySlugBooksImageImages) GetUrl() string { return v.Url }
+
+// FindBookBySlugBooksTaggings includes the requested fields of the GraphQL type taggings.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "taggings"
+type FindBookBySlugBooksTaggings struct {
+	// An object relationship
+	Tag FindBookBySlugBooksTaggingsTagTags `json:"tag"`
+}
+
+// GetTag returns FindBookBySlugBooksTaggings.Tag, and is useful for accessing the field via an interface.
+func (v *FindBookBySlugBooksTaggings) GetTag() FindBookBySlugBooksTaggingsTagTags { return v.Tag }
+
+// FindBookBySlugBooksTaggingsTagTags includes the requested fields of the GraphQL type tags.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "tags"
+type FindBookBySlugBooksTaggingsTagTags struct {
+	Tag string `json:"tag"`
+}
+
+// GetTag returns FindBookBySlugBooksTaggingsTagTags.Tag, and is useful for accessing the field via an interface.
+func (v *FindBookBySlugBooksTaggingsTagTags) GetTag() string { return v.Tag }
+
+// FindBookBySlugResponse is returned by FindBookBySlug on success.
+type FindBookBySlugResponse struct {
+	// An array relationship
+	Books []FindBookBySlugBooks `json:"books"`
+}
+
+// GetBooks returns FindBookBySlugResponse.Books, and is useful for accessing the field via an interface.
+func (v *FindBookBySlugResponse) GetBooks() []FindBookBySlugBooks { return v.Books }
+
 // GetBookReviewsMeUsers includes the requested fields of the GraphQL type users.
 // The GraphQL type's documentation follows.
 //
-// columns and relationships of "users
+// columns and relationships of "users"
 type GetBookReviewsMeUsers struct {
 	// An array relationship
 	User_books []GetBookReviewsMeUsersUser_books `json:"user_books"`
@@ -26,7 +366,7 @@ func (v *GetBookReviewsMeUsers) GetUser_books() []GetBookReviewsMeUsersUser_book
 // GetBookReviewsMeUsersUser_books includes the requested fields of the GraphQL type user_books.
 // The GraphQL type's documentation follows.
 //
-// columns and relationships of "user_books
+// columns and relationships of "user_books"
 type GetBookReviewsMeUsersUser_books struct {
 	Reviewed_at time.Time `json:"reviewed_at"`
 	Date_added  time.Time `json:"date_added"`
@@ -56,7 +396,7 @@ func (v *GetBookReviewsMeUsersUser_books) GetBook() GetBookReviewsMeUsersUser_bo
 // GetBookReviewsMeUsersUser_booksBookBooks includes the requested fields of the GraphQL type books.
 // The GraphQL type's documentation follows.
 //
-// columns and relationships of "books
+// columns and relationships of "books"
 type GetBookReviewsMeUsersUser_booksBookBooks struct {
 	Title string `json:"title"`
 }
@@ -66,7 +406,7 @@ func (v *GetBookReviewsMeUsersUser_booksBookBooks) GetTitle() string { return v.
 
 // GetBookReviewsResponse is returned by GetBookReviews on success.
 type GetBookReviewsResponse struct {
-	// execute function "me" which returns "users
+	// execute function "me" which returns "users"
 	Me []GetBookReviewsMeUsers `json:"me"`
 }
 
@@ -76,7 +416,7 @@ func (v *GetBookReviewsResponse) GetMe() []GetBookReviewsMeUsers { return v.Me }
 // GetCurrentUserMeUsers includes the requested fields of the GraphQL type users.
 // The GraphQL type's documentation follows.
 //
-// columns and relationships of "users
+// columns and relationships of "users"
 type GetCurrentUserMeUsers struct {
 	Name     string `json:"name"`
 	Username string `json:"username"`
@@ -90,12 +430,154 @@ func (v *GetCurrentUserMeUsers) GetUsername() string { return v.Username }
 
 // GetCurrentUserResponse is returned by GetCurrentUser on success.
 type GetCurrentUserResponse struct {
-	// execute function "me" which returns "users
+	// execute function "me" which returns "users"
 	Me []GetCurrentUserMeUsers `json:"me"`
 }
 
 // GetMe returns GetCurrentUserResponse.Me, and is useful for accessing the field via an interface.
 func (v *GetCurrentUserResponse) GetMe() []GetCurrentUserMeUsers { return v.Me }
+
+// __FindBookByNameInput is used internally by genqlient
+type __FindBookByNameInput struct {
+	Title string `json:"title"`
+}
+
+// GetTitle returns __FindBookByNameInput.Title, and is useful for accessing the field via an interface.
+func (v *__FindBookByNameInput) GetTitle() string { return v.Title }
+
+// __FindBookBySlugInput is used internally by genqlient
+type __FindBookBySlugInput struct {
+	Slug string `json:"slug"`
+}
+
+// GetSlug returns __FindBookBySlugInput.Slug, and is useful for accessing the field via an interface.
+func (v *__FindBookBySlugInput) GetSlug() string { return v.Slug }
+
+// The query or mutation executed by FindBookByName.
+const FindBookByName_Operation = `
+query FindBookByName ($title: String) {
+	books(where: {title:{_regex:$title}}, order_by: {users_read_count:desc_nulls_last}) {
+		title
+		slug
+		users_read_count
+		contributions {
+			author {
+				name
+			}
+		}
+		release_date
+		book_series {
+			series {
+				name
+			}
+		}
+		taggings {
+			tag {
+				tag
+			}
+		}
+		image {
+			url
+		}
+		editions {
+			asin
+			isbn_13
+			isbn_10
+			title
+		}
+		description
+	}
+}
+`
+
+func FindBookByName(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	title string,
+) (*FindBookByNameResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "FindBookByName",
+		Query:  FindBookByName_Operation,
+		Variables: &__FindBookByNameInput{
+			Title: title,
+		},
+	}
+	var err_ error
+
+	var data_ FindBookByNameResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
+
+// The query or mutation executed by FindBookBySlug.
+const FindBookBySlug_Operation = `
+query FindBookBySlug ($slug: String) {
+	books(where: {slug:{_eq:$slug}}, order_by: {users_read_count:desc_nulls_last}) {
+		title
+		slug
+		users_read_count
+		contributions {
+			author {
+				name
+			}
+		}
+		release_date
+		book_series {
+			series {
+				name
+			}
+		}
+		taggings {
+			tag {
+				tag
+			}
+		}
+		image {
+			url
+		}
+		editions {
+			asin
+			isbn_13
+			isbn_10
+			title
+		}
+		description
+	}
+}
+`
+
+func FindBookBySlug(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	slug string,
+) (*FindBookBySlugResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "FindBookBySlug",
+		Query:  FindBookBySlug_Operation,
+		Variables: &__FindBookBySlugInput{
+			Slug: slug,
+		},
+	}
+	var err_ error
+
+	var data_ FindBookBySlugResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
 
 // The query or mutation executed by GetBookReviews.
 const GetBookReviews_Operation = `

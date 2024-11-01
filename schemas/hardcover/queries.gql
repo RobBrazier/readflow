@@ -1,4 +1,4 @@
-query GetBookReviews() {
+query GetBookReviews {
   me {
     user_books(
       where: { _and: [ 
@@ -25,5 +25,80 @@ query GetCurrentUser {
   me {
     name
     username
+  }
+}
+
+query FindBookByName($title: String) {
+  books(
+    where: {title: {_regex: $title}}
+    order_by: {users_read_count: desc_nulls_last}
+  ) {
+    title
+    slug
+    users_read_count
+    contributions {
+      author {
+        name
+      }
+    }
+    release_date
+    book_series {
+      series {
+        name
+      }
+    }
+    taggings {
+      tag {
+        tag
+      }
+    }
+    image {
+      url
+    }
+    editions {
+      asin
+      isbn_13
+      isbn_10
+      title
+    }
+    description
+  }
+}
+
+
+query FindBookBySlug($slug: String) {
+  books(
+    where: {slug: {_eq: $slug}}
+    order_by: {users_read_count: desc_nulls_last}
+  ) {
+    title
+    slug
+    users_read_count
+    contributions {
+      author {
+        name
+      }
+    }
+    release_date
+    book_series {
+      series {
+        name
+      }
+    }
+    taggings {
+      tag {
+        tag
+      }
+    }
+    image {
+      url
+    }
+    editions {
+      asin
+      isbn_13
+      isbn_10
+      title
+    }
+    description
   }
 }

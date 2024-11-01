@@ -26,3 +26,12 @@ go.work.sum
 
 **/*.db
 readflow
+# Devenv
+.devenv*
+devenv.local.nix
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
