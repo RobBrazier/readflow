@@ -1,7 +1,7 @@
 { pkgs, lib, config, inputs, ... }:
 
 {
-  packages = [ pkgs.git pkgs.go-task pkgs.nodejs_22 ];
+  packages = [ pkgs.git pkgs.go-task pkgs.nodejs_22 pkgs.goreleaser ];
 
   languages.go.enable = true;
 
