@@ -12,6 +12,25 @@ import (
 	"github.com/RobBrazier/readflow/schemas/hardcover"
 )
 
+// ChangeBookStatusInsert_user_bookUserBookIdType includes the requested fields of the GraphQL type UserBookIdType.
+type ChangeBookStatusInsert_user_bookUserBookIdType struct {
+	Id int `json:"id"`
+}
+
+// GetId returns ChangeBookStatusInsert_user_bookUserBookIdType.Id, and is useful for accessing the field via an interface.
+func (v *ChangeBookStatusInsert_user_bookUserBookIdType) GetId() int { return v.Id }
+
+// ChangeBookStatusResponse is returned by ChangeBookStatus on success.
+type ChangeBookStatusResponse struct {
+	// insert_user_book
+	Insert_user_book ChangeBookStatusInsert_user_bookUserBookIdType `json:"insert_user_book"`
+}
+
+// GetInsert_user_book returns ChangeBookStatusResponse.Insert_user_book, and is useful for accessing the field via an interface.
+func (v *ChangeBookStatusResponse) GetInsert_user_book() ChangeBookStatusInsert_user_bookUserBookIdType {
+	return v.Insert_user_book
+}
+
 // FinishBookProgressResponse is returned by FinishBookProgress on success.
 type FinishBookProgressResponse struct {
 	// update_user_book_read
@@ -341,6 +360,18 @@ type UpdateBookProgressUpdate_user_book_readUserBookReadIdType struct {
 // GetId returns UpdateBookProgressUpdate_user_book_readUserBookReadIdType.Id, and is useful for accessing the field via an interface.
 func (v *UpdateBookProgressUpdate_user_book_readUserBookReadIdType) GetId() int { return v.Id }
 
+// __ChangeBookStatusInput is used internally by genqlient
+type __ChangeBookStatusInput struct {
+	BookId int `json:"bookId"`
+	Status int `json:"status"`
+}
+
+// GetBookId returns __ChangeBookStatusInput.BookId, and is useful for accessing the field via an interface.
+func (v *__ChangeBookStatusInput) GetBookId() int { return v.BookId }
+
+// GetStatus returns __ChangeBookStatusInput.Status, and is useful for accessing the field via an interface.
+func (v *__ChangeBookStatusInput) GetStatus() int { return v.Status }
+
 // __FinishBookProgressInput is used internally by genqlient
 type __FinishBookProgressInput struct {
 	Id         int       `json:"id"`
@@ -655,6 +686,43 @@ func (v *__UpdateBookProgressInput) __premarshalJSON() (*__premarshal__UpdateBoo
 		}
 	}
 	return &retval, nil
+}
+
+// The query or mutation executed by ChangeBookStatus.
+const ChangeBookStatus_Operation = `
+mutation ChangeBookStatus ($bookId: Int!, $status: Int) {
+	insert_user_book(object: {book_id:$bookId,status_id:$status}) {
+		id
+	}
+}
+`
+
+func ChangeBookStatus(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	bookId int,
+	status int,
+) (*ChangeBookStatusResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "ChangeBookStatus",
+		Query:  ChangeBookStatus_Operation,
+		Variables: &__ChangeBookStatusInput{
+			BookId: bookId,
+			Status: status,
+		},
+	}
+	var err_ error
+
+	var data_ ChangeBookStatusResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
 }
 
 // The query or mutation executed by FinishBookProgress.

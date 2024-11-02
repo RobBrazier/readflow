@@ -1,3 +1,9 @@
+mutation ChangeBookStatus($bookId: Int!, $status: Int) {
+  insert_user_book(object: {book_id: $bookId, status_id: $status}) {
+    id
+  }
+}
+
 mutation StartBookProgress($bookId: Int!, $pages: Int, $editionId: Int, $startedAt: date) {
   insert_user_book_read(user_book_id: $bookId, user_book_read: {
     progress_pages: $pages,
