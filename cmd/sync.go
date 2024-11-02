@@ -8,9 +8,9 @@ import (
 	"slices"
 
 	"github.com/RobBrazier/readflow/internal"
-	"github.com/RobBrazier/readflow/source"
-	"github.com/RobBrazier/readflow/sync"
-	"github.com/RobBrazier/readflow/target"
+	"github.com/RobBrazier/readflow/internal/source"
+	"github.com/RobBrazier/readflow/internal/sync"
+	"github.com/RobBrazier/readflow/internal/target"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

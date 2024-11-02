@@ -5,8 +5,8 @@ import (
 	"log/slog"
 
 	"github.com/Khan/genqlient/graphql"
-	"github.com/RobBrazier/readflow/source"
-	"github.com/RobBrazier/readflow/target/anilist"
+	"github.com/RobBrazier/readflow/internal/source"
+	"github.com/RobBrazier/readflow/internal/target/anilist"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

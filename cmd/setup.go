@@ -7,7 +7,7 @@ import (
 
 	"github.com/RobBrazier/readflow/internal"
 	"github.com/RobBrazier/readflow/internal/form"
-	"github.com/RobBrazier/readflow/target"
+	"github.com/RobBrazier/readflow/internal/target"
 	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/charmbracelet/huh"
 	"github.com/cli/browser"

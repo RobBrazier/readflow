@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/Khan/genqlient/graphql"
-	"github.com/RobBrazier/readflow/source"
-	"github.com/RobBrazier/readflow/target/hardcover"
+	"github.com/RobBrazier/readflow/internal/source"
+	"github.com/RobBrazier/readflow/internal/target/hardcover"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

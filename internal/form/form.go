@@ -4,8 +4,8 @@ import (
 	"errors"
 	"maps"
 
-	"github.com/RobBrazier/readflow/source"
-	"github.com/RobBrazier/readflow/target"
+	"github.com/RobBrazier/readflow/internal/source"
+	"github.com/RobBrazier/readflow/internal/target"
 	"github.com/charmbracelet/huh"
 )
 

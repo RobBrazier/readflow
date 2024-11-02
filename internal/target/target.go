@@ -7,7 +7,7 @@ import (
 	"slices"
 
 	"github.com/Khan/genqlient/graphql"
-	"github.com/RobBrazier/readflow/source"
+	"github.com/RobBrazier/readflow/internal/source"
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/spf13/viper"
 )
