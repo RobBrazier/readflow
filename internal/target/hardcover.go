@@ -5,14 +5,12 @@ import (
 	"errors"
 	"log/slog"
 	"math"
-	"strings"
 	"time"
 
 	"github.com/Khan/genqlient/graphql"
 	"github.com/RobBrazier/readflow/internal/source"
 	"github.com/RobBrazier/readflow/internal/target/hardcover"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 //go:generate go run github.com/Khan/genqlient ../../schemas/hardcover/genqlient.yaml
@@ -43,13 +41,6 @@ func (t *HardcoverTarget) getClient() graphql.Client {
 		t.client = t.GraphQLTarget.getClient(t.Target)
 	}
 	return t.client
-}
-
-func (t *HardcoverTarget) SaveToken(token string) error {
-	slog.Info("saved token to", "key", t.getTokenKey())
-	token = strings.TrimSpace(strings.Replace(token, "Bearer", "", 1))
-	viper.Set(t.getTokenKey(), token)
-	return nil
 }
 
 func (t *HardcoverTarget) GetCurrentUser() string {
@@ -198,9 +189,8 @@ func NewHardcoverTarget() SyncTarget {
 	target := &HardcoverTarget{
 		ctx: context.Background(),
 		Target: Target{
-			Name:     "hardcover",
-			Hostname: "hardcover.app",
-			ApiUrl:   "https://api.hardcover.app/v1/graphql",
+			Name:   "hardcover",
+			ApiUrl: "https://api.hardcover.app/v1/graphql",
 		},
 	}
 	return target

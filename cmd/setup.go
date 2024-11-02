@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"slices"
+	"strings"
 
 	"github.com/RobBrazier/readflow/internal"
 	"github.com/RobBrazier/readflow/internal/form"
@@ -122,7 +123,7 @@ var setupCmd = &cobra.Command{
 			viper.Set(internal.CONFIG_TOKENS_ANILIST, anilistToken)
 		}
 		if fetchHardcoverToken && hardcoverToken != "" {
-			viper.Set(internal.CONFIG_TOKENS_HARDCOVER, hardcoverToken)
+			viper.Set(internal.CONFIG_TOKENS_HARDCOVER, strings.TrimSpace(strings.Replace(hardcoverToken, "Bearer", "", 1)))
 		}
 		err = viper.WriteConfig()
 		if err != nil {

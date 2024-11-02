@@ -13,9 +13,8 @@ import (
 )
 
 type Target struct {
-	Name     string
-	Hostname string
-	ApiUrl   string
+	Name   string
+	ApiUrl string
 	SyncTarget
 }
 
@@ -28,11 +27,7 @@ type authTransport struct {
 
 type SyncTarget interface {
 	Login() (string, error)
-	HasToken() bool
-	GetTarget() *Target
 	getToken() string
-	getTokenKey() string
-	SaveToken(token string) error
 	GetName() string
 	GetCurrentUser() string
 	UpdateReadStatus(book source.BookContext) error
@@ -58,29 +53,13 @@ func (g *GraphQLTarget) getClient(target Target) graphql.Client {
 
 var targets = []SyncTarget{}
 
-func (t *Target) GetTarget() *Target {
-	return t
-}
-
 func (t *Target) GetName() string {
 	return t.Name
 }
 
 func (t *Target) getToken() string {
-	key := t.getTokenKey()
-	value := viper.GetString(key)
-	// if value == "" {
-	// 	cobra.CheckErr(fmt.Sprintf("Token for %s not set - please configure with `%s login` or disable with `%s config set targets DESIRED_TARGET`", t.Name, internal.NAME, internal.NAME))
-	// }
+	value := viper.GetString(fmt.Sprintf("tokens.%s", t.Name))
 	return value
-}
-
-func (t *Target) getTokenKey() string {
-	return fmt.Sprintf("tokens.%s", t.Name)
-}
-
-func (t *Target) HasToken() bool {
-	return t.getToken() != ""
 }
 
 func GetTargets() []SyncTarget {
