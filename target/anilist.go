@@ -5,6 +5,7 @@ import (
 	"log/slog"
 
 	"github.com/Khan/genqlient/graphql"
+	"github.com/RobBrazier/readflow/source"
 	"github.com/RobBrazier/readflow/target/anilist"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -40,6 +41,10 @@ func (t *AnilistTarget) GetCurrentUser() string {
 	response, err := anilist.GetCurrentUser(t.ctx, t.getClient())
 	cobra.CheckErr(err)
 	return response.Viewer.Name
+}
+
+func (t *AnilistTarget) UpdateReadStatus(book source.BookContext) error {
+	return nil
 }
 
 func NewAnilistTarget() SyncTarget {

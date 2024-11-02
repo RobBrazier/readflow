@@ -1,6 +1,7 @@
 schema: schema.gql
 operations:
   - queries.gql
+  - mutations.gql
 generated: ../../target/hardcover/generated.go
 bindings:
   citext:
@@ -9,5 +10,9 @@ bindings:
     type: time.Time
   date:
     type: time.Time
+    marshaler: github.com/RobBrazier/readflow/schemas/hardcover.MarshalHardcoverDate
+    unmarshaler: github.com/RobBrazier/readflow/schemas/hardcover.UnmarshalHardcoverDate
   numeric:
     type: int
+  float8:
+    type: float32

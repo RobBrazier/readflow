@@ -1,0 +1,30 @@
+mutation StartBookProgress($bookId: Int!, $pages: Int, $editionId: Int, $startedAt: date) {
+  insert_user_book_read(user_book_id: $bookId, user_book_read: {
+    progress_pages: $pages,
+    edition_id: $editionId,
+    started_at: $startedAt,
+  }) {
+    id
+  }
+}
+
+mutation UpdateBookProgress($id: Int!, $pages: Int, $editionId: Int, $startedAt: date) {
+  update_user_book_read(id: $id, object: {
+    progress_pages: $pages,
+    edition_id: $editionId,
+    started_at: $startedAt,
+  }) {
+    id
+  }
+}
+
+mutation FinishBookProgress($id: Int!, $pages: Int, $editionId: Int, $startedAt: date, $finishedAt: date) {
+  update_user_book_read(id: $id, object: {
+    progress_pages: $pages,
+    edition_id: $editionId,
+    started_at: $startedAt,
+    finished_at: $finishedAt,
+  }) {
+    id
+  }
+}

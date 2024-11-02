@@ -1,7 +1,6 @@
 package sync
 
 import (
-	"encoding/json"
 	"log/slog"
 	"sync"
 
@@ -28,23 +27,28 @@ func (a *syncAction) Sync() ([]SyncResult, error) {
 	a.source.Init()
 	recentReads, err := a.source.GetRecentReads()
 	cobra.CheckErr(err)
-	b, err := json.Marshal(recentReads)
-	cobra.CheckErr(err)
-	slog.Info(string(b))
 	var wg sync.WaitGroup
 	for _, t := range a.targets {
 		wg.Add(1)
-		go a.processTarget(t, &wg)
+		go a.processTarget(t, recentReads, &wg)
 	}
 
 	wg.Wait()
 	return []SyncResult{}, nil
 }
 
-func (a *syncAction) processTarget(t target.SyncTarget, wg *sync.WaitGroup) {
+func (a *syncAction) processTarget(t target.SyncTarget, reads []source.BookContext, wg *sync.WaitGroup) {
 	defer wg.Done()
 	user := t.GetCurrentUser()
-	slog.Info("current user for", "target", t.GetName(), "user", user)
+	slog.Debug("current user for", "target", t.GetName(), "user", user)
+
+	for _, book := range reads {
+		slog.Info("Processing", "book", book.Current.BookName, "target", t.GetName())
+		err := t.UpdateReadStatus(book)
+		if err != nil {
+			slog.Error("failed to update reading status", "error", err)
+		}
+	}
 }
 
 func NewSyncAction(enabledSource source.Source, targets []target.SyncTarget) SyncAction {

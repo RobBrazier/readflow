@@ -64,10 +64,8 @@ func (s *databaseSource) getChaptersColumn() (string, error) {
 	return fmt.Sprintf("custom_column_%d", row.Id), nil
 }
 
-func (s *databaseSource) GetRecentReads() ([]Book, error) {
+func (s *databaseSource) getRecentReads(db *sqlx.DB) ([]Book, error) {
 	var books = []Book{}
-	db := s.getDb()
-	defer db.Close()
 
 	query := RECENT_READS_QUERY_NO_CHAPTERS
 	if s.chaptersColumn != "" {
@@ -81,6 +79,37 @@ func (s *databaseSource) GetRecentReads() ([]Book, error) {
 		return nil, err
 	}
 	return books, nil
+}
+
+func (s *databaseSource) GetRecentReads() ([]BookContext, error) {
+	var recent = []BookContext{}
+	db := s.getDb()
+	defer db.Close()
+	recentReads, err := s.getRecentReads(db)
+	if err != nil {
+		return nil, err
+	}
+	query := PREVIOUS_BOOKS_IN_SERIES_QUERY_NO_CHAPTERS
+	if s.chaptersColumn != "" {
+		query = fmt.Sprintf(PREVIOUS_BOOKS_IN_SERIES_QUERY, s.chaptersColumn)
+	}
+	for _, book := range recentReads {
+		var previous = []Book{}
+		context := BookContext{
+			Current: book,
+		}
+		if book.SeriesID != nil {
+			err := db.Select(&previous, query, book.SeriesID, book.BookSeriesIndex)
+			if err != nil {
+				slog.Error("Unable to get previous books for", "book", book.BookName)
+			}
+			context.Previous = previous
+		} else {
+			slog.Info("Skipping retrieval of previous books as this book has no series", "book", book.BookName)
+		}
+		recent = append(recent, context)
+	}
+	return recent, nil
 }
 
 func checkValue(name, hint string) string {

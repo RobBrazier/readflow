@@ -1,4 +1,4 @@
-query GetCurrentUser() {
+query GetCurrentUser {
   Viewer {
     id
     name

@@ -4,414 +4,32 @@ package hardcover
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/Khan/genqlient/graphql"
+	"github.com/RobBrazier/readflow/schemas/hardcover"
 )
 
-// FindBookByNameBooks includes the requested fields of the GraphQL type books.
-// The GraphQL type's documentation follows.
-//
-// columns and relationships of "books"
-type FindBookByNameBooks struct {
-	Title            string `json:"title"`
-	Slug             string `json:"slug"`
-	Users_read_count int    `json:"users_read_count"`
-	// An array relationship
-	Contributions []FindBookByNameBooksContributions `json:"contributions"`
-	Release_date  time.Time                          `json:"release_date"`
-	// An array relationship
-	Book_series []FindBookByNameBooksBook_series `json:"book_series"`
-	// An array relationship
-	Taggings []FindBookByNameBooksTaggings `json:"taggings"`
-	// An object relationship
-	Image FindBookByNameBooksImageImages `json:"image"`
-	// An array relationship
-	Editions    []FindBookByNameBooksEditions `json:"editions"`
-	Description string                        `json:"description"`
+// FinishBookProgressResponse is returned by FinishBookProgress on success.
+type FinishBookProgressResponse struct {
+	// update_user_book_read
+	Update_user_book_read FinishBookProgressUpdate_user_book_readUserBookReadIdType `json:"update_user_book_read"`
 }
 
-// GetTitle returns FindBookByNameBooks.Title, and is useful for accessing the field via an interface.
-func (v *FindBookByNameBooks) GetTitle() string { return v.Title }
-
-// GetSlug returns FindBookByNameBooks.Slug, and is useful for accessing the field via an interface.
-func (v *FindBookByNameBooks) GetSlug() string { return v.Slug }
-
-// GetUsers_read_count returns FindBookByNameBooks.Users_read_count, and is useful for accessing the field via an interface.
-func (v *FindBookByNameBooks) GetUsers_read_count() int { return v.Users_read_count }
-
-// GetContributions returns FindBookByNameBooks.Contributions, and is useful for accessing the field via an interface.
-func (v *FindBookByNameBooks) GetContributions() []FindBookByNameBooksContributions {
-	return v.Contributions
+// GetUpdate_user_book_read returns FinishBookProgressResponse.Update_user_book_read, and is useful for accessing the field via an interface.
+func (v *FinishBookProgressResponse) GetUpdate_user_book_read() FinishBookProgressUpdate_user_book_readUserBookReadIdType {
+	return v.Update_user_book_read
 }
 
-// GetRelease_date returns FindBookByNameBooks.Release_date, and is useful for accessing the field via an interface.
-func (v *FindBookByNameBooks) GetRelease_date() time.Time { return v.Release_date }
-
-// GetBook_series returns FindBookByNameBooks.Book_series, and is useful for accessing the field via an interface.
-func (v *FindBookByNameBooks) GetBook_series() []FindBookByNameBooksBook_series { return v.Book_series }
-
-// GetTaggings returns FindBookByNameBooks.Taggings, and is useful for accessing the field via an interface.
-func (v *FindBookByNameBooks) GetTaggings() []FindBookByNameBooksTaggings { return v.Taggings }
-
-// GetImage returns FindBookByNameBooks.Image, and is useful for accessing the field via an interface.
-func (v *FindBookByNameBooks) GetImage() FindBookByNameBooksImageImages { return v.Image }
-
-// GetEditions returns FindBookByNameBooks.Editions, and is useful for accessing the field via an interface.
-func (v *FindBookByNameBooks) GetEditions() []FindBookByNameBooksEditions { return v.Editions }
-
-// GetDescription returns FindBookByNameBooks.Description, and is useful for accessing the field via an interface.
-func (v *FindBookByNameBooks) GetDescription() string { return v.Description }
-
-// FindBookByNameBooksBook_series includes the requested fields of the GraphQL type book_series.
-// The GraphQL type's documentation follows.
-//
-// columns and relationships of "book_series"
-type FindBookByNameBooksBook_series struct {
-	// An object relationship
-	Series FindBookByNameBooksBook_seriesSeries `json:"series"`
+// FinishBookProgressUpdate_user_book_readUserBookReadIdType includes the requested fields of the GraphQL type UserBookReadIdType.
+type FinishBookProgressUpdate_user_book_readUserBookReadIdType struct {
+	Id int `json:"id"`
 }
 
-// GetSeries returns FindBookByNameBooksBook_series.Series, and is useful for accessing the field via an interface.
-func (v *FindBookByNameBooksBook_series) GetSeries() FindBookByNameBooksBook_seriesSeries {
-	return v.Series
-}
-
-// FindBookByNameBooksBook_seriesSeries includes the requested fields of the GraphQL type series.
-// The GraphQL type's documentation follows.
-//
-// columns and relationships of "series"
-type FindBookByNameBooksBook_seriesSeries struct {
-	Name string `json:"name"`
-}
-
-// GetName returns FindBookByNameBooksBook_seriesSeries.Name, and is useful for accessing the field via an interface.
-func (v *FindBookByNameBooksBook_seriesSeries) GetName() string { return v.Name }
-
-// FindBookByNameBooksContributions includes the requested fields of the GraphQL type contributions.
-// The GraphQL type's documentation follows.
-//
-// columns and relationships of "contributions"
-type FindBookByNameBooksContributions struct {
-	// An object relationship
-	Author FindBookByNameBooksContributionsAuthorAuthors `json:"author"`
-}
-
-// GetAuthor returns FindBookByNameBooksContributions.Author, and is useful for accessing the field via an interface.
-func (v *FindBookByNameBooksContributions) GetAuthor() FindBookByNameBooksContributionsAuthorAuthors {
-	return v.Author
-}
-
-// FindBookByNameBooksContributionsAuthorAuthors includes the requested fields of the GraphQL type authors.
-// The GraphQL type's documentation follows.
-//
-// columns and relationships of "authors"
-type FindBookByNameBooksContributionsAuthorAuthors struct {
-	Name string `json:"name"`
-}
-
-// GetName returns FindBookByNameBooksContributionsAuthorAuthors.Name, and is useful for accessing the field via an interface.
-func (v *FindBookByNameBooksContributionsAuthorAuthors) GetName() string { return v.Name }
-
-// FindBookByNameBooksEditions includes the requested fields of the GraphQL type editions.
-// The GraphQL type's documentation follows.
-//
-// columns and relationships of "editions"
-type FindBookByNameBooksEditions struct {
-	Asin    string `json:"asin"`
-	Isbn_13 string `json:"isbn_13"`
-	Isbn_10 string `json:"isbn_10"`
-	Title   string `json:"title"`
-}
-
-// GetAsin returns FindBookByNameBooksEditions.Asin, and is useful for accessing the field via an interface.
-func (v *FindBookByNameBooksEditions) GetAsin() string { return v.Asin }
-
-// GetIsbn_13 returns FindBookByNameBooksEditions.Isbn_13, and is useful for accessing the field via an interface.
-func (v *FindBookByNameBooksEditions) GetIsbn_13() string { return v.Isbn_13 }
-
-// GetIsbn_10 returns FindBookByNameBooksEditions.Isbn_10, and is useful for accessing the field via an interface.
-func (v *FindBookByNameBooksEditions) GetIsbn_10() string { return v.Isbn_10 }
-
-// GetTitle returns FindBookByNameBooksEditions.Title, and is useful for accessing the field via an interface.
-func (v *FindBookByNameBooksEditions) GetTitle() string { return v.Title }
-
-// FindBookByNameBooksImageImages includes the requested fields of the GraphQL type images.
-// The GraphQL type's documentation follows.
-//
-// columns and relationships of "images"
-type FindBookByNameBooksImageImages struct {
-	Url string `json:"url"`
-}
-
-// GetUrl returns FindBookByNameBooksImageImages.Url, and is useful for accessing the field via an interface.
-func (v *FindBookByNameBooksImageImages) GetUrl() string { return v.Url }
-
-// FindBookByNameBooksTaggings includes the requested fields of the GraphQL type taggings.
-// The GraphQL type's documentation follows.
-//
-// columns and relationships of "taggings"
-type FindBookByNameBooksTaggings struct {
-	// An object relationship
-	Tag FindBookByNameBooksTaggingsTagTags `json:"tag"`
-}
-
-// GetTag returns FindBookByNameBooksTaggings.Tag, and is useful for accessing the field via an interface.
-func (v *FindBookByNameBooksTaggings) GetTag() FindBookByNameBooksTaggingsTagTags { return v.Tag }
-
-// FindBookByNameBooksTaggingsTagTags includes the requested fields of the GraphQL type tags.
-// The GraphQL type's documentation follows.
-//
-// columns and relationships of "tags"
-type FindBookByNameBooksTaggingsTagTags struct {
-	Tag string `json:"tag"`
-}
-
-// GetTag returns FindBookByNameBooksTaggingsTagTags.Tag, and is useful for accessing the field via an interface.
-func (v *FindBookByNameBooksTaggingsTagTags) GetTag() string { return v.Tag }
-
-// FindBookByNameResponse is returned by FindBookByName on success.
-type FindBookByNameResponse struct {
-	// An array relationship
-	Books []FindBookByNameBooks `json:"books"`
-}
-
-// GetBooks returns FindBookByNameResponse.Books, and is useful for accessing the field via an interface.
-func (v *FindBookByNameResponse) GetBooks() []FindBookByNameBooks { return v.Books }
-
-// FindBookBySlugBooks includes the requested fields of the GraphQL type books.
-// The GraphQL type's documentation follows.
-//
-// columns and relationships of "books"
-type FindBookBySlugBooks struct {
-	Title            string `json:"title"`
-	Slug             string `json:"slug"`
-	Users_read_count int    `json:"users_read_count"`
-	// An array relationship
-	Contributions []FindBookBySlugBooksContributions `json:"contributions"`
-	Release_date  time.Time                          `json:"release_date"`
-	// An array relationship
-	Book_series []FindBookBySlugBooksBook_series `json:"book_series"`
-	// An array relationship
-	Taggings []FindBookBySlugBooksTaggings `json:"taggings"`
-	// An object relationship
-	Image FindBookBySlugBooksImageImages `json:"image"`
-	// An array relationship
-	Editions    []FindBookBySlugBooksEditions `json:"editions"`
-	Description string                        `json:"description"`
-}
-
-// GetTitle returns FindBookBySlugBooks.Title, and is useful for accessing the field via an interface.
-func (v *FindBookBySlugBooks) GetTitle() string { return v.Title }
-
-// GetSlug returns FindBookBySlugBooks.Slug, and is useful for accessing the field via an interface.
-func (v *FindBookBySlugBooks) GetSlug() string { return v.Slug }
-
-// GetUsers_read_count returns FindBookBySlugBooks.Users_read_count, and is useful for accessing the field via an interface.
-func (v *FindBookBySlugBooks) GetUsers_read_count() int { return v.Users_read_count }
-
-// GetContributions returns FindBookBySlugBooks.Contributions, and is useful for accessing the field via an interface.
-func (v *FindBookBySlugBooks) GetContributions() []FindBookBySlugBooksContributions {
-	return v.Contributions
-}
-
-// GetRelease_date returns FindBookBySlugBooks.Release_date, and is useful for accessing the field via an interface.
-func (v *FindBookBySlugBooks) GetRelease_date() time.Time { return v.Release_date }
-
-// GetBook_series returns FindBookBySlugBooks.Book_series, and is useful for accessing the field via an interface.
-func (v *FindBookBySlugBooks) GetBook_series() []FindBookBySlugBooksBook_series { return v.Book_series }
-
-// GetTaggings returns FindBookBySlugBooks.Taggings, and is useful for accessing the field via an interface.
-func (v *FindBookBySlugBooks) GetTaggings() []FindBookBySlugBooksTaggings { return v.Taggings }
-
-// GetImage returns FindBookBySlugBooks.Image, and is useful for accessing the field via an interface.
-func (v *FindBookBySlugBooks) GetImage() FindBookBySlugBooksImageImages { return v.Image }
-
-// GetEditions returns FindBookBySlugBooks.Editions, and is useful for accessing the field via an interface.
-func (v *FindBookBySlugBooks) GetEditions() []FindBookBySlugBooksEditions { return v.Editions }
-
-// GetDescription returns FindBookBySlugBooks.Description, and is useful for accessing the field via an interface.
-func (v *FindBookBySlugBooks) GetDescription() string { return v.Description }
-
-// FindBookBySlugBooksBook_series includes the requested fields of the GraphQL type book_series.
-// The GraphQL type's documentation follows.
-//
-// columns and relationships of "book_series"
-type FindBookBySlugBooksBook_series struct {
-	// An object relationship
-	Series FindBookBySlugBooksBook_seriesSeries `json:"series"`
-}
-
-// GetSeries returns FindBookBySlugBooksBook_series.Series, and is useful for accessing the field via an interface.
-func (v *FindBookBySlugBooksBook_series) GetSeries() FindBookBySlugBooksBook_seriesSeries {
-	return v.Series
-}
-
-// FindBookBySlugBooksBook_seriesSeries includes the requested fields of the GraphQL type series.
-// The GraphQL type's documentation follows.
-//
-// columns and relationships of "series"
-type FindBookBySlugBooksBook_seriesSeries struct {
-	Name string `json:"name"`
-}
-
-// GetName returns FindBookBySlugBooksBook_seriesSeries.Name, and is useful for accessing the field via an interface.
-func (v *FindBookBySlugBooksBook_seriesSeries) GetName() string { return v.Name }
-
-// FindBookBySlugBooksContributions includes the requested fields of the GraphQL type contributions.
-// The GraphQL type's documentation follows.
-//
-// columns and relationships of "contributions"
-type FindBookBySlugBooksContributions struct {
-	// An object relationship
-	Author FindBookBySlugBooksContributionsAuthorAuthors `json:"author"`
-}
-
-// GetAuthor returns FindBookBySlugBooksContributions.Author, and is useful for accessing the field via an interface.
-func (v *FindBookBySlugBooksContributions) GetAuthor() FindBookBySlugBooksContributionsAuthorAuthors {
-	return v.Author
-}
-
-// FindBookBySlugBooksContributionsAuthorAuthors includes the requested fields of the GraphQL type authors.
-// The GraphQL type's documentation follows.
-//
-// columns and relationships of "authors"
-type FindBookBySlugBooksContributionsAuthorAuthors struct {
-	Name string `json:"name"`
-}
-
-// GetName returns FindBookBySlugBooksContributionsAuthorAuthors.Name, and is useful for accessing the field via an interface.
-func (v *FindBookBySlugBooksContributionsAuthorAuthors) GetName() string { return v.Name }
-
-// FindBookBySlugBooksEditions includes the requested fields of the GraphQL type editions.
-// The GraphQL type's documentation follows.
-//
-// columns and relationships of "editions"
-type FindBookBySlugBooksEditions struct {
-	Asin    string `json:"asin"`
-	Isbn_13 string `json:"isbn_13"`
-	Isbn_10 string `json:"isbn_10"`
-	Title   string `json:"title"`
-}
-
-// GetAsin returns FindBookBySlugBooksEditions.Asin, and is useful for accessing the field via an interface.
-func (v *FindBookBySlugBooksEditions) GetAsin() string { return v.Asin }
-
-// GetIsbn_13 returns FindBookBySlugBooksEditions.Isbn_13, and is useful for accessing the field via an interface.
-func (v *FindBookBySlugBooksEditions) GetIsbn_13() string { return v.Isbn_13 }
-
-// GetIsbn_10 returns FindBookBySlugBooksEditions.Isbn_10, and is useful for accessing the field via an interface.
-func (v *FindBookBySlugBooksEditions) GetIsbn_10() string { return v.Isbn_10 }
-
-// GetTitle returns FindBookBySlugBooksEditions.Title, and is useful for accessing the field via an interface.
-func (v *FindBookBySlugBooksEditions) GetTitle() string { return v.Title }
-
-// FindBookBySlugBooksImageImages includes the requested fields of the GraphQL type images.
-// The GraphQL type's documentation follows.
-//
-// columns and relationships of "images"
-type FindBookBySlugBooksImageImages struct {
-	Url string `json:"url"`
-}
-
-// GetUrl returns FindBookBySlugBooksImageImages.Url, and is useful for accessing the field via an interface.
-func (v *FindBookBySlugBooksImageImages) GetUrl() string { return v.Url }
-
-// FindBookBySlugBooksTaggings includes the requested fields of the GraphQL type taggings.
-// The GraphQL type's documentation follows.
-//
-// columns and relationships of "taggings"
-type FindBookBySlugBooksTaggings struct {
-	// An object relationship
-	Tag FindBookBySlugBooksTaggingsTagTags `json:"tag"`
-}
-
-// GetTag returns FindBookBySlugBooksTaggings.Tag, and is useful for accessing the field via an interface.
-func (v *FindBookBySlugBooksTaggings) GetTag() FindBookBySlugBooksTaggingsTagTags { return v.Tag }
-
-// FindBookBySlugBooksTaggingsTagTags includes the requested fields of the GraphQL type tags.
-// The GraphQL type's documentation follows.
-//
-// columns and relationships of "tags"
-type FindBookBySlugBooksTaggingsTagTags struct {
-	Tag string `json:"tag"`
-}
-
-// GetTag returns FindBookBySlugBooksTaggingsTagTags.Tag, and is useful for accessing the field via an interface.
-func (v *FindBookBySlugBooksTaggingsTagTags) GetTag() string { return v.Tag }
-
-// FindBookBySlugResponse is returned by FindBookBySlug on success.
-type FindBookBySlugResponse struct {
-	// An array relationship
-	Books []FindBookBySlugBooks `json:"books"`
-}
-
-// GetBooks returns FindBookBySlugResponse.Books, and is useful for accessing the field via an interface.
-func (v *FindBookBySlugResponse) GetBooks() []FindBookBySlugBooks { return v.Books }
-
-// GetBookReviewsMeUsers includes the requested fields of the GraphQL type users.
-// The GraphQL type's documentation follows.
-//
-// columns and relationships of "users"
-type GetBookReviewsMeUsers struct {
-	// An array relationship
-	User_books []GetBookReviewsMeUsersUser_books `json:"user_books"`
-}
-
-// GetUser_books returns GetBookReviewsMeUsers.User_books, and is useful for accessing the field via an interface.
-func (v *GetBookReviewsMeUsers) GetUser_books() []GetBookReviewsMeUsersUser_books {
-	return v.User_books
-}
-
-// GetBookReviewsMeUsersUser_books includes the requested fields of the GraphQL type user_books.
-// The GraphQL type's documentation follows.
-//
-// columns and relationships of "user_books"
-type GetBookReviewsMeUsersUser_books struct {
-	Reviewed_at time.Time `json:"reviewed_at"`
-	Date_added  time.Time `json:"date_added"`
-	Review_raw  string    `json:"review_raw"`
-	Rating      int       `json:"rating"`
-	// An object relationship
-	Book GetBookReviewsMeUsersUser_booksBookBooks `json:"book"`
-}
-
-// GetReviewed_at returns GetBookReviewsMeUsersUser_books.Reviewed_at, and is useful for accessing the field via an interface.
-func (v *GetBookReviewsMeUsersUser_books) GetReviewed_at() time.Time { return v.Reviewed_at }
-
-// GetDate_added returns GetBookReviewsMeUsersUser_books.Date_added, and is useful for accessing the field via an interface.
-func (v *GetBookReviewsMeUsersUser_books) GetDate_added() time.Time { return v.Date_added }
-
-// GetReview_raw returns GetBookReviewsMeUsersUser_books.Review_raw, and is useful for accessing the field via an interface.
-func (v *GetBookReviewsMeUsersUser_books) GetReview_raw() string { return v.Review_raw }
-
-// GetRating returns GetBookReviewsMeUsersUser_books.Rating, and is useful for accessing the field via an interface.
-func (v *GetBookReviewsMeUsersUser_books) GetRating() int { return v.Rating }
-
-// GetBook returns GetBookReviewsMeUsersUser_books.Book, and is useful for accessing the field via an interface.
-func (v *GetBookReviewsMeUsersUser_books) GetBook() GetBookReviewsMeUsersUser_booksBookBooks {
-	return v.Book
-}
-
-// GetBookReviewsMeUsersUser_booksBookBooks includes the requested fields of the GraphQL type books.
-// The GraphQL type's documentation follows.
-//
-// columns and relationships of "books"
-type GetBookReviewsMeUsersUser_booksBookBooks struct {
-	Title string `json:"title"`
-}
-
-// GetTitle returns GetBookReviewsMeUsersUser_booksBookBooks.Title, and is useful for accessing the field via an interface.
-func (v *GetBookReviewsMeUsersUser_booksBookBooks) GetTitle() string { return v.Title }
-
-// GetBookReviewsResponse is returned by GetBookReviews on success.
-type GetBookReviewsResponse struct {
-	// execute function "me" which returns "users"
-	Me []GetBookReviewsMeUsers `json:"me"`
-}
-
-// GetMe returns GetBookReviewsResponse.Me, and is useful for accessing the field via an interface.
-func (v *GetBookReviewsResponse) GetMe() []GetBookReviewsMeUsers { return v.Me }
+// GetId returns FinishBookProgressUpdate_user_book_readUserBookReadIdType.Id, and is useful for accessing the field via an interface.
+func (v *FinishBookProgressUpdate_user_book_readUserBookReadIdType) GetId() int { return v.Id }
 
 // GetCurrentUserMeUsers includes the requested fields of the GraphQL type users.
 // The GraphQL type's documentation follows.
@@ -437,176 +55,640 @@ type GetCurrentUserResponse struct {
 // GetMe returns GetCurrentUserResponse.Me, and is useful for accessing the field via an interface.
 func (v *GetCurrentUserResponse) GetMe() []GetCurrentUserMeUsers { return v.Me }
 
-// __FindBookByNameInput is used internally by genqlient
-type __FindBookByNameInput struct {
+// GetUserBooksBySlugMeUsers includes the requested fields of the GraphQL type users.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "users"
+type GetUserBooksBySlugMeUsers struct {
+	// An array relationship
+	User_books []GetUserBooksBySlugMeUsersUser_books `json:"user_books"`
+}
+
+// GetUser_books returns GetUserBooksBySlugMeUsers.User_books, and is useful for accessing the field via an interface.
+func (v *GetUserBooksBySlugMeUsers) GetUser_books() []GetUserBooksBySlugMeUsersUser_books {
+	return v.User_books
+}
+
+// GetUserBooksBySlugMeUsersUser_books includes the requested fields of the GraphQL type user_books.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "user_books"
+type GetUserBooksBySlugMeUsersUser_books struct {
+	Status_id int `json:"status_id"`
+	Book_id   int `json:"book_id"`
+	// An object relationship
+	Book GetUserBooksBySlugMeUsersUser_booksBookBooks `json:"book"`
+	// An object relationship
+	Edition GetUserBooksBySlugMeUsersUser_booksEditionEditions `json:"edition"`
+	// An array relationship
+	User_book_reads []GetUserBooksBySlugMeUsersUser_booksUser_book_reads `json:"user_book_reads"`
+}
+
+// GetStatus_id returns GetUserBooksBySlugMeUsersUser_books.Status_id, and is useful for accessing the field via an interface.
+func (v *GetUserBooksBySlugMeUsersUser_books) GetStatus_id() int { return v.Status_id }
+
+// GetBook_id returns GetUserBooksBySlugMeUsersUser_books.Book_id, and is useful for accessing the field via an interface.
+func (v *GetUserBooksBySlugMeUsersUser_books) GetBook_id() int { return v.Book_id }
+
+// GetBook returns GetUserBooksBySlugMeUsersUser_books.Book, and is useful for accessing the field via an interface.
+func (v *GetUserBooksBySlugMeUsersUser_books) GetBook() GetUserBooksBySlugMeUsersUser_booksBookBooks {
+	return v.Book
+}
+
+// GetEdition returns GetUserBooksBySlugMeUsersUser_books.Edition, and is useful for accessing the field via an interface.
+func (v *GetUserBooksBySlugMeUsersUser_books) GetEdition() GetUserBooksBySlugMeUsersUser_booksEditionEditions {
+	return v.Edition
+}
+
+// GetUser_book_reads returns GetUserBooksBySlugMeUsersUser_books.User_book_reads, and is useful for accessing the field via an interface.
+func (v *GetUserBooksBySlugMeUsersUser_books) GetUser_book_reads() []GetUserBooksBySlugMeUsersUser_booksUser_book_reads {
+	return v.User_book_reads
+}
+
+// GetUserBooksBySlugMeUsersUser_booksBookBooks includes the requested fields of the GraphQL type books.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "books"
+type GetUserBooksBySlugMeUsersUser_booksBookBooks struct {
+	Slug  string `json:"slug"`
 	Title string `json:"title"`
 }
 
-// GetTitle returns __FindBookByNameInput.Title, and is useful for accessing the field via an interface.
-func (v *__FindBookByNameInput) GetTitle() string { return v.Title }
+// GetSlug returns GetUserBooksBySlugMeUsersUser_booksBookBooks.Slug, and is useful for accessing the field via an interface.
+func (v *GetUserBooksBySlugMeUsersUser_booksBookBooks) GetSlug() string { return v.Slug }
 
-// __FindBookBySlugInput is used internally by genqlient
-type __FindBookBySlugInput struct {
+// GetTitle returns GetUserBooksBySlugMeUsersUser_booksBookBooks.Title, and is useful for accessing the field via an interface.
+func (v *GetUserBooksBySlugMeUsersUser_booksBookBooks) GetTitle() string { return v.Title }
+
+// GetUserBooksBySlugMeUsersUser_booksEditionEditions includes the requested fields of the GraphQL type editions.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "editions"
+type GetUserBooksBySlugMeUsersUser_booksEditionEditions struct {
+	Id    int `json:"id"`
+	Pages int `json:"pages"`
+}
+
+// GetId returns GetUserBooksBySlugMeUsersUser_booksEditionEditions.Id, and is useful for accessing the field via an interface.
+func (v *GetUserBooksBySlugMeUsersUser_booksEditionEditions) GetId() int { return v.Id }
+
+// GetPages returns GetUserBooksBySlugMeUsersUser_booksEditionEditions.Pages, and is useful for accessing the field via an interface.
+func (v *GetUserBooksBySlugMeUsersUser_booksEditionEditions) GetPages() int { return v.Pages }
+
+// GetUserBooksBySlugMeUsersUser_booksUser_book_reads includes the requested fields of the GraphQL type user_book_reads.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "user_book_reads"
+type GetUserBooksBySlugMeUsersUser_booksUser_book_reads struct {
+	Id             int       `json:"id"`
+	Progress       float32   `json:"progress"`
+	Progress_pages int       `json:"progress_pages"`
+	Started_at     time.Time `json:"-"`
+	Finished_at    time.Time `json:"-"`
+	// An object relationship
+	Edition GetUserBooksBySlugMeUsersUser_booksUser_book_readsEditionEditions `json:"edition"`
+}
+
+// GetId returns GetUserBooksBySlugMeUsersUser_booksUser_book_reads.Id, and is useful for accessing the field via an interface.
+func (v *GetUserBooksBySlugMeUsersUser_booksUser_book_reads) GetId() int { return v.Id }
+
+// GetProgress returns GetUserBooksBySlugMeUsersUser_booksUser_book_reads.Progress, and is useful for accessing the field via an interface.
+func (v *GetUserBooksBySlugMeUsersUser_booksUser_book_reads) GetProgress() float32 { return v.Progress }
+
+// GetProgress_pages returns GetUserBooksBySlugMeUsersUser_booksUser_book_reads.Progress_pages, and is useful for accessing the field via an interface.
+func (v *GetUserBooksBySlugMeUsersUser_booksUser_book_reads) GetProgress_pages() int {
+	return v.Progress_pages
+}
+
+// GetStarted_at returns GetUserBooksBySlugMeUsersUser_booksUser_book_reads.Started_at, and is useful for accessing the field via an interface.
+func (v *GetUserBooksBySlugMeUsersUser_booksUser_book_reads) GetStarted_at() time.Time {
+	return v.Started_at
+}
+
+// GetFinished_at returns GetUserBooksBySlugMeUsersUser_booksUser_book_reads.Finished_at, and is useful for accessing the field via an interface.
+func (v *GetUserBooksBySlugMeUsersUser_booksUser_book_reads) GetFinished_at() time.Time {
+	return v.Finished_at
+}
+
+// GetEdition returns GetUserBooksBySlugMeUsersUser_booksUser_book_reads.Edition, and is useful for accessing the field via an interface.
+func (v *GetUserBooksBySlugMeUsersUser_booksUser_book_reads) GetEdition() GetUserBooksBySlugMeUsersUser_booksUser_book_readsEditionEditions {
+	return v.Edition
+}
+
+func (v *GetUserBooksBySlugMeUsersUser_booksUser_book_reads) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*GetUserBooksBySlugMeUsersUser_booksUser_book_reads
+		Started_at  json.RawMessage `json:"started_at"`
+		Finished_at json.RawMessage `json:"finished_at"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.GetUserBooksBySlugMeUsersUser_booksUser_book_reads = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.Started_at
+		src := firstPass.Started_at
+		if len(src) != 0 && string(src) != "null" {
+			err = hardcover.UnmarshalHardcoverDate(
+				src, dst)
+			if err != nil {
+				return fmt.Errorf(
+					"unable to unmarshal GetUserBooksBySlugMeUsersUser_booksUser_book_reads.Started_at: %w", err)
+			}
+		}
+	}
+
+	{
+		dst := &v.Finished_at
+		src := firstPass.Finished_at
+		if len(src) != 0 && string(src) != "null" {
+			err = hardcover.UnmarshalHardcoverDate(
+				src, dst)
+			if err != nil {
+				return fmt.Errorf(
+					"unable to unmarshal GetUserBooksBySlugMeUsersUser_booksUser_book_reads.Finished_at: %w", err)
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshalGetUserBooksBySlugMeUsersUser_booksUser_book_reads struct {
+	Id int `json:"id"`
+
+	Progress float32 `json:"progress"`
+
+	Progress_pages int `json:"progress_pages"`
+
+	Started_at json.RawMessage `json:"started_at"`
+
+	Finished_at json.RawMessage `json:"finished_at"`
+
+	Edition GetUserBooksBySlugMeUsersUser_booksUser_book_readsEditionEditions `json:"edition"`
+}
+
+func (v *GetUserBooksBySlugMeUsersUser_booksUser_book_reads) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *GetUserBooksBySlugMeUsersUser_booksUser_book_reads) __premarshalJSON() (*__premarshalGetUserBooksBySlugMeUsersUser_booksUser_book_reads, error) {
+	var retval __premarshalGetUserBooksBySlugMeUsersUser_booksUser_book_reads
+
+	retval.Id = v.Id
+	retval.Progress = v.Progress
+	retval.Progress_pages = v.Progress_pages
+	{
+
+		dst := &retval.Started_at
+		src := v.Started_at
+		var err error
+		*dst, err = hardcover.MarshalHardcoverDate(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal GetUserBooksBySlugMeUsersUser_booksUser_book_reads.Started_at: %w", err)
+		}
+	}
+	{
+
+		dst := &retval.Finished_at
+		src := v.Finished_at
+		var err error
+		*dst, err = hardcover.MarshalHardcoverDate(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal GetUserBooksBySlugMeUsersUser_booksUser_book_reads.Finished_at: %w", err)
+		}
+	}
+	retval.Edition = v.Edition
+	return &retval, nil
+}
+
+// GetUserBooksBySlugMeUsersUser_booksUser_book_readsEditionEditions includes the requested fields of the GraphQL type editions.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "editions"
+type GetUserBooksBySlugMeUsersUser_booksUser_book_readsEditionEditions struct {
+	Id    int `json:"id"`
+	Pages int `json:"pages"`
+}
+
+// GetId returns GetUserBooksBySlugMeUsersUser_booksUser_book_readsEditionEditions.Id, and is useful for accessing the field via an interface.
+func (v *GetUserBooksBySlugMeUsersUser_booksUser_book_readsEditionEditions) GetId() int { return v.Id }
+
+// GetPages returns GetUserBooksBySlugMeUsersUser_booksUser_book_readsEditionEditions.Pages, and is useful for accessing the field via an interface.
+func (v *GetUserBooksBySlugMeUsersUser_booksUser_book_readsEditionEditions) GetPages() int {
+	return v.Pages
+}
+
+// GetUserBooksBySlugResponse is returned by GetUserBooksBySlug on success.
+type GetUserBooksBySlugResponse struct {
+	// execute function "me" which returns "users"
+	Me []GetUserBooksBySlugMeUsers `json:"me"`
+}
+
+// GetMe returns GetUserBooksBySlugResponse.Me, and is useful for accessing the field via an interface.
+func (v *GetUserBooksBySlugResponse) GetMe() []GetUserBooksBySlugMeUsers { return v.Me }
+
+// StartBookProgressInsert_user_book_readUserBookReadIdType includes the requested fields of the GraphQL type UserBookReadIdType.
+type StartBookProgressInsert_user_book_readUserBookReadIdType struct {
+	Id int `json:"id"`
+}
+
+// GetId returns StartBookProgressInsert_user_book_readUserBookReadIdType.Id, and is useful for accessing the field via an interface.
+func (v *StartBookProgressInsert_user_book_readUserBookReadIdType) GetId() int { return v.Id }
+
+// StartBookProgressResponse is returned by StartBookProgress on success.
+type StartBookProgressResponse struct {
+	Insert_user_book_read StartBookProgressInsert_user_book_readUserBookReadIdType `json:"insert_user_book_read"`
+}
+
+// GetInsert_user_book_read returns StartBookProgressResponse.Insert_user_book_read, and is useful for accessing the field via an interface.
+func (v *StartBookProgressResponse) GetInsert_user_book_read() StartBookProgressInsert_user_book_readUserBookReadIdType {
+	return v.Insert_user_book_read
+}
+
+// UpdateBookProgressResponse is returned by UpdateBookProgress on success.
+type UpdateBookProgressResponse struct {
+	// update_user_book_read
+	Update_user_book_read UpdateBookProgressUpdate_user_book_readUserBookReadIdType `json:"update_user_book_read"`
+}
+
+// GetUpdate_user_book_read returns UpdateBookProgressResponse.Update_user_book_read, and is useful for accessing the field via an interface.
+func (v *UpdateBookProgressResponse) GetUpdate_user_book_read() UpdateBookProgressUpdate_user_book_readUserBookReadIdType {
+	return v.Update_user_book_read
+}
+
+// UpdateBookProgressUpdate_user_book_readUserBookReadIdType includes the requested fields of the GraphQL type UserBookReadIdType.
+type UpdateBookProgressUpdate_user_book_readUserBookReadIdType struct {
+	Id int `json:"id"`
+}
+
+// GetId returns UpdateBookProgressUpdate_user_book_readUserBookReadIdType.Id, and is useful for accessing the field via an interface.
+func (v *UpdateBookProgressUpdate_user_book_readUserBookReadIdType) GetId() int { return v.Id }
+
+// __FinishBookProgressInput is used internally by genqlient
+type __FinishBookProgressInput struct {
+	Id         int       `json:"id"`
+	Pages      int       `json:"pages"`
+	EditionId  int       `json:"editionId"`
+	StartedAt  time.Time `json:"-"`
+	FinishedAt time.Time `json:"-"`
+}
+
+// GetId returns __FinishBookProgressInput.Id, and is useful for accessing the field via an interface.
+func (v *__FinishBookProgressInput) GetId() int { return v.Id }
+
+// GetPages returns __FinishBookProgressInput.Pages, and is useful for accessing the field via an interface.
+func (v *__FinishBookProgressInput) GetPages() int { return v.Pages }
+
+// GetEditionId returns __FinishBookProgressInput.EditionId, and is useful for accessing the field via an interface.
+func (v *__FinishBookProgressInput) GetEditionId() int { return v.EditionId }
+
+// GetStartedAt returns __FinishBookProgressInput.StartedAt, and is useful for accessing the field via an interface.
+func (v *__FinishBookProgressInput) GetStartedAt() time.Time { return v.StartedAt }
+
+// GetFinishedAt returns __FinishBookProgressInput.FinishedAt, and is useful for accessing the field via an interface.
+func (v *__FinishBookProgressInput) GetFinishedAt() time.Time { return v.FinishedAt }
+
+func (v *__FinishBookProgressInput) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*__FinishBookProgressInput
+		StartedAt  json.RawMessage `json:"startedAt"`
+		FinishedAt json.RawMessage `json:"finishedAt"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.__FinishBookProgressInput = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.StartedAt
+		src := firstPass.StartedAt
+		if len(src) != 0 && string(src) != "null" {
+			err = hardcover.UnmarshalHardcoverDate(
+				src, dst)
+			if err != nil {
+				return fmt.Errorf(
+					"unable to unmarshal __FinishBookProgressInput.StartedAt: %w", err)
+			}
+		}
+	}
+
+	{
+		dst := &v.FinishedAt
+		src := firstPass.FinishedAt
+		if len(src) != 0 && string(src) != "null" {
+			err = hardcover.UnmarshalHardcoverDate(
+				src, dst)
+			if err != nil {
+				return fmt.Errorf(
+					"unable to unmarshal __FinishBookProgressInput.FinishedAt: %w", err)
+			}
+		}
+	}
+	return nil
+}
+
+type __premarshal__FinishBookProgressInput struct {
+	Id int `json:"id"`
+
+	Pages int `json:"pages"`
+
+	EditionId int `json:"editionId"`
+
+	StartedAt json.RawMessage `json:"startedAt"`
+
+	FinishedAt json.RawMessage `json:"finishedAt"`
+}
+
+func (v *__FinishBookProgressInput) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *__FinishBookProgressInput) __premarshalJSON() (*__premarshal__FinishBookProgressInput, error) {
+	var retval __premarshal__FinishBookProgressInput
+
+	retval.Id = v.Id
+	retval.Pages = v.Pages
+	retval.EditionId = v.EditionId
+	{
+
+		dst := &retval.StartedAt
+		src := v.StartedAt
+		var err error
+		*dst, err = hardcover.MarshalHardcoverDate(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal __FinishBookProgressInput.StartedAt: %w", err)
+		}
+	}
+	{
+
+		dst := &retval.FinishedAt
+		src := v.FinishedAt
+		var err error
+		*dst, err = hardcover.MarshalHardcoverDate(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal __FinishBookProgressInput.FinishedAt: %w", err)
+		}
+	}
+	return &retval, nil
+}
+
+// __GetUserBooksBySlugInput is used internally by genqlient
+type __GetUserBooksBySlugInput struct {
 	Slug string `json:"slug"`
 }
 
-// GetSlug returns __FindBookBySlugInput.Slug, and is useful for accessing the field via an interface.
-func (v *__FindBookBySlugInput) GetSlug() string { return v.Slug }
+// GetSlug returns __GetUserBooksBySlugInput.Slug, and is useful for accessing the field via an interface.
+func (v *__GetUserBooksBySlugInput) GetSlug() string { return v.Slug }
 
-// The query or mutation executed by FindBookByName.
-const FindBookByName_Operation = `
-query FindBookByName ($title: String) {
-	books(where: {title:{_regex:$title}}, order_by: {users_read_count:desc_nulls_last}) {
-		title
-		slug
-		users_read_count
-		contributions {
-			author {
-				name
+// __StartBookProgressInput is used internally by genqlient
+type __StartBookProgressInput struct {
+	BookId    int       `json:"bookId"`
+	Pages     int       `json:"pages"`
+	EditionId int       `json:"editionId"`
+	StartedAt time.Time `json:"-"`
+}
+
+// GetBookId returns __StartBookProgressInput.BookId, and is useful for accessing the field via an interface.
+func (v *__StartBookProgressInput) GetBookId() int { return v.BookId }
+
+// GetPages returns __StartBookProgressInput.Pages, and is useful for accessing the field via an interface.
+func (v *__StartBookProgressInput) GetPages() int { return v.Pages }
+
+// GetEditionId returns __StartBookProgressInput.EditionId, and is useful for accessing the field via an interface.
+func (v *__StartBookProgressInput) GetEditionId() int { return v.EditionId }
+
+// GetStartedAt returns __StartBookProgressInput.StartedAt, and is useful for accessing the field via an interface.
+func (v *__StartBookProgressInput) GetStartedAt() time.Time { return v.StartedAt }
+
+func (v *__StartBookProgressInput) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*__StartBookProgressInput
+		StartedAt json.RawMessage `json:"startedAt"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.__StartBookProgressInput = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.StartedAt
+		src := firstPass.StartedAt
+		if len(src) != 0 && string(src) != "null" {
+			err = hardcover.UnmarshalHardcoverDate(
+				src, dst)
+			if err != nil {
+				return fmt.Errorf(
+					"unable to unmarshal __StartBookProgressInput.StartedAt: %w", err)
 			}
 		}
-		release_date
-		book_series {
-			series {
-				name
+	}
+	return nil
+}
+
+type __premarshal__StartBookProgressInput struct {
+	BookId int `json:"bookId"`
+
+	Pages int `json:"pages"`
+
+	EditionId int `json:"editionId"`
+
+	StartedAt json.RawMessage `json:"startedAt"`
+}
+
+func (v *__StartBookProgressInput) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *__StartBookProgressInput) __premarshalJSON() (*__premarshal__StartBookProgressInput, error) {
+	var retval __premarshal__StartBookProgressInput
+
+	retval.BookId = v.BookId
+	retval.Pages = v.Pages
+	retval.EditionId = v.EditionId
+	{
+
+		dst := &retval.StartedAt
+		src := v.StartedAt
+		var err error
+		*dst, err = hardcover.MarshalHardcoverDate(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal __StartBookProgressInput.StartedAt: %w", err)
+		}
+	}
+	return &retval, nil
+}
+
+// __UpdateBookProgressInput is used internally by genqlient
+type __UpdateBookProgressInput struct {
+	Id        int       `json:"id"`
+	Pages     int       `json:"pages"`
+	EditionId int       `json:"editionId"`
+	StartedAt time.Time `json:"-"`
+}
+
+// GetId returns __UpdateBookProgressInput.Id, and is useful for accessing the field via an interface.
+func (v *__UpdateBookProgressInput) GetId() int { return v.Id }
+
+// GetPages returns __UpdateBookProgressInput.Pages, and is useful for accessing the field via an interface.
+func (v *__UpdateBookProgressInput) GetPages() int { return v.Pages }
+
+// GetEditionId returns __UpdateBookProgressInput.EditionId, and is useful for accessing the field via an interface.
+func (v *__UpdateBookProgressInput) GetEditionId() int { return v.EditionId }
+
+// GetStartedAt returns __UpdateBookProgressInput.StartedAt, and is useful for accessing the field via an interface.
+func (v *__UpdateBookProgressInput) GetStartedAt() time.Time { return v.StartedAt }
+
+func (v *__UpdateBookProgressInput) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*__UpdateBookProgressInput
+		StartedAt json.RawMessage `json:"startedAt"`
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.__UpdateBookProgressInput = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	{
+		dst := &v.StartedAt
+		src := firstPass.StartedAt
+		if len(src) != 0 && string(src) != "null" {
+			err = hardcover.UnmarshalHardcoverDate(
+				src, dst)
+			if err != nil {
+				return fmt.Errorf(
+					"unable to unmarshal __UpdateBookProgressInput.StartedAt: %w", err)
 			}
 		}
-		taggings {
-			tag {
-				tag
-			}
+	}
+	return nil
+}
+
+type __premarshal__UpdateBookProgressInput struct {
+	Id int `json:"id"`
+
+	Pages int `json:"pages"`
+
+	EditionId int `json:"editionId"`
+
+	StartedAt json.RawMessage `json:"startedAt"`
+}
+
+func (v *__UpdateBookProgressInput) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *__UpdateBookProgressInput) __premarshalJSON() (*__premarshal__UpdateBookProgressInput, error) {
+	var retval __premarshal__UpdateBookProgressInput
+
+	retval.Id = v.Id
+	retval.Pages = v.Pages
+	retval.EditionId = v.EditionId
+	{
+
+		dst := &retval.StartedAt
+		src := v.StartedAt
+		var err error
+		*dst, err = hardcover.MarshalHardcoverDate(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal __UpdateBookProgressInput.StartedAt: %w", err)
 		}
-		image {
-			url
-		}
-		editions {
-			asin
-			isbn_13
-			isbn_10
-			title
-		}
-		description
+	}
+	return &retval, nil
+}
+
+// The query or mutation executed by FinishBookProgress.
+const FinishBookProgress_Operation = `
+mutation FinishBookProgress ($id: Int!, $pages: Int, $editionId: Int, $startedAt: date, $finishedAt: date) {
+	update_user_book_read(id: $id, object: {progress_pages:$pages,edition_id:$editionId,started_at:$startedAt,finished_at:$finishedAt}) {
+		id
 	}
 }
 `
 
-func FindBookByName(
+func FinishBookProgress(
 	ctx_ context.Context,
 	client_ graphql.Client,
-	title string,
-) (*FindBookByNameResponse, error) {
+	id int,
+	pages int,
+	editionId int,
+	startedAt time.Time,
+	finishedAt time.Time,
+) (*FinishBookProgressResponse, error) {
 	req_ := &graphql.Request{
-		OpName: "FindBookByName",
-		Query:  FindBookByName_Operation,
-		Variables: &__FindBookByNameInput{
-			Title: title,
+		OpName: "FinishBookProgress",
+		Query:  FinishBookProgress_Operation,
+		Variables: &__FinishBookProgressInput{
+			Id:         id,
+			Pages:      pages,
+			EditionId:  editionId,
+			StartedAt:  startedAt,
+			FinishedAt: finishedAt,
 		},
 	}
 	var err_ error
 
-	var data_ FindBookByNameResponse
-	resp_ := &graphql.Response{Data: &data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return &data_, err_
-}
-
-// The query or mutation executed by FindBookBySlug.
-const FindBookBySlug_Operation = `
-query FindBookBySlug ($slug: String) {
-	books(where: {slug:{_eq:$slug}}, order_by: {users_read_count:desc_nulls_last}) {
-		title
-		slug
-		users_read_count
-		contributions {
-			author {
-				name
-			}
-		}
-		release_date
-		book_series {
-			series {
-				name
-			}
-		}
-		taggings {
-			tag {
-				tag
-			}
-		}
-		image {
-			url
-		}
-		editions {
-			asin
-			isbn_13
-			isbn_10
-			title
-		}
-		description
-	}
-}
-`
-
-func FindBookBySlug(
-	ctx_ context.Context,
-	client_ graphql.Client,
-	slug string,
-) (*FindBookBySlugResponse, error) {
-	req_ := &graphql.Request{
-		OpName: "FindBookBySlug",
-		Query:  FindBookBySlug_Operation,
-		Variables: &__FindBookBySlugInput{
-			Slug: slug,
-		},
-	}
-	var err_ error
-
-	var data_ FindBookBySlugResponse
-	resp_ := &graphql.Response{Data: &data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return &data_, err_
-}
-
-// The query or mutation executed by GetBookReviews.
-const GetBookReviews_Operation = `
-query GetBookReviews {
-	me {
-		user_books(where: {_and:[{has_review:{_eq:true}},{status_id:{_eq:3}}]}, order_by: [{date_added:desc},{reviewed_at:desc}]) {
-			reviewed_at
-			date_added
-			review_raw
-			rating
-			book {
-				title
-			}
-		}
-	}
-}
-`
-
-func GetBookReviews(
-	ctx_ context.Context,
-	client_ graphql.Client,
-) (*GetBookReviewsResponse, error) {
-	req_ := &graphql.Request{
-		OpName: "GetBookReviews",
-		Query:  GetBookReviews_Operation,
-	}
-	var err_ error
-
-	var data_ GetBookReviewsResponse
+	var data_ FinishBookProgressResponse
 	resp_ := &graphql.Response{Data: &data_}
 
 	err_ = client_.MakeRequest(
@@ -639,6 +721,145 @@ func GetCurrentUser(
 	var err_ error
 
 	var data_ GetCurrentUserResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
+
+// The query or mutation executed by GetUserBooksBySlug.
+const GetUserBooksBySlug_Operation = `
+query GetUserBooksBySlug ($slug: String) {
+	me {
+		user_books(where: {book:{slug:{_eq:$slug}}}) {
+			status_id
+			book_id
+			book {
+				slug
+				title
+			}
+			edition {
+				id
+				pages
+			}
+			user_book_reads(order_by: {started_at:desc}, limit: 1) {
+				id
+				progress
+				progress_pages
+				started_at
+				finished_at
+				edition {
+					id
+					pages
+				}
+			}
+		}
+	}
+}
+`
+
+func GetUserBooksBySlug(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	slug string,
+) (*GetUserBooksBySlugResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "GetUserBooksBySlug",
+		Query:  GetUserBooksBySlug_Operation,
+		Variables: &__GetUserBooksBySlugInput{
+			Slug: slug,
+		},
+	}
+	var err_ error
+
+	var data_ GetUserBooksBySlugResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
+
+// The query or mutation executed by StartBookProgress.
+const StartBookProgress_Operation = `
+mutation StartBookProgress ($bookId: Int!, $pages: Int, $editionId: Int, $startedAt: date) {
+	insert_user_book_read(user_book_id: $bookId, user_book_read: {progress_pages:$pages,edition_id:$editionId,started_at:$startedAt}) {
+		id
+	}
+}
+`
+
+func StartBookProgress(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	bookId int,
+	pages int,
+	editionId int,
+	startedAt time.Time,
+) (*StartBookProgressResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "StartBookProgress",
+		Query:  StartBookProgress_Operation,
+		Variables: &__StartBookProgressInput{
+			BookId:    bookId,
+			Pages:     pages,
+			EditionId: editionId,
+			StartedAt: startedAt,
+		},
+	}
+	var err_ error
+
+	var data_ StartBookProgressResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
+
+// The query or mutation executed by UpdateBookProgress.
+const UpdateBookProgress_Operation = `
+mutation UpdateBookProgress ($id: Int!, $pages: Int, $editionId: Int, $startedAt: date) {
+	update_user_book_read(id: $id, object: {progress_pages:$pages,edition_id:$editionId,started_at:$startedAt}) {
+		id
+	}
+}
+`
+
+func UpdateBookProgress(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	id int,
+	pages int,
+	editionId int,
+	startedAt time.Time,
+) (*UpdateBookProgressResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "UpdateBookProgress",
+		Query:  UpdateBookProgress_Operation,
+		Variables: &__UpdateBookProgressInput{
+			Id:        id,
+			Pages:     pages,
+			EditionId: editionId,
+			StartedAt: startedAt,
+		},
+	}
+	var err_ error
+
+	var data_ UpdateBookProgressResponse
 	resp_ := &graphql.Response{Data: &data_}
 
 	err_ = client_.MakeRequest(

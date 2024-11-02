@@ -1,23 +1,30 @@
 package source
 
+import "github.com/RobBrazier/readflow/internal"
+
 type Source interface {
 	Init() error
-	GetRecentReads() ([]Book, error)
+	GetRecentReads() ([]BookContext, error)
 }
 
 var sources map[string]Source
 
 type Book struct {
-	BookID          int      `json:"book_id" db:"book_id"`
-	BookName        string   `json:"book_name" db:"book_name"`
-	SeriesID        *int     `json:"series_id" db:"series_id"`                 // Nullable, use pointer to handle NULLs
-	BookSeriesIndex *int     `json:"book_series_index" db:"book_series_index"` // Nullable, use pointer to handle NULLs
-	ReadStatus      int      `json:"read_status" db:"read_status"`
-	ISBN            *string  `json:"isbn" db:"isbn"`
-	AnilistID       *string  `json:"anilist_id" db:"anilist_id"`             // Nullable, use pointer to handle NULLs
-	HardcoverID     *string  `json:"hardcover_id" db:"hardcover_id"`         // Nullable, use pointer to handle NULLs
-	ProgressPercent *float64 `json:"progress_percent" db:"progress_percent"` // Nullable, use pointer to handle NULLs
-	ChapterCount    *int     `json:"chapter_count" db:"chapter_count"`       // Nullable, use pointer to handle NULLs
+	BookID          int                 `db:"book_id"`
+	BookName        string              `db:"book_name"`
+	SeriesID        *int                `db:"series_id"`
+	BookSeriesIndex *int                `db:"book_series_index"`
+	ReadStatus      internal.ReadStatus `db:"read_status"`
+	ISBN            *string             `db:"isbn"`
+	AnilistID       *string             `db:"anilist_id"`
+	HardcoverID     *string             `db:"hardcover_id"`
+	ProgressPercent *float64            `db:"progress_percent"`
+	ChapterCount    *int                `db:"chapter_count"`
+}
+
+type BookContext struct {
+	Current  Book
+	Previous []Book
 }
 
 func GetSources() map[string]Source {

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/RobBrazier/readflow/internal"
@@ -12,11 +13,19 @@ import (
 )
 
 var cfgFile string
+var verbose bool
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   internal.NAME,
 	Short: "Track your Kobo reads on Anilist.co and Hardcover.app using Calibre-Web and Calibre databases",
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		level := slog.LevelInfo
+		if verbose {
+			level = slog.LevelDebug
+		}
+		slog.SetLogLoggerLevel(level)
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -42,6 +51,7 @@ func init() {
 		availableTargets = append(availableTargets, name)
 	}
 	RootCmd.PersistentFlags().StringSliceP("targets", "t", availableTargets, "Active targets to sync reading status with")
+	RootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose logging")
 
 	viper.BindPFlag("targets", RootCmd.PersistentFlags().Lookup("targets"))
 }

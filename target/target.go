@@ -2,11 +2,14 @@ package target
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
 	"slices"
 
 	"github.com/Khan/genqlient/graphql"
 	"github.com/RobBrazier/readflow/internal"
+	"github.com/RobBrazier/readflow/source"
+	"github.com/hashicorp/go-retryablehttp"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -33,8 +36,8 @@ type SyncTarget interface {
 	getTokenKey() string
 	SaveToken(token string) error
 	GetName() string
-	GetHostname() string
 	GetCurrentUser() string
+	UpdateReadStatus(book source.BookContext) error
 }
 
 func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
@@ -43,13 +46,16 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 }
 
 func (g *GraphQLTarget) getClient(target Target) graphql.Client {
-	httpClient := http.Client{
+	retryClient := retryablehttp.NewClient()
+	retryClient.HTTPClient = &http.Client{
 		Transport: &authTransport{
 			key:     target.getToken(),
 			wrapped: http.DefaultTransport,
 		},
 	}
-	return graphql.NewClient(target.ApiUrl, &httpClient)
+	retryClient.Logger = slog.Default()
+	httpClient := retryClient.StandardClient()
+	return graphql.NewClient(target.ApiUrl, httpClient)
 }
 
 var targets = []SyncTarget{}
@@ -60,10 +66,6 @@ func (t *Target) GetTarget() *Target {
 
 func (t *Target) GetName() string {
 	return t.Name
-}
-
-func (t *Target) GetHostname() string {
-	return t.Hostname
 }
 
 func (t *Target) getToken() string {
