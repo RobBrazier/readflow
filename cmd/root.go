@@ -1,16 +1,11 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"log/slog"
-	"maps"
 	"os"
-	"slices"
 
 	"github.com/RobBrazier/readflow/internal"
-	"github.com/RobBrazier/readflow/source"
-	"github.com/RobBrazier/readflow/target"
 	"github.com/adrg/xdg"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -18,26 +13,20 @@ import (
 
 var cfgFile string
 var verbose bool
-var availableSources []string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   internal.NAME,
 	Short: "Track your Kobo reads on Anilist.co and Hardcover.app using Calibre-Web and Calibre databases",
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+	CompletionOptions: cobra.CompletionOptions{
+		DisableDefaultCmd: true,
+	},
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		level := slog.LevelInfo
 		if verbose {
 			level = slog.LevelDebug
 		}
 		slog.SetLogLoggerLevel(level)
-
-		if availableSources == nil {
-			availableSources = slices.Collect(maps.Keys(source.GetSources()))
-		}
-		if slices.Contains(availableSources, viper.GetString(internal.CONFIG_SOURCE)) {
-			return nil
-		}
-		return errors.New(fmt.Sprintf("Invalid source. Available sources: %v", availableSources))
 	},
 }
 
@@ -57,18 +46,7 @@ func init() {
 	cobra.CheckErr(err)
 
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", defaultConfigFile, "config file")
-
-	availableTargets := []string{}
-	for _, target := range target.GetTargets() {
-		name := target.GetName()
-		availableTargets = append(availableTargets, name)
-	}
-	rootCmd.PersistentFlags().StringSliceP("targets", "t", availableTargets, "Active targets to sync reading status with")
-	rootCmd.PersistentFlags().StringP("source", "s", "database", "Active source to retrieve reading data from")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose logging")
-
-	viper.BindPFlag("targets", rootCmd.PersistentFlags().Lookup("targets"))
-	viper.BindPFlag("source", rootCmd.PersistentFlags().Lookup("source"))
 }
 
 // initConfig reads in config file and ENV variables if set.
