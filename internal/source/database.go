@@ -8,8 +8,8 @@ import (
 
 	"github.com/RobBrazier/readflow/internal"
 	"github.com/jmoiron/sqlx"
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/spf13/viper"
+	_ "modernc.org/sqlite"
 )
 
 type databaseSource struct {
@@ -30,7 +30,7 @@ func (s *databaseSource) getReadOnlyDbString(file string) string {
 }
 
 func (s *databaseSource) getDb() *sqlx.DB {
-	db := sqlx.MustConnect("sqlite3", s.getReadOnlyDbString(s.calibreweb))
+	db := sqlx.MustConnect("sqlite", s.getReadOnlyDbString(s.calibreweb))
 	db.MustExec("attach database ? as calibre", s.getReadOnlyDbString(s.calibre))
 	return db
 }

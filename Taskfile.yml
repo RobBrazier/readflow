@@ -5,7 +5,7 @@ tasks:
     deps:
       - generate
     env:
-      CGO_ENABLED: 1
+      CGO_ENABLED: 0
     cmd: go build -o readflow main.go
 
   generate:
