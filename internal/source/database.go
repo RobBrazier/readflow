@@ -4,10 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"os"
 	"strings"
 
 	"github.com/RobBrazier/readflow/internal"
 	"github.com/jmoiron/sqlx"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	_ "modernc.org/sqlite"
 )
@@ -26,6 +28,9 @@ type chaptersRow struct {
 const CHAPTERS_COLUMN = "columns.chapter"
 
 func (s *databaseSource) getReadOnlyDbString(file string) string {
+	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
+		cobra.CheckErr(fmt.Sprintf("Unable to access database %s. Is the path correct?", file))
+	}
 	return fmt.Sprintf("file:%s?mode=ro", file)
 }
 
