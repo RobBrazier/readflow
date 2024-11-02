@@ -7,6 +7,9 @@
 *.dll
 *.so
 *.dylib
+dist/
+readflow.*
+readflow
 
 # Test binary, built with `go test -c`
 *.test
@@ -16,6 +19,7 @@
 
 # DB Browser for SQLite project file
 *.sqbpro
+**/*.db
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
@@ -26,17 +30,3 @@ go.work.sum
 
 # env file
 .env
-
-**/*.db
-readflow
-# Devenv
-.devenv*
-devenv.local.nix
-
-# direnv
-.direnv
-
-# pre-commit
-.pre-commit-config.yaml
-
-dist/
