@@ -1,5 +1,8 @@
 version: "3"
 
+dotenv:
+  - .env
+
 tasks:
   build:
     deps:
@@ -16,7 +19,7 @@ tasks:
 
   download-schemas:
     cmds:
-      - "npx -y gql-sdl https://graphql.anilist.co -o schemas/anilist/schema.gql"
-      - "npx -y gql-sdl https://api.hardcover.app/v1/graphql -o schemas/hardcover/schema.gql -H 'Authorization: {{ .HARDCOVER_TOKEN }}'"
+      - "gql-sdl https://graphql.anilist.co -o schemas/anilist/schema.gql"
+      - "gql-sdl https://api.hardcover.app/v1/graphql -o schemas/hardcover/schema.gql -H 'Authorization: {{ .HARDCOVER_TOKEN }}'"
     requires:
       vars: [HARDCOVER_TOKEN]
