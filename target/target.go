@@ -7,10 +7,8 @@ import (
 	"slices"
 
 	"github.com/Khan/genqlient/graphql"
-	"github.com/RobBrazier/readflow/internal"
 	"github.com/RobBrazier/readflow/source"
 	"github.com/hashicorp/go-retryablehttp"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -71,9 +69,9 @@ func (t *Target) GetName() string {
 func (t *Target) getToken() string {
 	key := t.getTokenKey()
 	value := viper.GetString(key)
-	if value == "" {
-		cobra.CheckErr(fmt.Sprintf("Token for %s not set - please configure with `%s login` or disable with `%s config set targets DESIRED_TARGET`", t.Name, internal.NAME, internal.NAME))
-	}
+	// if value == "" {
+	// 	cobra.CheckErr(fmt.Sprintf("Token for %s not set - please configure with `%s login` or disable with `%s config set targets DESIRED_TARGET`", t.Name, internal.NAME, internal.NAME))
+	// }
 	return value
 }
 

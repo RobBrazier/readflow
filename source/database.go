@@ -9,7 +9,6 @@ import (
 	"github.com/RobBrazier/readflow/internal"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -115,9 +114,9 @@ func (s *databaseSource) GetRecentReads() ([]BookContext, error) {
 func checkValue(name, hint string) string {
 	key := fmt.Sprintf("databases.%s", name)
 	value := viper.GetString(key)
-	if value == "" {
-		cobra.CheckErr(fmt.Sprintf("Database path for %s not configured - please configure with `%s config set %s /path/to/%s`", name, internal.NAME, key, hint))
-	}
+	// if value == "" {
+	// 	cobra.CheckErr(fmt.Sprintf("Database path for %s not configured - please configure with `%s config set %s /path/to/%s`", name, internal.NAME, key, hint))
+	// }
 	return value
 }
 

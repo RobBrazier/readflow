@@ -1,26 +1,14 @@
 package internal
 
-import "fmt"
-
 const NAME = "readflow"
 
-type ReadStatus int
+const CONFIG_SOURCE = "source"
+const CONFIG_TARGETS = "targets"
 
-const (
-	STATUS_UNREAD ReadStatus = iota
-	STATUS_FINISHED
-	STATUS_IN_PROGRESS
-)
+const CONFIG_CALIBRE_DB = "databases.calibre"
+const CONFIG_CALIBREWEB_DB = "databases.calibreweb"
 
-func (e ReadStatus) String() string {
-	switch e {
-	case STATUS_UNREAD:
-		return "UNREAD"
-	case STATUS_FINISHED:
-		return "FINISHED"
-	case STATUS_IN_PROGRESS:
-		return "IN_PROGRESS"
-	default:
-		return fmt.Sprintf("%d", int(e))
-	}
-}
+const CONFIG_CHAPTERS_COLUMN = "columns.chapter"
+
+const CONFIG_TOKENS_ANILIST = "tokens.anilist"
+const CONFIG_TOKENS_HARDCOVER = "tokens.hardcover"
