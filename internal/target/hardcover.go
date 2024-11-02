@@ -15,7 +15,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-//go:generate go run github.com/Khan/genqlient ../schemas/hardcover/genqlient.yaml
+//go:generate go run github.com/Khan/genqlient ../../schemas/hardcover/genqlient.yaml
 
 type HardcoverTarget struct {
 	Target

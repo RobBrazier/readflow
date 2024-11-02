@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-//go:generate go run github.com/Khan/genqlient ../schemas/anilist/genqlient.yaml
+//go:generate go run github.com/Khan/genqlient ../../schemas/anilist/genqlient.yaml
 
 type AnilistTarget struct {
 	GraphQLTarget

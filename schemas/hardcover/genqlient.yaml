@@ -2,7 +2,7 @@ schema: schema.gql
 operations:
   - queries.gql
   - mutations.gql
-generated: ../../target/hardcover/generated.go
+generated: ../../internal/target/hardcover/generated.go
 bindings:
   citext:
     type: string

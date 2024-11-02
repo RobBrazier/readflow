@@ -1,4 +1,4 @@
 schema: schema.gql
 operations:
   - queries.gql
-generated: ../../target/anilist/generated.go
+generated: ../../internal/target/anilist/generated.go
