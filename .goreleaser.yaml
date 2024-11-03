@@ -35,6 +35,32 @@ archives:
       - goos: windows
         format: zip
 
+# nfpms:
+#   - package_name: readflow
+#     vendor: Rob Brazier
+#     homepage: https://github.com/RobBrazier/readflow
+#     maintainer: Rob Brazier <2453018+RobBrazier@users.noreply.github.com>
+#     description: Track your Kobo reads on Anilist.co and Hardcover.app using Calibre-Web and Calibre databases
+#     formats:
+#       - deb
+#       - rpm
+#     bindir: /usr/local/bin
+#     contents:
+#       - src: ./packaging/systemd/readflow.timer
+#         dst: /usr/lib/systemd/system/readflow.timer
+#         type: config
+#         file_info:
+#           mode: 0644
+#       - src: ./packaging/systemd/readflow.service
+#         dst: /usr/lib/systemd/system/readflow.service
+#         type: config
+#         file_info:
+#           mode: 0644
+#
+#     scripts:
+#       postinstall: packaging/scripts/postinstall.sh
+#       postremove: packaging/scripts/postremove.sh
+
 changelog:
   sort: asc
   filters:
