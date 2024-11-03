@@ -5,6 +5,18 @@ Track your Kobo reads on Anilist and Hardcover using Calibre-Web and Calibre dat
 > [!WARNING]
 > This project is an early-stages WIP
 
+## Pre-Requisites for this to actually be useful
+
+Admittedly this is quite a niche tool. It's only really useful in the following scenario:
+
+1. You own a Kobo eReader
+2. You store all of your books in a [Calibre](https://calibre-ebook.com/) library
+3. You run a [Calibre-Web](https://github.com/janeczku/calibre-web) server
+4. You have configured your Kobo eReader to use the Calibre-Web
+[Kobo Integration](https://github.com/janeczku/calibre-web/wiki/Kobo-Integration)
+as the API endpoint
+
+
 ## Installation
 
 1. Download the [GitHub Release binaries](https://github.com/RobBrazier/readflow/releases/latest)
@@ -43,3 +55,20 @@ And this will pull recent reads and sync them to the providers configured
 >
 > e.g. [hardcover:pride-and-prejudice](https://hardcover.app/books/pride-and-prejudice)
 or [anilist:53390](https://anilist.co/manga/53390/Attack-on-Titan/)
+
+## Running on a Schedule
+
+This is a `oneshot` CLI tool, so if you want to run it frequently, you'll need
+to configure a cron job
+
+On Linux systems this can be done with
+
+```bash
+crontab -e
+```
+
+As an example, the cron job I use is:
+
+```crontab
+0 * * * * /usr/local/bin/readflow sync 2>> /var/log/readflow.log
+```
