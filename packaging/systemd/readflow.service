@@ -1,0 +1,11 @@
+[Unit]
+Description=Readflow sync service
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/readflow sync -c /etc/readflow/config.yaml
+
+[Install]
+WantedBy=default.target
