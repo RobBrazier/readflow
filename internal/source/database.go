@@ -7,17 +7,15 @@ import (
 	"strings"
 
 	"github.com/RobBrazier/readflow/internal"
+	"github.com/RobBrazier/readflow/internal/config"
 	"github.com/charmbracelet/log"
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	_ "modernc.org/sqlite"
 )
 
 type databaseSource struct {
 	log            *log.Logger
-	calibre        string
-	calibreweb     string
 	chaptersColumn string
 	enableChapters bool
 }
@@ -36,8 +34,8 @@ func (s *databaseSource) getReadOnlyDbString(file string) string {
 }
 
 func (s *databaseSource) getDb() *sqlx.DB {
-	db := sqlx.MustConnect("sqlite", s.getReadOnlyDbString(s.calibreweb))
-	db.MustExec("attach database ? as calibre", s.getReadOnlyDbString(s.calibre))
+	db := sqlx.MustConnect("sqlite", s.getReadOnlyDbString(config.GetDatabases().CalibreWeb))
+	db.MustExec("attach database ? as calibre", s.getReadOnlyDbString(config.GetDatabases().Calibre))
 	return db
 }
 
@@ -49,9 +47,11 @@ func (s *databaseSource) Init() error {
 			return errors.New(fmt.Sprintf("Unable to find chapters column - configure via `%s config set %s NAME` (or set to 'false' to disable reading progress tracking)", internal.NAME, CHAPTERS_COLUMN))
 		}
 		s.chaptersColumn = column
-		viper.Set(CHAPTERS_COLUMN, column)
+		c := config.GetConfig()
+		c.Columns.Chapter = column
+
 		s.log.Info("Stored chapters column", "column", column)
-		viper.WriteConfig()
+		config.SaveConfig(&c)
 	}
 	s.log.Debug("column", "enabled", s.enableChapters, "name", s.chaptersColumn)
 	return nil
@@ -118,7 +118,7 @@ func (s *databaseSource) GetRecentReads() ([]BookContext, error) {
 }
 
 func NewDatabaseSource() Source {
-	chapters := viper.GetString(CHAPTERS_COLUMN)
+	chapters := config.GetColumns().Chapter
 	enableChapters := true
 	if strings.ToLower(chapters) == "false" {
 		enableChapters = false
@@ -127,8 +127,6 @@ func NewDatabaseSource() Source {
 	logger := log.WithPrefix("database")
 	return &databaseSource{
 		log:            logger,
-		calibre:        viper.GetString(internal.CONFIG_CALIBRE_DB),
-		calibreweb:     viper.GetString(internal.CONFIG_CALIBREWEB_DB),
 		chaptersColumn: chapters,
 		enableChapters: enableChapters,
 	}

@@ -5,12 +5,19 @@ import (
 	"log/slog"
 	"net/http"
 	"slices"
+	"sync"
+	"sync/atomic"
 
 	"github.com/Khan/genqlient/graphql"
+	"github.com/RobBrazier/readflow/internal/config"
 	"github.com/RobBrazier/readflow/internal/source"
 	"github.com/charmbracelet/log"
 	"github.com/hashicorp/go-retryablehttp"
-	"github.com/spf13/viper"
+)
+
+var (
+	targets     atomic.Pointer[[]SyncTarget]
+	targetsOnce sync.Once
 )
 
 type Target struct {
@@ -28,7 +35,7 @@ type authTransport struct {
 
 type SyncTarget interface {
 	Login() (string, error)
-	getToken() string
+	GetToken() string
 	GetName() string
 	GetCurrentUser() string
 	UpdateReadStatus(book source.BookContext) error
@@ -39,44 +46,41 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	return t.wrapped.RoundTrip(req)
 }
 
-func (g *GraphQLTarget) getClient(target Target) graphql.Client {
+func (g *GraphQLTarget) getClient(url, token string) graphql.Client {
 	retryClient := retryablehttp.NewClient()
 	retryClient.HTTPClient = &http.Client{
 		Transport: &authTransport{
-			key:     target.getToken(),
+			key:     token,
 			wrapped: http.DefaultTransport,
 		},
 	}
 	retryClient.Logger = slog.New(log.Default())
 	httpClient := retryClient.StandardClient()
-	return graphql.NewClient(target.ApiUrl, httpClient)
+	return graphql.NewClient(url, httpClient)
 }
-
-var targets = []SyncTarget{}
 
 func (t *Target) GetName() string {
 	return t.Name
 }
 
-func (t *Target) getToken() string {
-	value := viper.GetString(fmt.Sprintf("tokens.%s", t.Name))
-	return value
-}
-
-func GetTargets() []SyncTarget {
-	if len(targets) == 0 {
-		targets = []SyncTarget{
-			NewAnilistTarget(),
-			NewHardcoverTarget(),
-		}
+func GetTargets() *[]SyncTarget {
+	t := targets.Load()
+	if t == nil {
+		targetsOnce.Do(func() {
+			targets.CompareAndSwap(nil, &[]SyncTarget{
+				NewAnilistTarget(),
+				NewHardcoverTarget(),
+			})
+		})
+		t = targets.Load()
 	}
-	return targets
+	return t
 }
 
 func GetActiveTargets() []SyncTarget {
 	active := []SyncTarget{}
-	selectedTargets := viper.GetStringSlice("targets")
-	for _, target := range GetTargets() {
+	selectedTargets := config.GetTargets()
+	for _, target := range *GetTargets() {
 		if slices.Contains(selectedTargets, target.GetName()) {
 			active = append(active, target)
 		}

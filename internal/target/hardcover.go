@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Khan/genqlient/graphql"
+	"github.com/RobBrazier/readflow/internal/config"
 	"github.com/RobBrazier/readflow/internal/source"
 	"github.com/RobBrazier/readflow/internal/target/hardcover"
 	"github.com/charmbracelet/log"
@@ -39,9 +40,13 @@ func (t *HardcoverTarget) Login() (string, error) {
 
 func (t *HardcoverTarget) getClient() graphql.Client {
 	if t.client == nil {
-		t.client = t.GraphQLTarget.getClient(t.Target)
+		t.client = t.GraphQLTarget.getClient(t.ApiUrl, t.GetToken())
 	}
 	return t.client
+}
+
+func (t *HardcoverTarget) GetToken() string {
+	return config.GetTokens().Hardcover
 }
 
 func (t *HardcoverTarget) GetCurrentUser() string {
@@ -145,8 +150,8 @@ func (t *HardcoverTarget) UpdateReadStatus(book source.BookContext) error {
 	if err != nil {
 		return err
 	}
-	// round to 2 decimal places
-	remoteProgress := math.Round(float64(bookProgress.progress)*100) / 100
+	// round to 0 decimal places to match the source progress
+	remoteProgress := math.Round(float64(bookProgress.progress))
 
 	t.log.Info("Got book data", "book", book.Current.BookName, "localProgress", localProgress, "remoteProgress", remoteProgress)
 

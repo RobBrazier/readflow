@@ -42,7 +42,7 @@ func SourceSelect(value *string) *huh.Select[string] {
 }
 
 func TargetSelect(value *[]string) *huh.MultiSelect[string] {
-	targets := target.GetTargets()
+	targets := *target.GetTargets()
 	options := []huh.Option[string]{}
 	for _, target := range targets {
 		name := target.GetName()
@@ -55,13 +55,27 @@ func TargetSelect(value *[]string) *huh.MultiSelect[string] {
 		Options(options...).
 		Title("Enabled Sync Targets").
 		Description("Where do you your reading updates to be sent to?").
-		Validate(func(s []string) error {
-			if len(s) == 0 {
-				return errors.New("You must select at least one target")
-			}
-			return nil
-		}).
+		Validate(ValidationMinValues[string](1)).
 		Value(value)
+}
+
+func ValidationMinValues[T comparable](min int) func([]T) error {
+	return func(t []T) error {
+		if len(t) < min {
+			return errors.New("You must select at least one")
+		}
+		return nil
+	}
+}
+
+func ValidationRequired[T comparable]() func(T) error {
+	return func(t T) error {
+		var empty T
+		if t == empty {
+			return errors.New("This field is required")
+		}
+		return nil
+	}
 }
 
 func Confirm(message string, value *bool) *huh.Confirm {

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Khan/genqlient/graphql"
+	"github.com/RobBrazier/readflow/internal/config"
 	"github.com/RobBrazier/readflow/internal/source"
 	"github.com/RobBrazier/readflow/internal/target/anilist"
 	"github.com/charmbracelet/log"
@@ -26,9 +27,13 @@ func (t *AnilistTarget) Login() (string, error) {
 
 func (t *AnilistTarget) getClient() graphql.Client {
 	if t.client == nil {
-		t.client = t.GraphQLTarget.getClient(t.Target)
+		t.client = t.GraphQLTarget.getClient(t.ApiUrl, t.GetToken())
 	}
 	return t.client
+}
+
+func (t *AnilistTarget) GetToken() string {
+	return config.GetTokens().Anilist
 }
 
 func (t *AnilistTarget) GetCurrentUser() string {

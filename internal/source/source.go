@@ -1,8 +1,10 @@
 package source
 
 import (
-	"github.com/RobBrazier/readflow/internal"
-	"github.com/spf13/viper"
+	"sync"
+	"sync/atomic"
+
+	"github.com/RobBrazier/readflow/internal/config"
 )
 
 type Source interface {
@@ -10,7 +12,10 @@ type Source interface {
 	GetRecentReads() ([]BookContext, error)
 }
 
-var sources map[string]Source
+var (
+	sources     atomic.Pointer[map[string]Source]
+	sourcesOnce sync.Once
+)
 
 type Book struct {
 	BookID          int      `db:"book_id"`
@@ -31,16 +36,21 @@ type BookContext struct {
 }
 
 func GetSources() map[string]Source {
-	if sources == nil {
-		sources = make(map[string]Source)
-		sources["database"] = NewDatabaseSource()
+	s := sources.Load()
+	if s == nil {
+		sourcesOnce.Do(func() {
+			sources.CompareAndSwap(nil, &map[string]Source{
+				"database": NewDatabaseSource(),
+			})
+		})
+		s = sources.Load()
 	}
-	return sources
+	return *s
 }
 
 func GetActiveSources() []string {
 	active := []string{}
-	selectedSources := viper.GetString(internal.CONFIG_SOURCE)
+	selectedSources := config.GetSource()
 	active = append(active, selectedSources)
 	return active
 }

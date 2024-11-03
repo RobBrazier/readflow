@@ -1,15 +1,14 @@
 package cmd
 
 import (
-	"fmt"
+	"errors"
 	"os"
 	"time"
 
 	"github.com/RobBrazier/readflow/internal"
-	"github.com/adrg/xdg"
+	"github.com/RobBrazier/readflow/internal/config"
 	"github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var cfgFile string
@@ -44,32 +43,20 @@ func init() {
 	log.SetTimeFormat(time.TimeOnly)
 	log.SetLevel(log.InfoLevel)
 
-	defaultConfigFile, err := xdg.SearchConfigFile(fmt.Sprintf("%s/config.yaml", rootCmd.Name()))
-	cobra.CheckErr(err)
-
-	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", defaultConfigFile, "config file")
+	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", config.GetConfigPath(&cfgFile), "config file")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose logging")
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
-		configPath, err := xdg.SearchConfigFile(rootCmd.Name())
-		cobra.CheckErr(err)
-
-		// Search config in xdg config directory with name "readflow/config.yaml".
-		viper.AddConfigPath(configPath)
-		viper.SetConfigType("yaml")
-		viper.SetConfigName("config")
-	}
-
-	viper.AutomaticEnv() // read in environment variables that match
-
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	configFile := config.GetConfigPath(&cfgFile)
+	err := config.LoadConfig(configFile)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			log.Warnf("Config file doesn't seem to exist! Please run `%s setup -c \"%s\"` to populate the configuration", internal.NAME, cfgFile)
+		} else {
+			log.Error("Unable to read config", "error", err)
+			os.Exit(1)
+		}
 	}
 }

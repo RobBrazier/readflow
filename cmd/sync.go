@@ -6,16 +6,15 @@ import (
 	"maps"
 	"slices"
 
-	"github.com/RobBrazier/readflow/internal"
 	"github.com/RobBrazier/readflow/internal/source"
 	"github.com/RobBrazier/readflow/internal/sync"
 	"github.com/RobBrazier/readflow/internal/target"
 	"github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var availableSources []string
+var activeSource string
 
 // syncCmd represents the sync command
 var syncCmd = &cobra.Command{
@@ -25,13 +24,17 @@ var syncCmd = &cobra.Command{
 		if availableSources == nil {
 			availableSources = slices.Collect(maps.Keys(source.GetSources()))
 		}
-		if slices.Contains(availableSources, viper.GetString(internal.CONFIG_SOURCE)) {
+		activeSources := source.GetActiveSources()
+		if len(activeSources) > 0 {
+			activeSource = activeSources[0]
+		}
+		if slices.Contains(availableSources, activeSource) {
 			return nil
 		}
 		return errors.New(fmt.Sprintf("Invalid source. Available sources: %v", availableSources))
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		log.Debug("sync called", "source", viper.GetString(internal.CONFIG_SOURCE))
+		log.Debug("sync called", "source", activeSource)
 		targetNames := []string{}
 		activeTargets := target.GetActiveTargets()
 		enabledSource := getEnabledSource()
@@ -47,26 +50,13 @@ var syncCmd = &cobra.Command{
 }
 
 func getEnabledSource() source.Source {
-	key := viper.GetString(internal.CONFIG_SOURCE)
 	sources := source.GetSources()
-	if val, ok := sources[key]; ok {
+	if val, ok := sources[activeSource]; ok {
 		return val
 	}
 	return nil
 }
 
 func init() {
-	// availableTargets := []string{}
-	// for _, target := range target.GetTargets() {
-	// 	name := target.GetName()
-	// 	availableTargets = append(availableTargets, name)
-	// }
-	//
-	// syncCmd.PersistentFlags().StringSliceP("targets", "t", availableTargets, "Active targets to sync reading status with")
-	// viper.BindPFlag("targets", syncCmd.Flags().Lookup("targets"))
-	//
-	// syncCmd.PersistentFlags().StringP("source", "s", "database", "Active source to retrieve reading data from")
-	// viper.BindPFlag("source", syncCmd.Flags().Lookup("source"))
-
 	rootCmd.AddCommand(syncCmd)
 }

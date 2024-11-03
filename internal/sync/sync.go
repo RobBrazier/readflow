@@ -18,6 +18,7 @@ type SyncAction interface {
 }
 
 type syncAction struct {
+	log     *log.Logger
 	targets []target.SyncTarget
 	source  source.Source
 }

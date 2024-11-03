@@ -5,7 +5,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/RobBrazier/readflow/internal"
+	"github.com/RobBrazier/readflow/internal/config"
 	"github.com/RobBrazier/readflow/internal/form"
 	"github.com/RobBrazier/readflow/internal/target"
 	"github.com/charmbracelet/bubbles/textinput"
@@ -13,7 +13,6 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/cli/browser"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 // setupCmd represents the setup command
@@ -21,14 +20,10 @@ var setupCmd = &cobra.Command{
 	Use:   "setup",
 	Short: "Setup configuration options and login to services",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		source := viper.GetString(internal.CONFIG_SOURCE)
-		targets := viper.GetStringSlice(internal.CONFIG_TARGETS)
-		calibreDb := viper.GetString(internal.CONFIG_CALIBRE_DB)
-		calibreWebDb := viper.GetString(internal.CONFIG_CALIBREWEB_DB)
-		chaptersColumn := viper.GetString(internal.CONFIG_CHAPTERS_COLUMN)
+		c := config.GetConfig()
 
-		anilistTokenExists := viper.GetString(internal.CONFIG_TOKENS_ANILIST) != ""
-		hardcoverTokenExists := viper.GetString(internal.CONFIG_TOKENS_HARDCOVER) != ""
+		anilistTokenExists := c.Tokens.Anilist != ""
+		hardcoverTokenExists := c.Tokens.Hardcover != ""
 
 		fetchAnilistToken := !anilistTokenExists
 		fetchHardcoverToken := !hardcoverTokenExists
@@ -40,41 +35,43 @@ var setupCmd = &cobra.Command{
 		form := huh.NewForm(
 			// Source/Target
 			huh.NewGroup(
-				form.SourceSelect(&source),
-				form.TargetSelect(&targets),
+				form.SourceSelect(&c.Source),
+				form.TargetSelect(&c.Targets),
 			),
 			// Databases
 			huh.NewGroup(
 				huh.NewInput().
 					Title("Calibre datatabase location").
 					Description("e.g. /path/to/metadata.db").
-					Value(&calibreDb),
+					Validate(form.ValidationRequired[string]()).
+					Value(&c.Databases.Calibre),
 				huh.NewInput().
 					Title("Calibre-Web datatabase location").
 					Description("e.g. /path/to/app.db").
-					Value(&calibreWebDb),
+					Validate(form.ValidationRequired[string]()).
+					Value(&c.Databases.CalibreWeb),
 			).WithHideFunc(func() bool {
-				return source != "database"
+				return c.Source != "database"
 			}),
 			// Chapters Column
 			huh.NewGroup(
 				huh.NewInput().
 					Title("Calibre database 'chapters' custom column").
 					Description("e.g. custom_column_15 (if not specified, it'll be searched for in the calibre db)\nNOTE: only used for anilist").
-					Value(&chaptersColumn),
+					Value(&c.Columns.Chapter),
 			).WithHideFunc(func() bool {
-				return !slices.Contains(targets, "anilist") || source != "database"
+				return !slices.Contains(c.Targets, "anilist") || c.Source != "database"
 			}),
 			// Prompt for Re-Authentication
 			huh.NewGroup(
 				form.Confirm("Token already exists in config for Anilist, Re-authenticate", &fetchAnilistToken),
 			).WithHideFunc(func() bool {
-				return !slices.Contains(targets, "anilist") || fetchAnilistToken
+				return !slices.Contains(c.Targets, "anilist") || fetchAnilistToken
 			}),
 			huh.NewGroup(
 				form.Confirm("Token already exists in config for Hardcover, Re-authenticate", &fetchHardcoverToken),
 			).WithHideFunc(func() bool {
-				return !slices.Contains(targets, "hardcover") || fetchHardcoverToken
+				return !slices.Contains(c.Targets, "hardcover") || fetchHardcoverToken
 			}),
 			// Re-Authorize if requested
 			huh.NewGroup(
@@ -91,7 +88,7 @@ var setupCmd = &cobra.Command{
 					EchoMode(huh.EchoMode(textinput.EchoPassword)).
 					Value(&anilistToken),
 			).WithHideFunc(func() bool {
-				return !slices.Contains(targets, "anilist") || !fetchAnilistToken
+				return !slices.Contains(c.Targets, "anilist") || !fetchAnilistToken
 			}),
 			huh.NewGroup(
 				huh.NewInput().
@@ -107,35 +104,32 @@ var setupCmd = &cobra.Command{
 					EchoMode(huh.EchoMode(textinput.EchoPassword)).
 					Value(&hardcoverToken),
 			).WithHideFunc(func() bool {
-				return !slices.Contains(targets, "hardcover") || !fetchHardcoverToken
+				return !slices.Contains(c.Targets, "hardcover") || !fetchHardcoverToken
 			}),
 		)
 		err := form.Run()
 		if err != nil {
 			return err
 		}
-		viper.Set(internal.CONFIG_SOURCE, source)
-		viper.Set(internal.CONFIG_TARGETS, targets)
-		viper.Set(internal.CONFIG_CALIBRE_DB, calibreDb)
-		viper.Set(internal.CONFIG_CALIBREWEB_DB, calibreWebDb)
-		viper.Set(internal.CONFIG_CHAPTERS_COLUMN, chaptersColumn)
+
 		if fetchAnilistToken && anilistToken != "" {
-			viper.Set(internal.CONFIG_TOKENS_ANILIST, anilistToken)
+			c.Tokens.Anilist = anilistToken
 		}
 		if fetchHardcoverToken && hardcoverToken != "" {
-			viper.Set(internal.CONFIG_TOKENS_HARDCOVER, strings.TrimSpace(strings.Replace(hardcoverToken, "Bearer", "", 1)))
+			c.Tokens.Hardcover = strings.TrimSpace(strings.Replace(hardcoverToken, "Bearer", "", 1))
 		}
-		err = viper.WriteConfig()
+
+		err = config.SaveConfig(&c)
 		if err != nil {
 			return err
 		}
-		log.Info("Saved settings to config")
+		log.Info("Successfully saved config!")
 		return nil
 	},
 }
 
 func getTarget(name string) target.SyncTarget {
-	for _, target := range target.GetTargets() {
+	for _, target := range *target.GetTargets() {
 		if target.GetName() == name {
 			return target
 		}
