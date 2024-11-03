@@ -16,7 +16,13 @@ tasks:
     cmd: go build -o readflow main.go
 
   generate:
-    cmd: go generate ./...
+    vars:
+      GENQLIENT_VERSION:
+        sh: grep -m 1 genqlient  go.mod | awk '{ print $2 }'
+    cmds:
+      - go get github.com/Khan/genqlient@{{ .GENQLIENT_VERSION }}
+      - defer: go mod tidy
+      - go generate ./...
 
   test:
     cmd: go test ./...
