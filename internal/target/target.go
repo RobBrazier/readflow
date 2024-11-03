@@ -38,6 +38,7 @@ type SyncTarget interface {
 	GetToken() string
 	GetName() string
 	GetCurrentUser() string
+	ShouldProcess(book source.BookContext) bool
 	UpdateReadStatus(book source.BookContext) error
 }
 
@@ -54,7 +55,7 @@ func (g *GraphQLTarget) getClient(url, token string) graphql.Client {
 			wrapped: http.DefaultTransport,
 		},
 	}
-	retryClient.Logger = slog.New(log.Default())
+	retryClient.Logger = slog.New(log.WithPrefix("graphql"))
 	httpClient := retryClient.StandardClient()
 	return graphql.NewClient(url, httpClient)
 }

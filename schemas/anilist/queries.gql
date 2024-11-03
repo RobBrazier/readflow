@@ -4,3 +4,19 @@ query GetCurrentUser {
     name
   }
 }
+
+
+query GetUserMediaById($mediaId: Int) {
+  Media(id: $mediaId, type: MANGA) {
+    volumes
+    chapters
+    mediaListEntry {
+      progressVolumes
+      progress
+      status
+    }
+    title {
+      userPreferred
+    }
+  }
+}

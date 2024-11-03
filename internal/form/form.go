@@ -1,7 +1,6 @@
 package form
 
 import (
-	"errors"
 	"maps"
 
 	"github.com/RobBrazier/readflow/internal/source"
@@ -57,25 +56,6 @@ func TargetSelect(value *[]string) *huh.MultiSelect[string] {
 		Description("Where do you your reading updates to be sent to?").
 		Validate(ValidationMinValues[string](1)).
 		Value(value)
-}
-
-func ValidationMinValues[T comparable](min int) func([]T) error {
-	return func(t []T) error {
-		if len(t) < min {
-			return errors.New("You must select at least one")
-		}
-		return nil
-	}
-}
-
-func ValidationRequired[T comparable]() func(T) error {
-	return func(t T) error {
-		var empty T
-		if t == empty {
-			return errors.New("This field is required")
-		}
-		return nil
-	}
 }
 
 func Confirm(message string, value *bool) *huh.Confirm {

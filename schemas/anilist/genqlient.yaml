@@ -1,4 +1,5 @@
 schema: schema.gql
 operations:
   - queries.gql
+  - mutations.gql
 generated: ../../internal/target/anilist/generated.go

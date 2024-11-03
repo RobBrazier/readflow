@@ -40,11 +40,17 @@ func (a *syncAction) Sync() ([]SyncResult, error) {
 
 func (a *syncAction) processTarget(t target.SyncTarget, reads []source.BookContext, wg *sync.WaitGroup) {
 	defer wg.Done()
-	user := t.GetCurrentUser()
-	log.Debug("current user for", "target", t.GetName(), "user", user)
+	// user := t.GetCurrentUser()
+	// log.Debug("current user for", "target", t.GetName(), "user", user)
 
 	for _, book := range reads {
-		log.Info("Processing", "book", book.Current.BookName, "target", t.GetName())
+		name := book.Current.BookName
+		log := log.With("target", t.GetName(), "book", name)
+		if !t.ShouldProcess(book) {
+			log.Debug("Skipping processing of ineligible book")
+			continue
+		}
+		log.Info("Processing")
 		err := t.UpdateReadStatus(book)
 		if err != nil {
 			log.Error("failed to update reading status", "error", err)

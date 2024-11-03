@@ -25,6 +25,7 @@ type chaptersRow struct {
 }
 
 const CHAPTERS_COLUMN = "columns.chapter"
+const QUERY_DAYS = 30
 
 func (s *databaseSource) getReadOnlyDbString(file string) string {
 	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
@@ -77,7 +78,7 @@ func (s *databaseSource) getRecentReads(db *sqlx.DB) ([]Book, error) {
 		query = fmt.Sprintf(RECENT_READS_QUERY, s.chaptersColumn)
 	}
 
-	daysToQuery := "-7 day"
+	daysToQuery := fmt.Sprintf("-%d day", QUERY_DAYS)
 
 	err := db.Select(&books, query, daysToQuery)
 	if err != nil {

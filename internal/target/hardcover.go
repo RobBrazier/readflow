@@ -34,7 +34,7 @@ type hardcoverProgress struct {
 	edition   int
 }
 
-func (t *HardcoverTarget) Login() (string, error) {
+func (t HardcoverTarget) Login() (string, error) {
 	return "https://hardcover.app/account/api", nil
 }
 
@@ -45,7 +45,7 @@ func (t *HardcoverTarget) getClient() graphql.Client {
 	return t.client
 }
 
-func (t *HardcoverTarget) GetToken() string {
+func (t HardcoverTarget) GetToken() string {
 	return config.GetTokens().Hardcover
 }
 
@@ -53,6 +53,17 @@ func (t *HardcoverTarget) GetCurrentUser() string {
 	response, err := hardcover.GetCurrentUser(t.ctx, t.getClient())
 	cobra.CheckErr(err)
 	return response.GetMe()[0].GetUsername()
+}
+
+func (t HardcoverTarget) ShouldProcess(book source.BookContext) bool {
+	id := book.Current.HardcoverID
+	if id == nil {
+		return false
+	}
+	if *id == "" {
+		return false
+	}
+	return true
 }
 
 // Yes this is absolutely horrible, but the generated code is horrible too...
@@ -137,9 +148,6 @@ func (t *HardcoverTarget) startProgress(id, pages, edition, status int) error {
 
 func (t *HardcoverTarget) UpdateReadStatus(book source.BookContext) error {
 	slug := book.Current.HardcoverID
-	if slug == nil {
-		return BookNotFound
-	}
 	localProgressPointer := book.Current.ProgressPercent
 	if localProgressPointer == nil {
 		// no error, but nothing to update as we have no progress
@@ -152,11 +160,12 @@ func (t *HardcoverTarget) UpdateReadStatus(book source.BookContext) error {
 	}
 	// round to 0 decimal places to match the source progress
 	remoteProgress := math.Round(float64(bookProgress.progress))
+	log := t.log.With("book", book.Current.BookName)
 
-	t.log.Info("Got book data", "book", book.Current.BookName, "localProgress", localProgress, "remoteProgress", remoteProgress)
+	log.Info("Retrieved book data", "localProgress", localProgress, "remoteProgress", remoteProgress)
 
 	if localProgress <= remoteProgress {
-		t.log.Info("Progress already up-to-date, skipping")
+		log.Info("Skipping update as target is already up-to-date")
 		return nil
 	}
 	pages := float64(bookProgress.pages)
@@ -164,7 +173,7 @@ func (t *HardcoverTarget) UpdateReadStatus(book source.BookContext) error {
 	newPagesCount := int(math.Round(pages * progress))
 
 	if bookProgress.readId != nil {
-		t.log.Info("Updating progress for", "book", book.Current.BookName, "pages", newPagesCount)
+		log.Info("Updating progress for", "pages", newPagesCount)
 		startTime := time.Now()
 		if bookProgress.startTime != nil {
 			startTime = *bookProgress.startTime
@@ -172,16 +181,16 @@ func (t *HardcoverTarget) UpdateReadStatus(book source.BookContext) error {
 		if progress == 100.0 {
 			err := t.finishProgress(*bookProgress.readId, bookProgress.bookId, newPagesCount, bookProgress.edition, startTime)
 			if err != nil {
-				t.log.Error("error finishing book", "error", err)
+				log.Error("error finishing book", "error", err)
 			}
 		} else {
 			err := t.updateProgress(*bookProgress.readId, bookProgress.bookId, newPagesCount, bookProgress.edition, bookProgress.status, startTime)
 			if err != nil {
-				t.log.Error("error updating progress", "error", err)
+				log.Error("error updating progress", "error", err)
 			}
 		}
 	} else {
-		log.Info("Starting progress for", "book", book.Current.BookName, "pages", newPagesCount)
+		log.Info("Starting progress for", "pages", newPagesCount)
 		err := t.startProgress(bookProgress.bookId, newPagesCount, bookProgress.edition, bookProgress.status)
 		if err != nil {
 			t.log.Error("error starting progress", "error", err)
