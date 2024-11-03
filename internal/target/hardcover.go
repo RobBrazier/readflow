@@ -3,13 +3,13 @@ package target
 import (
 	"context"
 	"errors"
-	"log/slog"
 	"math"
 	"time"
 
 	"github.com/Khan/genqlient/graphql"
 	"github.com/RobBrazier/readflow/internal/source"
 	"github.com/RobBrazier/readflow/internal/target/hardcover"
+	"github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
 )
 
@@ -20,6 +20,7 @@ type HardcoverTarget struct {
 	GraphQLTarget
 	ctx    context.Context
 	client graphql.Client
+	log    *log.Logger
 }
 
 type hardcoverProgress struct {
@@ -147,10 +148,10 @@ func (t *HardcoverTarget) UpdateReadStatus(book source.BookContext) error {
 	// round to 2 decimal places
 	remoteProgress := math.Round(float64(bookProgress.progress)*100) / 100
 
-	slog.Info("Got book data", "book", book.Current.BookName, "localProgress", localProgress, "remoteProgress", remoteProgress)
+	t.log.Info("Got book data", "book", book.Current.BookName, "localProgress", localProgress, "remoteProgress", remoteProgress)
 
 	if localProgress <= remoteProgress {
-		slog.Info("Progress already up-to-date, skipping")
+		t.log.Info("Progress already up-to-date, skipping")
 		return nil
 	}
 	pages := float64(bookProgress.pages)
@@ -158,7 +159,7 @@ func (t *HardcoverTarget) UpdateReadStatus(book source.BookContext) error {
 	newPagesCount := int(math.Round(pages * progress))
 
 	if bookProgress.readId != nil {
-		slog.Info("Updating progress for", "book", book.Current.BookName, "pages", newPagesCount)
+		t.log.Info("Updating progress for", "book", book.Current.BookName, "pages", newPagesCount)
 		startTime := time.Now()
 		if bookProgress.startTime != nil {
 			startTime = *bookProgress.startTime
@@ -166,19 +167,19 @@ func (t *HardcoverTarget) UpdateReadStatus(book source.BookContext) error {
 		if progress == 100.0 {
 			err := t.finishProgress(*bookProgress.readId, bookProgress.bookId, newPagesCount, bookProgress.edition, startTime)
 			if err != nil {
-				slog.Error("error finishing book", "error", err)
+				t.log.Error("error finishing book", "error", err)
 			}
 		} else {
 			err := t.updateProgress(*bookProgress.readId, bookProgress.bookId, newPagesCount, bookProgress.edition, bookProgress.status, startTime)
 			if err != nil {
-				slog.Error("error updating progress", "error", err)
+				t.log.Error("error updating progress", "error", err)
 			}
 		}
 	} else {
-		slog.Info("Starting progress for", "book", book.Current.BookName, "pages", newPagesCount)
+		log.Info("Starting progress for", "book", book.Current.BookName, "pages", newPagesCount)
 		err := t.startProgress(bookProgress.bookId, newPagesCount, bookProgress.edition, bookProgress.status)
 		if err != nil {
-			slog.Error("error starting progress", "error", err)
+			t.log.Error("error starting progress", "error", err)
 		}
 	}
 
@@ -186,10 +187,13 @@ func (t *HardcoverTarget) UpdateReadStatus(book source.BookContext) error {
 }
 
 func NewHardcoverTarget() SyncTarget {
+	name := "hardcover"
+	logger := log.WithPrefix(name)
 	target := &HardcoverTarget{
 		ctx: context.Background(),
+		log: logger,
 		Target: Target{
-			Name:   "hardcover",
+			Name:   name,
 			ApiUrl: "https://api.hardcover.app/v1/graphql",
 		},
 	}

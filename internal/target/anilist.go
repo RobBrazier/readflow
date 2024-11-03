@@ -6,6 +6,7 @@ import (
 	"github.com/Khan/genqlient/graphql"
 	"github.com/RobBrazier/readflow/internal/source"
 	"github.com/RobBrazier/readflow/internal/target/anilist"
+	"github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
 )
 
@@ -16,6 +17,7 @@ type AnilistTarget struct {
 	Target
 	client graphql.Client
 	ctx    context.Context
+	log    *log.Logger
 }
 
 func (t *AnilistTarget) Login() (string, error) {
@@ -40,10 +42,13 @@ func (t *AnilistTarget) UpdateReadStatus(book source.BookContext) error {
 }
 
 func NewAnilistTarget() SyncTarget {
+	name := "anilist"
+	logger := log.WithPrefix(name)
 	target := &AnilistTarget{
 		ctx: context.Background(),
+		log: logger,
 		Target: Target{
-			Name:   "anilist",
+			Name:   name,
 			ApiUrl: "https://graphql.anilist.co",
 		},
 	}

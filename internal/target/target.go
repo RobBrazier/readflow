@@ -8,6 +8,7 @@ import (
 
 	"github.com/Khan/genqlient/graphql"
 	"github.com/RobBrazier/readflow/internal/source"
+	"github.com/charmbracelet/log"
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/spf13/viper"
 )
@@ -46,7 +47,7 @@ func (g *GraphQLTarget) getClient(target Target) graphql.Client {
 			wrapped: http.DefaultTransport,
 		},
 	}
-	retryClient.Logger = slog.Default()
+	retryClient.Logger = slog.New(log.Default())
 	httpClient := retryClient.StandardClient()
 	return graphql.NewClient(target.ApiUrl, httpClient)
 }

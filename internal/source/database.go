@@ -3,11 +3,11 @@ package source
 import (
 	"errors"
 	"fmt"
-	"log/slog"
 	"os"
 	"strings"
 
 	"github.com/RobBrazier/readflow/internal"
+	"github.com/charmbracelet/log"
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -15,6 +15,7 @@ import (
 )
 
 type databaseSource struct {
+	log            *log.Logger
 	calibre        string
 	calibreweb     string
 	chaptersColumn string
@@ -49,10 +50,10 @@ func (s *databaseSource) Init() error {
 		}
 		s.chaptersColumn = column
 		viper.Set(CHAPTERS_COLUMN, column)
-		slog.Info("Stored chapters column", "column", column)
+		s.log.Info("Stored chapters column", "column", column)
 		viper.WriteConfig()
 	}
-	slog.Debug("column", "enabled", s.enableChapters, "name", s.chaptersColumn)
+	s.log.Debug("column", "enabled", s.enableChapters, "name", s.chaptersColumn)
 	return nil
 }
 
@@ -105,24 +106,15 @@ func (s *databaseSource) GetRecentReads() ([]BookContext, error) {
 		if book.SeriesID != nil {
 			err := db.Select(&previous, query, book.SeriesID, book.BookSeriesIndex)
 			if err != nil {
-				slog.Error("Unable to get previous books for", "book", book.BookName)
+				s.log.Error("Unable to get previous books for", "book", book.BookName)
 			}
 			context.Previous = previous
 		} else {
-			slog.Info("Skipping retrieval of previous books as this book has no series", "book", book.BookName)
+			s.log.Info("Skipping retrieval of previous books as this book has no series", "book", book.BookName)
 		}
 		recent = append(recent, context)
 	}
 	return recent, nil
-}
-
-func checkValue(name, hint string) string {
-	key := fmt.Sprintf("databases.%s", name)
-	value := viper.GetString(key)
-	// if value == "" {
-	// 	cobra.CheckErr(fmt.Sprintf("Database path for %s not configured - please configure with `%s config set %s /path/to/%s`", name, internal.NAME, key, hint))
-	// }
-	return value
 }
 
 func NewDatabaseSource() Source {
@@ -132,9 +124,11 @@ func NewDatabaseSource() Source {
 		enableChapters = false
 		chapters = ""
 	}
+	logger := log.WithPrefix("database")
 	return &databaseSource{
-		calibre:        checkValue("calibre", "metadata.db"),
-		calibreweb:     checkValue("calibreweb", "app.db"),
+		log:            logger,
+		calibre:        viper.GetString(internal.CONFIG_CALIBRE_DB),
+		calibreweb:     viper.GetString(internal.CONFIG_CALIBREWEB_DB),
 		chaptersColumn: chapters,
 		enableChapters: enableChapters,
 	}

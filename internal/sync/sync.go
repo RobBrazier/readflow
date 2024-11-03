@@ -1,11 +1,11 @@
 package sync
 
 import (
-	"log/slog"
 	"sync"
 
 	"github.com/RobBrazier/readflow/internal/source"
 	"github.com/RobBrazier/readflow/internal/target"
+	"github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
 )
 
@@ -40,13 +40,13 @@ func (a *syncAction) Sync() ([]SyncResult, error) {
 func (a *syncAction) processTarget(t target.SyncTarget, reads []source.BookContext, wg *sync.WaitGroup) {
 	defer wg.Done()
 	user := t.GetCurrentUser()
-	slog.Debug("current user for", "target", t.GetName(), "user", user)
+	log.Debug("current user for", "target", t.GetName(), "user", user)
 
 	for _, book := range reads {
-		slog.Info("Processing", "book", book.Current.BookName, "target", t.GetName())
+		log.Info("Processing", "book", book.Current.BookName, "target", t.GetName())
 		err := t.UpdateReadStatus(book)
 		if err != nil {
-			slog.Error("failed to update reading status", "error", err)
+			log.Error("failed to update reading status", "error", err)
 		}
 	}
 }

@@ -2,11 +2,12 @@ package cmd
 
 import (
 	"fmt"
-	"log/slog"
 	"os"
+	"time"
 
 	"github.com/RobBrazier/readflow/internal"
 	"github.com/adrg/xdg"
+	"github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -22,11 +23,9 @@ var rootCmd = &cobra.Command{
 		DisableDefaultCmd: true,
 	},
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		level := slog.LevelInfo
 		if verbose {
-			level = slog.LevelDebug
+			log.SetLevel(log.DebugLevel)
 		}
-		slog.SetLogLoggerLevel(level)
 	},
 }
 
@@ -41,6 +40,9 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
+
+	log.SetTimeFormat(time.TimeOnly)
+	log.SetLevel(log.InfoLevel)
 
 	defaultConfigFile, err := xdg.SearchConfigFile(fmt.Sprintf("%s/config.yaml", rootCmd.Name()))
 	cobra.CheckErr(err)

@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"log/slog"
 	"slices"
 	"strings"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/RobBrazier/readflow/internal/target"
 	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/charmbracelet/huh"
+	"github.com/charmbracelet/log"
 	"github.com/cli/browser"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -129,7 +129,7 @@ var setupCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		slog.Info("Saved settings to config")
+		log.Info("Saved settings to config")
 		return nil
 	},
 }

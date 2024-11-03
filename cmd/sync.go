@@ -3,7 +3,6 @@ package cmd
 import (
 	"errors"
 	"fmt"
-	"log/slog"
 	"maps"
 	"slices"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/RobBrazier/readflow/internal/source"
 	"github.com/RobBrazier/readflow/internal/sync"
 	"github.com/RobBrazier/readflow/internal/target"
+	"github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -31,18 +31,18 @@ var syncCmd = &cobra.Command{
 		return errors.New(fmt.Sprintf("Invalid source. Available sources: %v", availableSources))
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		slog.Debug("sync called", "source", viper.GetString(internal.CONFIG_SOURCE))
+		log.Debug("sync called", "source", viper.GetString(internal.CONFIG_SOURCE))
 		targetNames := []string{}
 		activeTargets := target.GetActiveTargets()
 		enabledSource := getEnabledSource()
 		for _, target := range activeTargets {
 			targetNames = append(targetNames, target.GetName())
 		}
-		slog.Debug("target", "active", targetNames)
+		log.Debug("target", "active", targetNames)
 		action := sync.NewSyncAction(enabledSource, activeTargets)
 		results, err := action.Sync()
 		cobra.CheckErr(err)
-		slog.Info("sync completed", "results", results)
+		log.Info("sync completed", "results", results)
 	},
 }
 

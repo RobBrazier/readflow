@@ -4,6 +4,10 @@ dotenv:
   - .env
 
 tasks:
+  default:
+    silent: true
+    cmd: task --list-all
+
   build:
     deps:
       - generate
