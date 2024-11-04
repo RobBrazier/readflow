@@ -16,7 +16,6 @@ Admittedly this is quite a niche tool. It's only really useful in the following 
 [Kobo Integration](https://github.com/janeczku/calibre-web/wiki/Kobo-Integration)
 as the API endpoint
 
-
 ## Installation
 
 1. Download the [GitHub Release binaries](https://github.com/RobBrazier/readflow/releases/latest)
@@ -55,8 +54,9 @@ And this will pull recent reads and sync them to the providers configured
 >
 > e.g. [hardcover:the-hobbit](https://hardcover.app/books/the-hobbit)
 or [anilist:53390](https://anilist.co/manga/53390/Attack-on-Titan/)
-[![Calibre-Web Identifier Format](.github/readme/calibreweb-identifier.png)]
-[![Calibre Identifier Format](.github/readme/calibre-identifier.png)]
+
+![Calibre-Web Identifier Format](.github/readme/calibreweb-identifier.png)
+![Calibre Identifier Format](.github/readme/calibre-identifier.png)
 
 ## Running on a Schedule
 
