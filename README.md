@@ -53,8 +53,10 @@ And this will pull recent reads and sync them to the providers configured
 > Currently you are required to set calibre identifiers for the providers in the
 > books you want to sync. Any books missing these will be skipped.
 >
-> e.g. [hardcover:pride-and-prejudice](https://hardcover.app/books/pride-and-prejudice)
+> e.g. [hardcover:the-hobbit](https://hardcover.app/books/the-hobbit)
 or [anilist:53390](https://anilist.co/manga/53390/Attack-on-Titan/)
+[![Calibre-Web Identifier Format](.github/readme/calibreweb-identifier.png)]
+[![Calibre Identifier Format](.github/readme/calibre-identifier.png)]
 
 ## Running on a Schedule
 
@@ -72,3 +74,5 @@ As an example, the cron job I use is:
 ```crontab
 0 * * * * /usr/local/bin/readflow sync 2>> /var/log/readflow.log
 ```
+
+This runs every hour on the hour
