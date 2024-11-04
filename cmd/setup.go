@@ -76,12 +76,12 @@ var setupCmd = &cobra.Command{
 			// Re-Authorize if requested
 			huh.NewGroup(
 				huh.NewInput().
-					Title("Authenticating with Anilist").
+					Title("Authenticating with Anilist - Please paste the token below").
 					DescriptionFunc(func() string {
 						url, _ := getTarget("anilist").Login()
 						browser.OpenURL(url)
 						return fmt.Sprintf(
-							"Please open the following URL in your browser if it hasn't already opened:\n%s",
+							"Please open the following URL in your browser if it hasn't already opened: %s",
 							url,
 						)
 					}, nil).
@@ -92,12 +92,12 @@ var setupCmd = &cobra.Command{
 			}),
 			huh.NewGroup(
 				huh.NewInput().
-					Title("Authenticating with Hardcover").
+					Title("Authenticating with Hardcover - Please paste the token below").
 					DescriptionFunc(func() string {
 						url, _ := getTarget("hardcover").Login()
 						browser.OpenURL(url)
 						return fmt.Sprintf(
-							"Please open the following URL in your browser if it hasn't already opened:\n%s",
+							"Please open the following URL in your browser if it hasn't already opened: %s",
 							url,
 						)
 					}, nil).
