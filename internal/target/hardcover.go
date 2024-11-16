@@ -124,25 +124,25 @@ func (t *HardcoverTarget) finishProgress(readId, bookId, pages, edition int, sta
 	finishTime := time.Now()
 	ctx := t.ctx
 	client := t.getClient()
-	_, err := hardcover.FinishBookProgress(ctx, client, bookId, pages, edition, startTime, finishTime)
+	_, err := hardcover.FinishBookProgress(ctx, client, readId, pages, edition, startTime, finishTime)
 	if err != nil {
 		return err
 	}
-	_, err = hardcover.ChangeBookStatus(ctx, client, readId, 3) // finished
+	_, err = hardcover.ChangeBookStatus(ctx, client, bookId, 3) // finished
 	return err
 }
 
-func (t *HardcoverTarget) startProgress(id, pages, edition, status int) error {
+func (t *HardcoverTarget) startProgress(bookId, pages, edition, status int) error {
 	startTime := time.Now()
 	ctx := t.ctx
 	client := t.getClient()
 	if status != 2 { // in progress
-		_, err := hardcover.ChangeBookStatus(ctx, client, id, 2)
+		_, err := hardcover.ChangeBookStatus(ctx, client, bookId, 2)
 		if err != nil {
 			return err
 		}
 	}
-	_, err := hardcover.StartBookProgress(ctx, client, id, pages, edition, startTime)
+	_, err := hardcover.StartBookProgress(ctx, client, bookId, pages, edition, startTime)
 	return err
 }
 
@@ -178,7 +178,8 @@ func (t *HardcoverTarget) UpdateReadStatus(book source.BookContext) error {
 		if bookProgress.startTime != nil {
 			startTime = *bookProgress.startTime
 		}
-		if progress == 100.0 {
+		if progress == 1 { // 100%
+			log.Info("Marking book as finished", "book", book.Current.BookName)
 			err := t.finishProgress(*bookProgress.readId, bookProgress.bookId, newPagesCount, bookProgress.edition, startTime)
 			if err != nil {
 				log.Error("error finishing book", "error", err)

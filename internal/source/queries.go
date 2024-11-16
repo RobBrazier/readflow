@@ -4,6 +4,43 @@ const CHAPTERS_QUERY = "SELECT id FROM calibre.custom_columns WHERE label = ?;"
 
 // I'd love to compress these into one query, but can't figure out a SQL query that still passes if a table doesn't exist
 const RECENT_READS_QUERY = `
+SELECT
+    b.id as book_id,
+    b.title AS book_name,
+    s.id AS series_id,
+    b.series_index as book_series_index,
+    i_isbn.val as isbn,
+    i_anilist.val as anilist_id,
+    i_hardcover.val as hardcover_id,
+    kb.progress_percent as progress_percent,
+    brl.read_status as read_status,
+    c.value as chapter_count
+FROM
+    book_read_link brl
+LEFT JOIN
+    calibre.books b ON b.id = brl.book_id
+LEFT JOIN
+    calibre.books_series_link bsl ON bsl.book = b.id
+LEFT JOIN
+    calibre.series s ON bsl.series = s.id
+LEFT JOIN
+    calibre.identifiers i_isbn ON i_isbn.book = b.id AND i_isbn.type = 'isbn'
+LEFT JOIN
+    calibre.identifiers i_anilist ON i_anilist.book = b.id AND i_anilist.type = 'anilist'
+LEFT JOIN
+    calibre.identifiers i_hardcover ON i_hardcover.book = b.id AND i_hardcover.type = 'hardcover'
+LEFT JOIN
+    calibre.%s c ON c.book = b.id
+LEFT JOIN
+    kobo_reading_state krs ON krs.book_id = b.id
+LEFT JOIN
+    kobo_bookmark kb ON kb.kobo_reading_state_id = krs.id
+WHERE
+    krs.last_modified > datetime('now', ?)
+    AND kb.progress_percent IS NOT NULL
+    AND brl.read_status != 0;
+`
+const RECENT_READS_QUERY_RANKED = `
 WITH ranked_books AS (
     SELECT
         b.id as book_id,
@@ -63,7 +100,43 @@ WHERE
 ORDER BY
     series_id NULLS LAST, book_series_index DESC;
 `
+
 const RECENT_READS_QUERY_NO_CHAPTERS = `
+SELECT
+    b.id as book_id,
+    b.title AS book_name,
+    s.id AS series_id,
+    b.series_index as book_series_index,
+    i_isbn.val as isbn,
+    i_anilist.val as anilist_id,
+    i_hardcover.val as hardcover_id,
+    kb.progress_percent as progress_percent,
+    brl.read_status as read_status,
+    NULL as chapter_count
+FROM
+    book_read_link brl
+LEFT JOIN
+    calibre.books b ON b.id = brl.book_id
+LEFT JOIN
+    calibre.books_series_link bsl ON bsl.book = b.id
+LEFT JOIN
+    calibre.series s ON bsl.series = s.id
+LEFT JOIN
+    calibre.identifiers i_isbn ON i_isbn.book = b.id AND i_isbn.type = 'isbn'
+LEFT JOIN
+    calibre.identifiers i_anilist ON i_anilist.book = b.id AND i_anilist.type = 'anilist'
+LEFT JOIN
+    calibre.identifiers i_hardcover ON i_hardcover.book = b.id AND i_hardcover.type = 'hardcover'
+LEFT JOIN
+    kobo_reading_state krs ON krs.book_id = b.id
+LEFT JOIN
+    kobo_bookmark kb ON kb.kobo_reading_state_id = krs.id
+WHERE
+    krs.last_modified > datetime('now', ?)
+    AND kb.progress_percent IS NOT NULL
+    AND brl.read_status != 0
+`
+const RECENT_READS_QUERY_NO_CHAPTERS_RANKED = `
 WITH ranked_books AS (
     SELECT
         b.id as book_id,
