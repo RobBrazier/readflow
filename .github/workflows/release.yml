@@ -6,10 +6,12 @@ on:
     tags:
       - "*"
 
+env:
+  REGISTRY: ghcr.io
+
 permissions:
   contents: write
   packages: write
-  attestations: write
   id-token: write
 
 jobs:
