@@ -85,23 +85,26 @@ docker pull ghcr.io/robbrazier/readflow
 
 ### Environment Variables
 
-| Name                | Default           | Notes                                                                                                               | <!-- markdownlint-disable-line MD013 -->
-|---------------------|-------------------|---------------------------------------------------------------------------------------------------------------------| <!-- markdownlint-disable-line MD013 -->
-| SOURCE              | database          | Leave as default - there are no other options currently                                                             | <!-- markdownlint-disable-line MD013 -->
-| TARGETS             | anilist,hardcover | Defaults to all targets                                                                                             | <!-- markdownlint-disable-line MD013 -->
-| COLUMN_CHAPTER      | false             | Only used for Anilist - set if you want to count chapters                                                           | <!-- markdownlint-disable-line MD013 -->
-| DATABASE_CALIBRE    | /data/metadata.db | Mount your metadata.db here                                                                                         | <!-- markdownlint-disable-line MD013 -->
-| DATABASE_CALIBREWEB | /data/app.db      | Mount your app.db here                                                                                              | <!-- markdownlint-disable-line MD013 -->
-| CRON_SCHEDULE       | @hourly           | See [crontab.guru](https://crontab.guru/#@hourly) for syntax                                                        | <!-- markdownlint-disable-line MD013 -->
-| TOKEN_ANILIST       |                   | Anilist token - Retrieve from [here](https://anilist.co/api/v2/oauth/authorize?client_id=21288&response_type=token) | <!-- markdownlint-disable-line MD013 -->
-| TOKEN_HARDCOVER     |                   | Hardcover token - Retrieve from [here](https://hardcover.app/account/api)                                           | <!-- markdownlint-disable-line MD013 -->
+<!-- markdownlint-capture -->
+<!-- markdownlint-disable MD013 -->
+| Name                | Default           | Notes                                                                                                               |
+|---------------------|-------------------|---------------------------------------------------------------------------------------------------------------------|
+| SOURCE              | database          | Leave as default - there are no other options currently                                                             |
+| TARGETS             | anilist,hardcover | Defaults to all targets                                                                                             |
+| COLUMN_CHAPTER      | false             | Only used for Anilist - set if you want to count chapters                                                           |
+| DATABASE_CALIBRE    | /data/metadata.db | Mount your metadata.db here                                                                                         |
+| DATABASE_CALIBREWEB | /data/app.db      | Mount your app.db here                                                                                              |
+| CRON_SCHEDULE       | @hourly           | See [crontab.guru](https://crontab.guru/#@hourly) for syntax                                                        |
+| TOKEN_ANILIST       |                   | Anilist token - Retrieve from [here](https://anilist.co/api/v2/oauth/authorize?client_id=21288&response_type=token) |
+| TOKEN_HARDCOVER     |                   | Hardcover token - Retrieve from [here](https://hardcover.app/account/api)                                           |
+<!-- markdownlint-restore -->
 
 ### Run modes
 
 #### Cron Job
 
 ```bash
-docker run -e CRON_SCHEDULE="@daily" ghcr.io/robbrazier/readflow
+docker run -e CRON_SCHEDULE="@daily" ghcr.io/robbrazier/readflowt
 ```
 
 #### One-off Sync
