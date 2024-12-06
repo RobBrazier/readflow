@@ -5,6 +5,7 @@ go 1.23.2
 require (
 	github.com/Khan/genqlient v0.7.0
 	github.com/adrg/xdg v0.5.1
+	github.com/caarlos0/env/v11 v11.2.2
 	github.com/charmbracelet/bubbles v0.20.0
 	github.com/charmbracelet/huh v0.6.0
 	github.com/charmbracelet/log v0.4.0
@@ -38,7 +39,6 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-localereader v0.0.1 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
-	github.com/mattn/go-sqlite3 v1.14.24 // indirect
 	github.com/mitchellh/hashstructure/v2 v2.0.2 // indirect
 	github.com/muesli/ansi v0.0.0-20230316100256-276c6243b2f6 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect

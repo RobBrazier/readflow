@@ -51,6 +51,9 @@ func init() {
 func initConfig() {
 	configFile := config.GetConfigPath(&cfgFile)
 	err := config.LoadConfig(configFile)
+	if os.Getenv("READFLOW_DOCKER") == "1" {
+		err = config.LoadConfigFromEnv()
+	}
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			log.Warnf("Config file doesn't seem to exist! Please run `%s setup -c \"%s\"` to populate the configuration", internal.NAME, cfgFile)

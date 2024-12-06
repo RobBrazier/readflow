@@ -35,6 +35,12 @@ archives:
       - goos: windows
         format: zip
 
+dockers:
+  - image_templates:
+      - "ghcr.io/robbrazier/readflow"
+    extra_files:
+      - packaging/entrypoint.sh
+
 # nfpms:
 #   - package_name: readflow
 #     vendor: Rob Brazier
@@ -65,6 +71,6 @@ changelog:
   sort: asc
   filters:
     exclude:
-      - "^docs:"
-      - "^test:"
-      - "^chore:"
+      - "^docs(\\(.*\\))?:"
+      - "^test(\\(.*\\))?:"
+      - "^chore(\\(.*\\))?:"

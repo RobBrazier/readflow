@@ -7,6 +7,7 @@ import (
 
 	"github.com/RobBrazier/readflow/internal"
 	"github.com/adrg/xdg"
+	"github.com/caarlos0/env/v11"
 	"github.com/charmbracelet/log"
 	"gopkg.in/yaml.v3"
 )
@@ -36,6 +37,11 @@ func GetConfigPath(override *string) string {
 
 	return configPath
 
+}
+
+func LoadConfigFromEnv() error {
+	err := env.Parse(&config)
+	return err
 }
 
 func LoadConfig(path string) error {

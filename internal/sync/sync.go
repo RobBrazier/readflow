@@ -40,9 +40,6 @@ func (a *syncAction) Sync() ([]SyncResult, error) {
 
 func (a *syncAction) processTarget(t target.SyncTarget, reads []source.BookContext, wg *sync.WaitGroup) {
 	defer wg.Done()
-	// user := t.GetCurrentUser()
-	// log.Debug("current user for", "target", t.GetName(), "user", user)
-
 	for _, book := range reads {
 		name := book.Current.BookName
 		log := log.With("target", t.GetName(), "book", name)
