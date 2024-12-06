@@ -1,8 +1,3 @@
-# This is an example .goreleaser.yml file with some sensible defaults.
-# Make sure to check the documentation at https://goreleaser.com
-
-# The lines below are called `modelines`. See `:help modeline`
-# Feel free to remove those if you don't want/need to use them.
 # yaml-language-server: $schema=https://goreleaser.com/static/schema.json
 # vim: set ts=2 sw=2 tw=0 fo=cnqoj
 
@@ -37,7 +32,9 @@ archives:
 
 dockers:
   - image_templates:
-      - "ghcr.io/robbrazier/readflow"
+      - "ghcr.io/robbrazier/readflow:latest"
+      - "ghcr.io/robbrazier/readflow:{{ .Tag }}"
+      - "ghcr.io/robbrazier/readflow:v{{ .Major }}"
     extra_files:
       - packaging/entrypoint.sh
 
