@@ -2,3 +2,4 @@
 go = "latest"
 "ubi:go-task/task" = "latest"
 "npm:gql-sdl" = "latest"
+goreleaser = "latest"
