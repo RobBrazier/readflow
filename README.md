@@ -104,7 +104,7 @@ docker pull ghcr.io/robbrazier/readflow
 #### Cron Job
 
 ```bash
-docker run -e CRON_SCHEDULE="@daily" ghcr.io/robbrazier/readflowt
+docker run -e CRON_SCHEDULE="@daily" ghcr.io/robbrazier/readflow
 ```
 
 #### One-off Sync
