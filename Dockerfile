@@ -1,12 +1,11 @@
 FROM docker.io/alpine:3
-ENV READFLOW_DOCKER="1"
-ENV SOURCE="database"
-ENV COLUMN_CHAPTER="false"
-ENV TARGETS="anilist,hardcover"
-
-ENV DATABASE_CALIBRE="/data/metadata.db"
-ENV DATABASE_CALIBREWEB="/data/app.db"
-ENV CRON_SCHEDULE="@hourly"
+ENV READFLOW_DOCKER="1" \
+	SOURCE="database" \
+	COLUMN_CHAPTER="false" \
+	TARGETS="anilist,hardcover" \
+	DATABASE_CALIBRE="/data/metadata.db" \
+	DATABASE_CALIBREWEB="/data/app.db" \
+	CRON_SCHEDULE="@hourly"
 
 COPY packaging/entrypoint.sh /
 RUN chmod +x /entrypoint.sh && \
