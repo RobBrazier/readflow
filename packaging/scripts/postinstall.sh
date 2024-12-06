@@ -1,4 +1,3 @@
-
 #!/bin/sh
 
 # Step 1, decide if we should use SystemD or init/upstart
