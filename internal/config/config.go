@@ -6,6 +6,7 @@ type Config struct {
 	Source    string         `yaml:"source" env:"SOURCE"`
 	Targets   []string       `yaml:"targets" env:"TARGETS"`
 	Tokens    TokenConfig    `yaml:"tokens"`
+	SyncDays  int            `yaml:"sync_days" env:"SYNC_DAYS"`
 }
 
 // ColumnConfig represents the columns configuration
@@ -52,4 +53,8 @@ func GetTargets() []string {
 
 func GetTokens() TokenConfig {
 	return config.Tokens
+}
+
+func GetSyncDays() int {
+	return config.SyncDays
 }

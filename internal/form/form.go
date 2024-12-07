@@ -1,7 +1,9 @@
 package form
 
 import (
+	"errors"
 	"maps"
+	"strconv"
 
 	"github.com/RobBrazier/readflow/internal/source"
 	"github.com/RobBrazier/readflow/internal/target"
@@ -56,6 +58,45 @@ func TargetSelect(value *[]string) *huh.MultiSelect[string] {
 		Description("Where do you your reading updates to be sent to?").
 		Validate(ValidationMinValues[string](1)).
 		Value(value)
+}
+
+type intAccessor struct {
+	Value *int
+}
+
+func (ia intAccessor) Get() string {
+	return strconv.Itoa(*ia.Value)
+}
+
+func (ia intAccessor) Set(value string) {
+	val, err := strconv.Atoi(value)
+	if err == nil {
+		return
+	}
+	*ia.Value = val
+}
+
+func SyncDays(value *int) *huh.Input {
+	if *value == 0 {
+		*value = 1
+	}
+
+	strValue := strconv.Itoa(*value)
+
+	return huh.NewInput().
+		Title("Sync Days").
+		Description("How many days do you want to look at when syncing?").
+		Validate(func(s string) error {
+			if err := ValidationRequired[string]()(s); err != nil {
+				return err
+			}
+			if val, err := strconv.Atoi(s); err != nil || val < 1 || val > 30 {
+				return errors.New("Please specify a number between 1 and 30")
+			}
+			return nil
+		}).
+		Accessor(intAccessor{Value: value}).
+		Value(&strValue)
 }
 
 func Confirm(message string, value *bool) *huh.Confirm {

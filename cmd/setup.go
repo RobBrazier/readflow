@@ -37,6 +37,7 @@ var setupCmd = &cobra.Command{
 			huh.NewGroup(
 				form.SourceSelect(&c.Source),
 				form.TargetSelect(&c.Targets),
+				form.SyncDays(&c.SyncDays),
 			),
 			// Databases
 			huh.NewGroup(

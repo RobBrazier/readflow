@@ -18,6 +18,7 @@ type databaseSource struct {
 	log            *log.Logger
 	chaptersColumn string
 	enableChapters bool
+	syncDays       int
 }
 
 type chaptersRow struct {
@@ -78,7 +79,9 @@ func (s *databaseSource) getRecentReads(db *sqlx.DB) ([]Book, error) {
 		query = fmt.Sprintf(RECENT_READS_QUERY, s.chaptersColumn)
 	}
 
-	daysToQuery := fmt.Sprintf("-%d day", QUERY_DAYS)
+	daysToQuery := fmt.Sprintf("-%d day", s.syncDays)
+
+	log.Debug("Running source query with", "days", daysToQuery)
 
 	err := db.Select(&books, query, daysToQuery)
 	if err != nil {
@@ -130,5 +133,6 @@ func NewDatabaseSource() Source {
 		log:            logger,
 		chaptersColumn: chapters,
 		enableChapters: enableChapters,
+		syncDays:       config.GetSyncDays(),
 	}
 }
