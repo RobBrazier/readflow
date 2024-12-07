@@ -18,7 +18,7 @@ tasks:
   generate:
     vars:
       GENQLIENT_VERSION:
-        sh: grep -m 1 genqlient  go.mod | awk '{ print $2 }'
+        sh: grep -m 1 genqlient go.mod | awk '{ print $2 }'
     cmds:
       - go get github.com/Khan/genqlient@{{ .GENQLIENT_VERSION }}
       - defer: go mod tidy
@@ -29,7 +29,7 @@ tasks:
 
   download-schemas:
     cmds:
-      - "gql-sdl https://graphql.anilist.co -o schemas/anilist/schema.gql"
-      - "gql-sdl https://api.hardcover.app/v1/graphql -o schemas/hardcover/schema.gql -H 'Authorization: {{ .HARDCOVER_TOKEN }}'"
+      - "gquil introspection generate-sdl https://graphql.anilist.co > schemas/anilist/schema.gql"
+      - "gquil introspection generate-sdl https://api.hardcover.app/v1/graphql -H 'Authorization: {{ .HARDCOVER_TOKEN }}' > schemas/hardcover/schema.gql"
     requires:
       vars: [HARDCOVER_TOKEN]
