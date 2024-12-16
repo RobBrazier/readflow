@@ -3,3 +3,4 @@
 "ubi:go-task/task" = "latest"
 go = "latest"
 goreleaser = "latest"
+git-cliff = "latest"
