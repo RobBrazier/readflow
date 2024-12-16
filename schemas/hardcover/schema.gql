@@ -17,14 +17,6 @@ directive @cached(
 	"""
 	refresh: Boolean! = false
 ) on QUERY
-"""
-whether this query should be included
-"""
-directive @include(if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
-"""
-whether this query should be skipped
-"""
-directive @skip(if: Boolean!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
 type AuthorIdType {
 	author: authors
 	errors: [String]
@@ -125,7 +117,6 @@ input BookSeriesDtoInput {
 	position: numeric
 	series_id: Int!
 }
-scalar Boolean
 """
 Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'.
 """
@@ -213,7 +204,6 @@ input EditionInput {
 	dto: BookDtoInput
 	locked: Boolean
 }
-scalar Float
 type FollowedListType {
 	errors: [String]
 	followed_list: followed_lists
@@ -246,7 +236,6 @@ type InsertBlockOutput {
 	id: Int
 	user_block: user_blocks
 }
-scalar Int
 """
 Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'.
 """
@@ -498,7 +487,6 @@ input SeriesInputType {
 type SignedImageUrlType {
 	url: String!
 }
-scalar String
 """
 Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'.
 """
@@ -669,62 +657,6 @@ input UserLoginInput {
 type ValidateReceiptType {
 	result: jsonb!
 	supporter: Boolean
-}
-type __Directive {
-	args: __InputValue
-	description: String!
-	isRepeatable: String!
-	locations: String!
-	name: String!
-}
-type __EnumValue {
-	deprecationReason: String!
-	description: String!
-	isDeprecated: String!
-	name: String!
-}
-type __Field {
-	args: __InputValue
-	deprecationReason: String!
-	description: String!
-	isDeprecated: String!
-	name: String!
-	type: __Type
-}
-type __InputValue {
-	defaultValue: String!
-	description: String!
-	name: String!
-	type: __Type
-}
-type __Schema {
-	description: String!
-	directives: __Directive
-	mutationType: __Type
-	queryType: __Type
-	subscriptionType: __Type
-	types: __Type
-}
-type __Type {
-	description: String!
-	enumValues(includeDeprecated: Boolean = false): __EnumValue
-	fields(includeDeprecated: Boolean = false): __Field
-	inputFields: __InputValue
-	interfaces: __Type
-	kind: __TypeKind!
-	name: String!
-	ofType: __Type
-	possibleTypes: __Type
-}
-enum __TypeKind {
-	ENUM
-	INPUT_OBJECT
-	INTERFACE
-	LIST
-	NON_NULL
-	OBJECT
-	SCALAR
-	UNION
 }
 """
 columns and relationships of "activities"
