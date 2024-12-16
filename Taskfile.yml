@@ -33,3 +33,11 @@ tasks:
       - "gquil introspection generate-sdl https://api.hardcover.app/v1/graphql -H 'Authorization: {{ .HARDCOVER_TOKEN }}' > schemas/hardcover/schema.gql"
     requires:
       vars: [HARDCOVER_TOKEN]
+
+  version:
+    vars:
+      NEW_VERSION:
+        sh: git cliff --bumped-version
+    prompt: "Bumping version to {{ .NEW_VERSION }}, continue?"
+    cmds:
+      - git tag -f {{ .NEW_VERSION }}
