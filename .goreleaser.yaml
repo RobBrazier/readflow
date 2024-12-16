@@ -48,7 +48,6 @@ docker_manifests:
     image_templates:
       - "ghcr.io/robbrazier/readflow:{{ .Version }}-amd64"
       - "ghcr.io/robbrazier/readflow:{{ .Version }}-arm64v8"
-
 # nfpms:
 #   - package_name: readflow
 #     vendor: Rob Brazier
@@ -74,11 +73,3 @@ docker_manifests:
 #     scripts:
 #       postinstall: packaging/scripts/postinstall.sh
 #       postremove: packaging/scripts/postremove.sh
-
-changelog:
-  use: github-native
-  filters:
-    exclude:
-      - "^docs(\\(.*\\))?:"
-      - "^test(\\(.*\\))?:"
-      - "^chore(\\(.*\\))?:"
