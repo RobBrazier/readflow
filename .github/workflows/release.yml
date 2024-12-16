@@ -41,7 +41,9 @@ jobs:
         uses: orhun/git-cliff-action@4a4a951bc43fafe41cd2348d181853f52356bee7 # v4
         with:
           config: cliff.toml
-          args: --current --strip all
+          args: --current --strip all \
+            --github-repo ${{ github.repository }} \
+            --github-token ${{ secrets.GITHUB_TOKEN }}
         env:
           OUTPUT: RELEASE_NOTES.md
           GITHUB_REPO: ${{ github.repository }}
