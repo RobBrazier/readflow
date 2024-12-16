@@ -26,7 +26,6 @@ type chaptersRow struct {
 }
 
 const CHAPTERS_COLUMN = "columns.chapter"
-const QUERY_DAYS = 7
 
 func (s *databaseSource) getReadOnlyDbString(file string) string {
 	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {

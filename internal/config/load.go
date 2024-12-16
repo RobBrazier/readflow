@@ -9,7 +9,7 @@ import (
 	"github.com/adrg/xdg"
 	"github.com/caarlos0/env/v11"
 	"github.com/charmbracelet/log"
-	"gopkg.in/yaml.v3"
+	"github.com/goccy/go-yaml"
 )
 
 func GetConfigPath(override *string) string {

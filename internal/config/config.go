@@ -6,7 +6,7 @@ type Config struct {
 	Source    string         `yaml:"source" env:"SOURCE"`
 	Targets   []string       `yaml:"targets" env:"TARGETS"`
 	Tokens    TokenConfig    `yaml:"tokens"`
-	SyncDays  int            `yaml:"sync_days" env:"SYNC_DAYS"`
+	SyncDays  int            `yaml:"syncDays" env:"SYNC_DAYS"`
 }
 
 // ColumnConfig represents the columns configuration
@@ -56,5 +56,11 @@ func GetTokens() TokenConfig {
 }
 
 func GetSyncDays() int {
-	return config.SyncDays
+	days := config.SyncDays
+	// if config is unset, default to the old sync days value
+	// to preserve backwards compatibility
+	if days == 0 {
+		days = 7
+	}
+	return days
 }
