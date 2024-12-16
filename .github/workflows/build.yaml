@@ -19,7 +19,7 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
-      - uses: jdx/mise-action@63a673876c7072c1d6ecb2049c0d572976c83b22 # v2
+      - uses: jdx/mise-action@5bb8f8c1911837cf42064e6490e7634fc842ee7e # v2
       - run: task test || true # no tests right now - remove when first added
   build:
     runs-on: ubuntu-24.04
@@ -34,5 +34,5 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
-      - uses: jdx/mise-action@63a673876c7072c1d6ecb2049c0d572976c83b22 # v2
+      - uses: jdx/mise-action@5bb8f8c1911837cf42064e6490e7634fc842ee7e # v2
       - run: task build
