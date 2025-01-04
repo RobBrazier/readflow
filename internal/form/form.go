@@ -1,6 +1,7 @@
 package form
 
 import (
+	"context"
 	"errors"
 	"maps"
 	"strconv"
@@ -27,7 +28,7 @@ func getOptionLabel(key string, labels map[string]string) string {
 	return key
 }
 
-func SourceSelect(value *string) *huh.Select[string] {
+func SourceSelect(ctx context.Context, value *string) *huh.Select[string] {
 	sources := source.GetSources()
 	options := []huh.Option[string]{}
 	for name := range maps.Keys(sources) {
@@ -42,11 +43,10 @@ func SourceSelect(value *string) *huh.Select[string] {
 		Value(value)
 }
 
-func TargetSelect(value *[]string) *huh.MultiSelect[string] {
-	targets := *target.GetTargets()
+func TargetSelect(ctx context.Context, value *[]string) *huh.MultiSelect[string] {
+	targets := target.GetTargets()
 	options := []huh.Option[string]{}
-	for _, target := range targets {
-		name := target.GetName()
+	for name := range maps.Keys(targets) {
 		label := getOptionLabel(name, targetLabels)
 		option := huh.NewOption(label, name)
 
@@ -60,28 +60,10 @@ func TargetSelect(value *[]string) *huh.MultiSelect[string] {
 		Value(value)
 }
 
-type intAccessor struct {
-	Value *int
-}
-
-func (ia intAccessor) Get() string {
-	return strconv.Itoa(*ia.Value)
-}
-
-func (ia intAccessor) Set(value string) {
-	val, err := strconv.Atoi(value)
-	if err == nil {
-		return
+func SyncDays(value *string) *huh.Input {
+	if *value == "0" {
+		*value = "1"
 	}
-	*ia.Value = val
-}
-
-func SyncDays(value *int) *huh.Input {
-	if *value == 0 {
-		*value = 1
-	}
-
-	strValue := strconv.Itoa(*value)
 
 	return huh.NewInput().
 		Title("Sync Days").
@@ -95,8 +77,7 @@ func SyncDays(value *int) *huh.Input {
 			}
 			return nil
 		}).
-		Accessor(intAccessor{Value: value}).
-		Value(&strValue)
+		Value(value)
 }
 
 func Confirm(message string, value *bool) *huh.Confirm {

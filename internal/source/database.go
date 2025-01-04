@@ -1,23 +1,25 @@
 package source
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/RobBrazier/readflow/internal"
 	"github.com/RobBrazier/readflow/internal/config"
 	"github.com/charmbracelet/log"
 	"github.com/jmoiron/sqlx"
-	"github.com/spf13/cobra"
 	_ "modernc.org/sqlite"
 )
 
 type databaseSource struct {
+	name           string
 	log            *log.Logger
 	chaptersColumn string
 	enableChapters bool
+	config         *config.Config
+	databases      config.DatabaseConfig
 	syncDays       int
 }
 
@@ -29,15 +31,19 @@ const CHAPTERS_COLUMN = "columns.chapter"
 
 func (s *databaseSource) getReadOnlyDbString(file string) string {
 	if _, err := os.Stat(file); errors.Is(err, os.ErrNotExist) {
-		cobra.CheckErr(fmt.Sprintf("Unable to access database %s. Is the path correct?", file))
+		log.Fatal("Unable to access database. Is the path correct?", "path", file)
 	}
 	return fmt.Sprintf("file:%s?mode=ro", file)
 }
 
 func (s *databaseSource) getDb() *sqlx.DB {
-	db := sqlx.MustConnect("sqlite", s.getReadOnlyDbString(config.GetDatabases().CalibreWeb))
-	db.MustExec("attach database ? as calibre", s.getReadOnlyDbString(config.GetDatabases().Calibre))
+	db := sqlx.MustConnect("sqlite", s.getReadOnlyDbString(s.databases.CalibreWeb))
+	db.MustExec("attach database ? as calibre", s.getReadOnlyDbString(s.databases.Calibre))
 	return db
+}
+
+func (s databaseSource) Name() string {
+	return s.name
 }
 
 func (s *databaseSource) Init() error {
@@ -48,11 +54,10 @@ func (s *databaseSource) Init() error {
 			return errors.New(fmt.Sprintf("Unable to find chapters column - configure via `%s config set %s NAME` (or set to 'false' to disable reading progress tracking)", internal.NAME, CHAPTERS_COLUMN))
 		}
 		s.chaptersColumn = column
-		c := config.GetConfig()
-		c.Columns.Chapter = column
+		s.config.Columns.Chapter = column
 
 		s.log.Info("Stored chapters column", "column", column)
-		config.SaveConfig(&c)
+		config.SaveConfig(s.config)
 	}
 	s.log.Debug("column", "enabled", s.enableChapters, "name", s.chaptersColumn)
 	return nil
@@ -120,18 +125,18 @@ func (s *databaseSource) GetRecentReads() ([]BookContext, error) {
 	return recent, nil
 }
 
-func NewDatabaseSource() Source {
-	chapters := config.GetColumns().Chapter
-	enableChapters := true
-	if strings.ToLower(chapters) == "false" {
-		enableChapters = false
-		chapters = ""
-	}
-	logger := log.WithPrefix("database")
+func NewDatabaseSource(ctx context.Context) Source {
+	cfg := config.GetFromContext(ctx)
+	chapters := cfg.Columns.Chapter
+	name := "database"
+	logger := log.WithPrefix(name)
 	return &databaseSource{
+		name:           name,
 		log:            logger,
 		chaptersColumn: chapters,
-		enableChapters: enableChapters,
-		syncDays:       config.GetSyncDays(),
+		enableChapters: cfg.AreChaptersEnabled(),
+		config:         cfg,
+		databases:      cfg.Databases,
+		syncDays:       cfg.SyncDays,
 	}
 }

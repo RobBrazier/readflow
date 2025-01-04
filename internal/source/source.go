@@ -1,33 +1,29 @@
 package source
 
 import (
-	"sync"
-	"sync/atomic"
+	"context"
 
 	"github.com/RobBrazier/readflow/internal/config"
 )
 
 type Source interface {
+	Name() string
 	Init() error
 	GetRecentReads() ([]BookContext, error)
 }
 
-var (
-	sources     atomic.Pointer[map[string]Source]
-	sourcesOnce sync.Once
-)
-
 type Book struct {
-	BookID          int      `db:"book_id"`
-	BookName        string   `db:"book_name"`
-	SeriesID        *int     `db:"series_id"`
-	BookSeriesIndex *int     `db:"book_series_index"`
-	ReadStatus      int      `db:"read_status"`
-	ISBN            *string  `db:"isbn"`
-	AnilistID       *string  `db:"anilist_id"`
-	HardcoverID     *string  `db:"hardcover_id"`
-	ProgressPercent *float64 `db:"progress_percent"`
-	ChapterCount    *int     `db:"chapter_count"`
+	BookID           int      `db:"book_id"`
+	BookName         string   `db:"book_name"`
+	SeriesID         *int     `db:"series_id"`
+	BookSeriesIndex  *int     `db:"book_series_index"`
+	ReadStatus       int      `db:"read_status"`
+	ISBN             *string  `db:"isbn"`
+	AnilistID        *string  `db:"anilist_id"`
+	HardcoverID      *string  `db:"hardcover_id"`
+	HardcoverEdition *string  `db:"hardcover_edition"`
+	ProgressPercent  *float64 `db:"progress_percent"`
+	ChapterCount     *int     `db:"chapter_count"`
 }
 
 type BookContext struct {
@@ -35,22 +31,33 @@ type BookContext struct {
 	Previous []Book
 }
 
-func GetSources() map[string]Source {
-	s := sources.Load()
-	if s == nil {
-		sourcesOnce.Do(func() {
-			sources.CompareAndSwap(nil, &map[string]Source{
-				"database": NewDatabaseSource(),
-			})
-		})
-		s = sources.Load()
+type SourceFunc func(ctx context.Context) Source
+
+func SourceProvider(fn SourceFunc) SourceFunc {
+	return func(ctx context.Context) Source {
+		return fn(ctx)
 	}
-	return *s
 }
 
-func GetActiveSources() []string {
+func GetSources() map[string]SourceFunc {
+	return map[string]SourceFunc{
+		"database": SourceProvider(NewDatabaseSource),
+	}
+}
+
+func GetActiveSource(enabled string, ctx context.Context) *Source {
+	sourceFn, ok := GetSources()[enabled]
+	if ok {
+		source := sourceFn(ctx)
+		return &source
+	}
+	return nil
+}
+
+func GetActiveSources(ctx context.Context) []string {
+	cfg := config.GetFromContext(ctx)
 	active := []string{}
-	selectedSources := config.GetSource()
+	selectedSources := cfg.Source
 	active = append(active, selectedSources)
 	return active
 }

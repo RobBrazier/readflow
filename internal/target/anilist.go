@@ -10,7 +10,6 @@ import (
 	"github.com/RobBrazier/readflow/internal/source"
 	"github.com/RobBrazier/readflow/internal/target/anilist"
 	"github.com/charmbracelet/log"
-	"github.com/spf13/cobra"
 )
 
 //go:generate go run github.com/Khan/genqlient ../../schemas/anilist/genqlient.yaml
@@ -36,13 +35,14 @@ func (t AnilistTarget) Login() (string, error) {
 
 func (t *AnilistTarget) getClient() graphql.Client {
 	if t.client == nil {
-		t.client = t.GraphQLTarget.getClient(t.ApiUrl, t.GetToken())
+		t.client = t.GraphQLTarget.getClient(t.apiUrl, t.Token())
 	}
 	return t.client
 }
 
-func (t AnilistTarget) GetToken() string {
-	return config.GetTokens().Anilist
+func (t AnilistTarget) Token() string {
+	cfg := config.GetFromContext(t.ctx)
+	return cfg.Tokens.Anilist
 }
 
 func (t AnilistTarget) ShouldProcess(book source.BookContext) bool {
@@ -54,12 +54,6 @@ func (t AnilistTarget) ShouldProcess(book source.BookContext) bool {
 		return false
 	}
 	return true
-}
-
-func (t *AnilistTarget) GetCurrentUser() string {
-	response, err := anilist.GetCurrentUser(t.ctx, t.getClient())
-	cobra.CheckErr(err)
-	return response.Viewer.Name
 }
 
 func (t *AnilistTarget) getLocalVolumes(book source.Book, maxVolumes int) int {
@@ -150,15 +144,15 @@ func (t *AnilistTarget) UpdateReadStatus(book source.BookContext) error {
 	return nil
 }
 
-func NewAnilistTarget() SyncTarget {
+func NewAnilistTarget(ctx context.Context) SyncTarget {
 	name := "anilist"
 	logger := log.WithPrefix(name)
 	target := &AnilistTarget{
-		ctx: context.Background(),
+		ctx: ctx,
 		log: logger,
 		Target: Target{
-			Name:   name,
-			ApiUrl: "https://graphql.anilist.co",
+			name:   name,
+			apiUrl: "https://graphql.anilist.co",
 		},
 	}
 	return target

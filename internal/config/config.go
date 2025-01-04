@@ -1,12 +1,15 @@
 package config
 
+import "strings"
+
 type Config struct {
-	Columns   ColumnConfig   `yaml:"columns"`
-	Databases DatabaseConfig `yaml:"databases"`
-	Source    string         `yaml:"source" env:"SOURCE"`
-	Targets   []string       `yaml:"targets" env:"TARGETS"`
-	Tokens    TokenConfig    `yaml:"tokens"`
-	SyncDays  int            `yaml:"syncDays" env:"SYNC_DAYS"`
+	Columns    ColumnConfig   `yaml:"columns"`
+	Databases  DatabaseConfig `yaml:"databases"`
+	Source     string         `yaml:"source" env:"SOURCE" default:"database"`
+	Targets    []string       `yaml:"targets" env:"TARGETS"`
+	Tokens     TokenConfig    `yaml:"tokens"`
+	SyncDays   int            `yaml:"syncDays" env:"SYNC_DAYS" default:"1"`
+	sourceFile string
 }
 
 // ColumnConfig represents the columns configuration
@@ -26,41 +29,13 @@ type TokenConfig struct {
 	Hardcover string `yaml:"hardcover" env:"TOKEN_HARDCOVER"`
 }
 
-var (
-	config     Config
-	configPath string
-)
-
-func GetConfig() Config {
-	return config
-}
-
-func GetColumns() ColumnConfig {
-	return config.Columns
-}
-
-func GetDatabases() DatabaseConfig {
-	return config.Databases
-}
-
-func GetSource() string {
-	return config.Source
-}
-
-func GetTargets() []string {
-	return config.Targets
-}
-
-func GetTokens() TokenConfig {
-	return config.Tokens
-}
-
-func GetSyncDays() int {
-	days := config.SyncDays
-	// if config is unset, default to the old sync days value
-	// to preserve backwards compatibility
-	if days == 0 {
-		days = 7
+func (c Config) AreChaptersEnabled() bool {
+	if strings.ToLower(c.Columns.Chapter) == "false" {
+		return false
 	}
-	return days
+	return true
+}
+
+func (c Config) GetSourceFile() string {
+	return c.sourceFile
 }

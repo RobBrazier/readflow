@@ -6,7 +6,6 @@ import (
 	"github.com/RobBrazier/readflow/internal/source"
 	"github.com/RobBrazier/readflow/internal/target"
 	"github.com/charmbracelet/log"
-	"github.com/spf13/cobra"
 )
 
 type SyncResult struct {
@@ -27,7 +26,9 @@ func (a *syncAction) Sync() ([]SyncResult, error) {
 	// if the chapters column doesn't exist in config, fetch the name and store it
 	a.source.Init()
 	recentReads, err := a.source.GetRecentReads()
-	cobra.CheckErr(err)
+	if err != nil {
+		return nil, err
+	}
 	var wg sync.WaitGroup
 	for _, t := range a.targets {
 		wg.Add(1)
@@ -42,7 +43,7 @@ func (a *syncAction) processTarget(t target.SyncTarget, reads []source.BookConte
 	defer wg.Done()
 	for _, book := range reads {
 		name := book.Current.BookName
-		log := log.With("target", t.GetName(), "book", name)
+		log := log.With("target", t.Name(), "book", name)
 		if !t.ShouldProcess(book) {
 			log.Debug("Skipping processing of ineligible book")
 			continue

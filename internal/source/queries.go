@@ -12,6 +12,7 @@ SELECT
     i_isbn.val as isbn,
     i_anilist.val as anilist_id,
     i_hardcover.val as hardcover_id,
+    i_hardcover_edition.val as hardcover_edition,
     kb.progress_percent as progress_percent,
     brl.read_status as read_status,
     c.value as chapter_count
@@ -29,6 +30,8 @@ LEFT JOIN
     calibre.identifiers i_anilist ON i_anilist.book = b.id AND i_anilist.type = 'anilist'
 LEFT JOIN
     calibre.identifiers i_hardcover ON i_hardcover.book = b.id AND i_hardcover.type = 'hardcover'
+LEFT JOIN
+    calibre.identifiers i_hardcover_edition ON i_hardcover_edition.book = b.id AND i_hardcover_edition.type = 'hardcover-edition'
 LEFT JOIN
     calibre.%s c ON c.book = b.id
 LEFT JOIN
@@ -50,6 +53,7 @@ WITH ranked_books AS (
 		i_isbn.val as isbn,
         i_anilist.val as anilist_id,
         i_hardcover.val as hardcover_id,
+        i_hardcover_edition.val as hardcover_edition,
         kb.progress_percent as progress_percent,
         brl.read_status as read_status,
         c.value as chapter_count,
@@ -72,6 +76,8 @@ WITH ranked_books AS (
     LEFT JOIN
         calibre.identifiers i_hardcover ON i_hardcover.book = b.id AND i_hardcover.type = 'hardcover'
     LEFT JOIN
+        calibre.identifiers i_hardcover_edition ON i_hardcover_edition.book = b.id AND i_hardcover_edition.type = 'hardcover-edition'
+    LEFT JOIN
         calibre.%s c ON c.book = b.id
     LEFT JOIN
         kobo_reading_state krs ON krs.book_id = b.id
@@ -90,6 +96,7 @@ WITH ranked_books AS (
 	isbn,
     anilist_id,
     hardcover_id,
+    hardcover_edition,
     progress_percent,
     chapter_count
 FROM
@@ -110,6 +117,7 @@ SELECT
     i_isbn.val as isbn,
     i_anilist.val as anilist_id,
     i_hardcover.val as hardcover_id,
+    i_hardcover_edition.val as hardcover_edition,
     kb.progress_percent as progress_percent,
     brl.read_status as read_status,
     NULL as chapter_count
@@ -127,6 +135,8 @@ LEFT JOIN
     calibre.identifiers i_anilist ON i_anilist.book = b.id AND i_anilist.type = 'anilist'
 LEFT JOIN
     calibre.identifiers i_hardcover ON i_hardcover.book = b.id AND i_hardcover.type = 'hardcover'
+LEFT JOIN
+    calibre.identifiers i_hardcover_edition ON i_hardcover_edition.book = b.id AND i_hardcover_edition.type = 'hardcover-edition'
 LEFT JOIN
     kobo_reading_state krs ON krs.book_id = b.id
 LEFT JOIN
@@ -146,6 +156,7 @@ WITH ranked_books AS (
 		i_isbn.val as isbn,
         i_anilist.val as anilist_id,
         i_hardcover.val as hardcover_id,
+        i_hardcover_edition.val as hardcover_edition,
         kb.progress_percent as progress_percent,
         brl.read_status as read_status,
         NULL as chapter_count,
@@ -168,6 +179,8 @@ WITH ranked_books AS (
     LEFT JOIN
         calibre.identifiers i_hardcover ON i_hardcover.book = b.id AND i_hardcover.type = 'hardcover'
     LEFT JOIN
+        calibre.identifiers i_hardcover_edition ON i_hardcover_edition.book = b.id AND i_hardcover_edition.type = 'hardcover-edition'
+    LEFT JOIN
         kobo_reading_state krs ON krs.book_id = b.id
     LEFT JOIN
         kobo_bookmark kb ON kb.kobo_reading_state_id = krs.id
@@ -184,6 +197,7 @@ WITH ranked_books AS (
 	isbn,
     anilist_id,
     hardcover_id,
+    hardcover_edition,
     progress_percent,
     chapter_count
 FROM
@@ -205,6 +219,7 @@ SELECT
 	i_isbn.val AS isbn,
     i_anilist.val AS anilist_id,
 	i_hardcover.val AS hardcover_id,
+    i_hardcover_edition.val as hardcover_edition,
 	NULL AS progress_percent,
     c.value AS chapter_count
 FROM 
@@ -217,6 +232,8 @@ LEFT JOIN
 	calibre.identifiers i_anilist ON i_anilist.book = b.id AND i_anilist.type = 'anilist'
 LEFT JOIN
 	calibre.identifiers i_hardcover ON i_hardcover.book = b.id AND i_hardcover.type = 'hardcover'
+LEFT JOIN
+    calibre.identifiers i_hardcover_edition ON i_hardcover_edition.book = b.id AND i_hardcover_edition.type = 'hardcover-edition'
 LEFT JOIN 
     calibre.%s c ON b.id = c.book
 LEFT JOIN
@@ -238,6 +255,7 @@ SELECT
 	i_isbn.val AS isbn,
     i_anilist.val AS anilist_id,
 	i_hardcover.val AS hardcover_id,
+    i_hardcover_edition.val as hardcover_edition,
 	NULL AS progress_percent,
     NULL AS chapter_count
 FROM 
@@ -250,6 +268,8 @@ LEFT JOIN
 	calibre.identifiers i_anilist ON i_anilist.book = b.id AND i_anilist.type = 'anilist'
 LEFT JOIN
 	calibre.identifiers i_hardcover ON i_hardcover.book = b.id AND i_hardcover.type = 'hardcover'
+LEFT JOIN
+    calibre.identifiers i_hardcover_edition ON i_hardcover_edition.book = b.id AND i_hardcover_edition.type = 'hardcover-edition'
 LEFT JOIN
 	book_read_link brl ON brl.book_id = b.id
 WHERE 

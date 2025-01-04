@@ -9,15 +9,15 @@ import (
 	"github.com/adrg/xdg"
 	"github.com/caarlos0/env/v11"
 	"github.com/charmbracelet/log"
+	"github.com/creasty/defaults"
 	"github.com/goccy/go-yaml"
 )
 
-func GetConfigPath(override *string) string {
+func GetConfigPath(override string) string {
+	var configPath string
 	// Has the config flag been passed in? - if it's got a value, use it
-	if override != nil {
-		if *override != "" {
-			configPath = *override
-		}
+	if override != "" {
+		configPath = override
 	}
 
 	if configPath == "" {
@@ -39,22 +39,26 @@ func GetConfigPath(override *string) string {
 
 }
 
-func LoadConfigFromEnv() error {
-	err := env.Parse(&config)
+func LoadConfigFromEnv(target *Config) error {
+	defaults.Set(target)
+	err := env.Parse(target)
 	return err
 }
 
-func LoadConfig(path string) error {
+func LoadConfig(path string) (*Config, error) {
+	var cfg Config
 	log.Debug("Loading config from", "file", path)
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return err
+		return &cfg, err
 	}
-	if err := yaml.Unmarshal(data, &config); err != nil {
-		return err
+	defaults.Set(&cfg)
+	if err := yaml.Unmarshal(data, &cfg); err != nil {
+		return &cfg, err
 	}
+	cfg.sourceFile = path
 	log.Debug("Successfully loaded config")
-	return nil
+	return &cfg, nil
 }
 
 func SaveConfig(cfg *Config) error {
@@ -62,6 +66,8 @@ func SaveConfig(cfg *Config) error {
 	if err != nil {
 		return err
 	}
+
+	configPath := cfg.GetSourceFile()
 
 	if _, err = os.Stat(configPath); errors.Is(err, os.ErrNotExist) {
 		// file doesn't exist - lets create the folder structure required
@@ -80,6 +86,5 @@ func SaveConfig(cfg *Config) error {
 		return err
 	}
 	log.Debug("Successfully saved config to", "file", configPath)
-	config = *cfg
 	return nil
 }

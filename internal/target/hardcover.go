@@ -11,7 +11,6 @@ import (
 	"github.com/RobBrazier/readflow/internal/source"
 	"github.com/RobBrazier/readflow/internal/target/hardcover"
 	"github.com/charmbracelet/log"
-	"github.com/spf13/cobra"
 )
 
 //go:generate go run github.com/Khan/genqlient ../../schemas/hardcover/genqlient.yaml
@@ -40,19 +39,14 @@ func (t HardcoverTarget) Login() (string, error) {
 
 func (t *HardcoverTarget) getClient() graphql.Client {
 	if t.client == nil {
-		t.client = t.GraphQLTarget.getClient(t.ApiUrl, t.GetToken())
+		t.client = t.GraphQLTarget.getClient(t.apiUrl, t.Token())
 	}
 	return t.client
 }
 
-func (t HardcoverTarget) GetToken() string {
-	return config.GetTokens().Hardcover
-}
-
-func (t *HardcoverTarget) GetCurrentUser() string {
-	response, err := hardcover.GetCurrentUser(t.ctx, t.getClient())
-	cobra.CheckErr(err)
-	return response.GetMe()[0].GetUsername()
+func (t HardcoverTarget) Token() string {
+	cfg := config.GetFromContext(t.ctx)
+	return cfg.Tokens.Hardcover
 }
 
 func (t HardcoverTarget) ShouldProcess(book source.BookContext) bool {
@@ -201,15 +195,15 @@ func (t *HardcoverTarget) UpdateReadStatus(book source.BookContext) error {
 	return nil
 }
 
-func NewHardcoverTarget() SyncTarget {
+func NewHardcoverTarget(ctx context.Context) SyncTarget {
 	name := "hardcover"
 	logger := log.WithPrefix(name)
 	target := &HardcoverTarget{
-		ctx: context.Background(),
+		ctx: ctx,
 		log: logger,
 		Target: Target{
-			Name:   name,
-			ApiUrl: "https://api.hardcover.app/v1/graphql",
+			name:   name,
+			apiUrl: "https://api.hardcover.app/v1/graphql",
 		},
 	}
 	return target
