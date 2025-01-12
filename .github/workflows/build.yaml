@@ -6,7 +6,28 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  pull-requests: read
+  checks: write
+
 jobs:
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - uses: jdx/mise-action@5bb8f8c1911837cf42064e6490e7634fc842ee7e # v2
+      - uses: golangci/golangci-lint-action@v6
+        with:
+          install-mode: "none"
   test:
     runs-on: ubuntu-24.04
     steps:

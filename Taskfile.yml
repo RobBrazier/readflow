@@ -8,6 +8,17 @@ tasks:
     silent: true
     cmd: task --list-all
 
+  lint:
+    vars:
+      LINT_BIN: golangci-lint
+      LINT_BIN_PATH:
+        sh: which {{ .LINT_BIN }} || echo "{{ .LINT_BIN }}"
+    cmds:
+      - "{{ .LINT_BIN }} run"
+    preconditions:
+      - sh: test -f {{ .LINT_BIN_PATH }}
+        msg: "{{ .LINT_BIN }} not found - please run 'mise install' or follow 'https://golangci-lint.run/welcome/install/#local-installation'"
+
   build:
     deps:
       - generate
