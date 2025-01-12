@@ -7,10 +7,10 @@ import (
 	"maps"
 	"slices"
 
-	"github.com/RobBrazier/readflow/internal/config"
-	"github.com/RobBrazier/readflow/internal/source"
+	"github.com/RobBrazier/readflow/config"
 	"github.com/RobBrazier/readflow/internal/sync"
-	"github.com/RobBrazier/readflow/internal/target"
+	"github.com/RobBrazier/readflow/source"
+	"github.com/RobBrazier/readflow/target"
 	"github.com/charmbracelet/log"
 	"github.com/urfave/cli/v3"
 )

@@ -5,13 +5,14 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/RobBrazier/readflow/internal"
 	"github.com/adrg/xdg"
 	"github.com/caarlos0/env/v11"
 	"github.com/charmbracelet/log"
 	"github.com/creasty/defaults"
 	"github.com/goccy/go-yaml"
 )
+
+const NAME = "readflow"
 
 func GetConfigPath(override string) string {
 	var configPath string
@@ -23,7 +24,7 @@ func GetConfigPath(override string) string {
 	if configPath == "" {
 		// look in the XDG_CONFIG_HOME location
 		var err error
-		configPath, err = xdg.ConfigFile(filepath.Join(internal.NAME, "config.yaml"))
+		configPath, err = xdg.ConfigFile(filepath.Join(NAME, "config.yaml"))
 
 		if err != nil {
 			// if that doesn't work for some reason, fall back to the current dir

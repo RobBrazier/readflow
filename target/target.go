@@ -8,7 +8,7 @@ import (
 	"slices"
 
 	"github.com/Khan/genqlient/graphql"
-	"github.com/RobBrazier/readflow/internal/source"
+	"github.com/RobBrazier/readflow/source"
 	"github.com/charmbracelet/log"
 	"github.com/hashicorp/go-retryablehttp"
 )

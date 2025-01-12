@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/RobBrazier/readflow/internal/config"
+	"github.com/RobBrazier/readflow/config"
 	"github.com/RobBrazier/readflow/internal/form"
-	"github.com/RobBrazier/readflow/internal/target"
+	"github.com/RobBrazier/readflow/target"
 	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/log"

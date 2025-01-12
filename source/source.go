@@ -3,7 +3,7 @@ package source
 import (
 	"context"
 
-	"github.com/RobBrazier/readflow/internal/config"
+	"github.com/RobBrazier/readflow/config"
 )
 
 type Source interface {

@@ -6,8 +6,8 @@ import (
 	"maps"
 	"strconv"
 
-	"github.com/RobBrazier/readflow/internal/source"
-	"github.com/RobBrazier/readflow/internal/target"
+	"github.com/RobBrazier/readflow/source"
+	"github.com/RobBrazier/readflow/target"
 	"github.com/charmbracelet/huh"
 )
 

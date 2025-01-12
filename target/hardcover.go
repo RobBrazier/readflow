@@ -7,13 +7,13 @@ import (
 	"time"
 
 	"github.com/Khan/genqlient/graphql"
-	"github.com/RobBrazier/readflow/internal/config"
-	"github.com/RobBrazier/readflow/internal/source"
-	"github.com/RobBrazier/readflow/internal/target/hardcover"
+	"github.com/RobBrazier/readflow/config"
+	"github.com/RobBrazier/readflow/source"
+	"github.com/RobBrazier/readflow/target/hardcover"
 	"github.com/charmbracelet/log"
 )
 
-//go:generate go run github.com/Khan/genqlient ../../schemas/hardcover/genqlient.yaml
+//go:generate go run github.com/Khan/genqlient ../schemas/hardcover/genqlient.yaml
 
 type HardcoverTarget struct {
 	Target

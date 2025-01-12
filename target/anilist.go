@@ -6,13 +6,13 @@ import (
 	"strconv"
 
 	"github.com/Khan/genqlient/graphql"
-	"github.com/RobBrazier/readflow/internal/config"
-	"github.com/RobBrazier/readflow/internal/source"
-	"github.com/RobBrazier/readflow/internal/target/anilist"
+	"github.com/RobBrazier/readflow/config"
+	"github.com/RobBrazier/readflow/source"
+	"github.com/RobBrazier/readflow/target/anilist"
 	"github.com/charmbracelet/log"
 )
 
-//go:generate go run github.com/Khan/genqlient ../../schemas/anilist/genqlient.yaml
+//go:generate go run github.com/Khan/genqlient ../schemas/anilist/genqlient.yaml
 
 type AnilistTarget struct {
 	GraphQLTarget

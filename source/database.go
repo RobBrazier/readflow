@@ -6,8 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/RobBrazier/readflow/internal"
-	"github.com/RobBrazier/readflow/internal/config"
+	"github.com/RobBrazier/readflow/config"
 	"github.com/charmbracelet/log"
 	"github.com/jmoiron/sqlx"
 	_ "modernc.org/sqlite"
@@ -51,7 +50,7 @@ func (s *databaseSource) Init() error {
 	if s.chaptersColumn == "" && s.enableChapters {
 		column, err := s.getChaptersColumn()
 		if err != nil {
-			return errors.New(fmt.Sprintf("Unable to find chapters column - configure via `%s config set %s NAME` (or set to 'false' to disable reading progress tracking)", internal.NAME, CHAPTERS_COLUMN))
+			return errors.New(fmt.Sprintf("Unable to find chapters column - configure via `readflow config set %s NAME` (or set to 'false' to disable reading progress tracking)", CHAPTERS_COLUMN))
 		}
 		s.chaptersColumn = column
 		s.config.Columns.Chapter = column
