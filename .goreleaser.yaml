@@ -14,6 +14,12 @@ builds:
       - linux
       - windows
       - darwin
+    ldflags:
+      - -s
+      - -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{ .Commit }}
+      - -X main.date={{ .Date }}
 
 upx:
   - enabled: true
@@ -77,3 +83,31 @@ docker_manifests:
 #     scripts:
 #       postinstall: packaging/scripts/postinstall.sh
 #       postremove: packaging/scripts/postremove.sh
+changelog:
+  sort: asc
+  use: github
+
+  groups:
+    - title: Dependency updates
+      regexp: '^.*?(.+)\(deps\)!?:.+$'
+      order: 4
+    - title: Added
+      regexp: "^.*: add|^[aA]dd|^.*: support|^[sS]upport"
+      order: 0
+    - title: Removed
+      regexp: "^.*: remove|^[rR]emove|^.*: delete"
+      order: 1
+    - title: Fixed
+      regexp: "^test|^fix|^.*: fix"
+      order: 2
+    - title: Changed
+      order: 3
+
+  filters:
+    exclude:
+      - "^chore"
+      - ".*typo.*"
+      - "merge conflict"
+      - Merge pull request
+      - Merge remote-tracking branch
+      - Merge branch
