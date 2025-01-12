@@ -3,23 +3,54 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
+	"runtime/debug"
 	"time"
 
 	"github.com/RobBrazier/readflow/commands"
-	"github.com/RobBrazier/readflow/internal/config"
+	"github.com/RobBrazier/readflow/config"
 	"github.com/charmbracelet/log"
 	"github.com/urfave/cli/v3"
+)
+
+var (
+	version string = "debug"
+	commit  string
+	date    string
 )
 
 func main() {
 	log.SetTimeFormat(time.TimeOnly)
 	log.SetLevel(log.InfoLevel)
 
+	cli.VersionPrinter = func(cmd *cli.Command) {
+		if commit == "" || date == "" {
+			if buildInfo, ok := debug.ReadBuildInfo(); ok {
+				for _, setting := range buildInfo.Settings {
+					switch setting.Key {
+					case "vcs.revision":
+						commit = setting.Value
+					case "vcs.time":
+						date = setting.Value
+					}
+				}
+			}
+		}
+		fmt.Printf("%s version %s, commit %s, build date %s\n", cmd.Root().Name, cmd.Root().Version, commit, date)
+	}
+	cli.VersionFlag = &cli.BoolFlag{
+		Name:    "version",
+		Aliases: []string{"V"},
+		Usage:   "print only the version",
+	}
+
 	app := &cli.Command{
-		Name:    "readflow",
-		Usage:   "Track your Kobo reads on Anilist.co and Hardcover.app using Calibre-Web and Calibre databases",
-		Suggest: true,
+		Name:                   "readflow",
+		Usage:                  "Track your Kobo reads on Anilist.co and Hardcover.app using Calibre-Web and Calibre databases",
+		Suggest:                true,
+		Version:                version,
+		UseShortOptionHandling: true,
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "config",
@@ -34,6 +65,7 @@ func main() {
 					if verbose {
 						log.SetLevel(log.DebugLevel)
 					}
+					log.SetReportCaller(true)
 					return nil
 				},
 			},
