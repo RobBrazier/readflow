@@ -20,6 +20,7 @@ type syncAction struct {
 	log     *log.Logger
 	targets []target.SyncTarget
 	source  source.Source
+	dryrun  bool
 }
 
 func (a *syncAction) Sync() ([]SyncResult, error) {
@@ -43,12 +44,16 @@ func (a *syncAction) processTarget(t target.SyncTarget, reads []source.BookConte
 	defer wg.Done()
 	for _, book := range reads {
 		name := book.Current.BookName
-		log := log.With("target", t.Name(), "book", name)
+		log := a.log.With("target", t.Name(), "book", name)
 		if !t.ShouldProcess(book) {
 			log.Debug("Skipping processing of ineligible book")
 			continue
 		}
 		log.Info("Processing")
+		if a.dryrun {
+			a.log.Info("would update read status")
+			continue
+		}
 		err := t.UpdateReadStatus(book)
 		if err != nil {
 			log.Error("failed to update reading status", "error", err)
@@ -56,9 +61,15 @@ func (a *syncAction) processTarget(t target.SyncTarget, reads []source.BookConte
 	}
 }
 
-func NewSyncAction(enabledSource source.Source, targets []target.SyncTarget) SyncAction {
+func NewSyncAction(enabledSource source.Source, targets []target.SyncTarget, dryrun bool) SyncAction {
+	logger := log.Default()
+	if dryrun {
+		logger = logger.With("dryrun", true)
+	}
 	return &syncAction{
+		log:     logger,
 		targets: targets,
 		source:  enabledSource,
+		dryrun:  dryrun,
 	}
 }

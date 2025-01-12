@@ -34,28 +34,39 @@ func (c SetupCommand) getTarget(name string) target.SyncTarget {
 	return nil
 }
 
-func (c SetupCommand) Run() error {
-	anilistTokenExists := c.cfg.Tokens.Anilist != ""
-	hardcoverTokenExists := c.cfg.Tokens.Hardcover != ""
+type tokenLink struct {
+	Name        string
+	source      *string
+	ShouldFetch bool
+	Value       string
+}
 
-	fetchAnilistToken := !anilistTokenExists
-	fetchHardcoverToken := !hardcoverTokenExists
+func (t *tokenLink) Save() {
+	if t.Value != "" {
+		// remove bearer from token
+		*t.source = strings.TrimSpace(strings.Replace(t.Value, "Bearer", "", 1))
+	}
+}
+
+func newTokenLink(name string, source *string) *tokenLink {
+	shouldFetch := *source == ""
+	return &tokenLink{
+		Name:        name,
+		source:      source,
+		ShouldFetch: shouldFetch,
+		Value:       "",
+	}
+}
+
+func (c SetupCommand) Run() error {
+	tokens := []*tokenLink{
+		newTokenLink("anilist", &c.cfg.Tokens.Anilist),
+		newTokenLink("hardcover", &c.cfg.Tokens.Hardcover),
+	}
+
 	syncDays := strconv.Itoa(c.cfg.SyncDays)
 
-	fetchToken := map[string]*bool{
-		"anilist":   &fetchAnilistToken,
-		"hardcover": &fetchHardcoverToken,
-	}
-
-	var anilistToken string
-	var hardcoverToken string
-
-	values := map[string]*string{
-		"anilist":   &anilistToken,
-		"hardcover": &hardcoverToken,
-	}
-
-	form := c.buildForm(fetchToken, values, &syncDays)
+	form := c.buildForm(tokens, &syncDays)
 
 	err := form.Run()
 	if err != nil {
@@ -68,11 +79,8 @@ func (c SetupCommand) Run() error {
 		c.cfg.SyncDays = syncDaysInt
 	}
 
-	if fetchAnilistToken && anilistToken != "" {
-		c.cfg.Tokens.Anilist = anilistToken
-	}
-	if fetchHardcoverToken && hardcoverToken != "" {
-		c.cfg.Tokens.Hardcover = strings.TrimSpace(strings.Replace(hardcoverToken, "Bearer", "", 1))
+	for _, token := range tokens {
+		token.Save()
 	}
 
 	err = config.SaveConfig(c.cfg)
@@ -83,7 +91,7 @@ func (c SetupCommand) Run() error {
 	return nil
 }
 
-func (c SetupCommand) buildForm(fetchToken map[string]*bool, values map[string]*string, syncDays *string) *huh.Form {
+func (c SetupCommand) buildForm(tokens []*tokenLink, syncDays *string) *huh.Form {
 	// Initial config form
 	sourceTargetGroup := huh.NewGroup(
 		form.SourceSelect(c.ctx, &c.cfg.Source),
@@ -119,30 +127,34 @@ func (c SetupCommand) buildForm(fetchToken map[string]*bool, values map[string]*
 		databaseGroup,
 		chaptersColumnGroup,
 	}
-	groups = append(groups, c.createReauthGroups(fetchToken, values)...)
+	groups = append(groups, c.createReauthGroups(tokens)...)
 
 	form := huh.NewForm(groups...)
 	return form
 }
 
-func (c SetupCommand) createReauthGroups(fetchToken map[string]*bool, values map[string]*string) []*huh.Group {
+func (c SetupCommand) createReauthGroups(tokens []*tokenLink) []*huh.Group {
 	var (
 		confirmGroups []*huh.Group
 		authGroups    []*huh.Group
 		groups        []*huh.Group
 	)
 	targets := target.GetTargets()
+	tokenMap := make(map[string]*tokenLink)
+	for _, token := range tokens {
+		tokenMap[token.Name] = token
+	}
 	for name, targetFn := range targets {
 		title := cases.Title(language.English).String(name)
 		target := targetFn(c.ctx)
 
-		shouldFetch := fetchToken[name]
-		value := values[name]
+		token := tokenMap[name]
+		shouldFetch := token.ShouldFetch
 
 		confirmGroup := huh.NewGroup(
-			form.Confirm(fmt.Sprintf("Token already exists in config for %s, Re-authenticate", title), shouldFetch),
+			form.Confirm(fmt.Sprintf("Token already exists in config for %s, Re-authenticate", title), &shouldFetch),
 		).WithHideFunc(func() bool {
-			return !slices.Contains(c.cfg.Targets, name) || *shouldFetch
+			return !slices.Contains(c.cfg.Targets, name) || shouldFetch
 		})
 		confirmGroups = append(confirmGroups, confirmGroup)
 
@@ -159,9 +171,9 @@ func (c SetupCommand) createReauthGroups(fetchToken map[string]*bool, values map
 					return fmt.Sprintf(message, url)
 				}, nil).
 				EchoMode(huh.EchoMode(textinput.EchoPassword)).
-				Value(value),
+				Value(&token.Value),
 		).WithHideFunc(func() bool {
-			return !slices.Contains(c.cfg.Targets, name) || !*shouldFetch
+			return !slices.Contains(c.cfg.Targets, name) || !shouldFetch
 		})
 		authGroups = append(authGroups, authGroup)
 	}

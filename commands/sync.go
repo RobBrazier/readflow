@@ -59,7 +59,7 @@ func (c SyncCommand) Run() error {
 	syncSource := source.GetActiveSource(cfgSource, c.ctx)
 	syncTargets := target.GetActiveTargets(cfgTargets, c.ctx)
 
-	action := sync.NewSyncAction(*syncSource, syncTargets)
+	action := sync.NewSyncAction(*syncSource, syncTargets, c.dryrun)
 	results, err := action.Sync()
 	if err != nil {
 		return err
