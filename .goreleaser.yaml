@@ -15,6 +15,9 @@ builds:
       - windows
       - darwin
 
+upx:
+  - enabled: true
+
 archives:
   - format: binary
 
@@ -26,6 +29,7 @@ dockers:
       - --platform=linux/amd64
     extra_files:
       - packaging/entrypoint.sh
+    dockerfile: packaging/Dockerfile
   # - image_templates:
   #     - "ghcr.io/robbrazier/readflow:{{ .Version }}-arm64v8"
   #   use: buildx

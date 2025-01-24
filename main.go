@@ -58,6 +58,19 @@ func main() {
 				Before: loadConfig,
 				Action: commands.NewSetupCommand,
 			},
+			{
+				Name:   "schedule",
+				Usage:  "Run sync on a specified schedule",
+				Before: loadConfig,
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:        "schedule",
+						Usage:       "cron-style schedule, e.g. @hourly or 0 1 0 0 0",
+						DefaultText: "@hourly",
+					},
+				},
+				Action: commands.NewScheduleCommand,
+			},
 		},
 	}
 	if err := app.Run(context.Background(), os.Args); err != nil {

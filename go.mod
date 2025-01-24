@@ -4,6 +4,7 @@ go 1.23.2
 
 require (
 	github.com/Khan/genqlient v0.7.0
+	github.com/adhocore/gronx v1.19.5
 	github.com/adrg/xdg v0.5.3
 	github.com/caarlos0/env/v11 v11.3.0
 	github.com/charmbracelet/bubbles v0.20.0

@@ -4,3 +4,4 @@
 go = "latest"
 goreleaser = "latest"
 git-cliff = "latest"
+upx = "latest"

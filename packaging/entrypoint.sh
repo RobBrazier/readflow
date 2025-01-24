@@ -2,13 +2,13 @@
 
 set -e
 
-cronjob="$CRON_SCHEDULE /bin/readflow sync"
-echo "$cronjob" > /tmp/crontab
-chmod 644 /tmp/crontab
+cronjob="$CRON_SCHEDULE /readflow sync"
+echo "$cronjob" > /crontab
+chmod 644 /crontab
 
 # first arg is `-f` or `--some-option`
 if [ "${1#-}" != "$1" ] || [ "$1" == "sync" ]; then
-	set -- /bin/readflow "$@"
+	set -- /readflow "$@"
 fi
 
 exec "$@"

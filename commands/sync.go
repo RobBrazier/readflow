@@ -16,24 +16,24 @@ import (
 )
 
 type SyncCommand struct {
-	ctx     context.Context
-	cfg     *config.Config
-	source  string
-	targets []string
-	cmd     *cli.Command
-	dryrun  bool
+	ctx    context.Context
+	cfg    *config.Config
+	cmd    *cli.Command
+	dryrun bool
 }
 
 func (c SyncCommand) validate() error {
 	var errs []error
+	cfgSource := c.cfg.Source
+	cfgTargets := c.cfg.Targets
 	sources := source.GetSources()
 	allowedSources := slices.Collect(maps.Keys(sources))
-	if _, ok := sources[c.source]; !ok {
-		errs = append(errs, errors.New(fmt.Sprintf("Invalid source [%s] provided in configuration. Allowed values: %v", c.source, allowedSources)))
+	if _, ok := sources[cfgSource]; !ok {
+		errs = append(errs, errors.New(fmt.Sprintf("Invalid source [%s] provided in configuration. Allowed values: %v", cfgSource, allowedSources)))
 	}
 	targets := target.GetTargets()
 	allowedTargets := slices.Collect(maps.Keys(targets))
-	for _, t := range c.targets {
+	for _, t := range cfgTargets {
 		if _, ok := targets[t]; !ok {
 			errs = append(errs, errors.New(fmt.Sprintf("Invalid target [%s] provided in configuration. Allowed values: %v", t, allowedTargets)))
 		}
@@ -45,7 +45,10 @@ func (c SyncCommand) validate() error {
 }
 
 func (c SyncCommand) Run() error {
-	log.Debug("sync called", "source", c.source, "targets", c.targets)
+	cfgSource := c.cfg.Source
+	cfgTargets := c.cfg.Targets
+
+	log.Debug("sync called", "source", cfgSource, "targets", cfgTargets)
 
 	// run validation to ensure that valid source / targets are provided
 	err := c.validate()
@@ -53,8 +56,8 @@ func (c SyncCommand) Run() error {
 		return err
 	}
 
-	syncSource := source.GetActiveSource(c.source, c.ctx)
-	syncTargets := target.GetActiveTargets(c.targets, c.ctx)
+	syncSource := source.GetActiveSource(cfgSource, c.ctx)
+	syncTargets := target.GetActiveTargets(cfgTargets, c.ctx)
 
 	action := sync.NewSyncAction(*syncSource, syncTargets)
 	results, err := action.Sync()
@@ -69,16 +72,11 @@ func NewSyncCommand(ctx context.Context, cmd *cli.Command) error {
 	dryrun := cmd.Bool("dryrun")
 	cfg := config.GetFromContext(ctx)
 
-	source := cfg.Source
-	targets := cfg.Targets
-
 	command := SyncCommand{
-		ctx:     ctx,
-		cmd:     cmd,
-		source:  source,
-		targets: targets,
-		cfg:     cfg,
-		dryrun:  dryrun,
+		ctx:    ctx,
+		cmd:    cmd,
+		cfg:    cfg,
+		dryrun: dryrun,
 	}
 	return command.Run()
 }
