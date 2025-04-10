@@ -5,8 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/RobBrazier/readflow/internal"
-	"github.com/RobBrazier/readflow/internal/config"
+	"github.com/RobBrazier/readflow/config"
 	"github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
 )
@@ -14,9 +13,11 @@ import (
 var cfgFile string
 var verbose bool
 
+const NAME = "readflow"
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   internal.NAME,
+	Use:   NAME,
 	Short: "Track your Kobo reads on Anilist.co and Hardcover.app using Calibre-Web and Calibre databases",
 	CompletionOptions: cobra.CompletionOptions{
 		DisableDefaultCmd: true,
@@ -43,20 +44,20 @@ func init() {
 	log.SetTimeFormat(time.TimeOnly)
 	log.SetLevel(log.InfoLevel)
 
-	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", config.GetConfigPath(&cfgFile), "config file")
+	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", config.GetConfigPath(&cfgFile, NAME), "config file")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose logging")
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	configFile := config.GetConfigPath(&cfgFile)
+	configFile := config.GetConfigPath(&cfgFile, NAME)
 	err := config.LoadConfig(configFile)
 	if os.Getenv("READFLOW_DOCKER") == "1" {
 		err = config.LoadConfigFromEnv()
 	}
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			log.Warnf("Config file doesn't seem to exist! Please run `%s setup -c \"%s\"` to populate the configuration", internal.NAME, cfgFile)
+			log.Warnf("Config file doesn't seem to exist! Please run `%s setup -c \"%s\"` to populate the configuration", NAME, cfgFile)
 		} else {
 			log.Error("Unable to read config", "error", err)
 			os.Exit(1)

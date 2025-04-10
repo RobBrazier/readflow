@@ -1,33 +1,78 @@
 query GetCurrentUser {
   me {
-    name
-    username
+    id
+  }
+}
+
+fragment Book on books {
+  id
+  slug
+  title
+}
+
+fragment Edition on editions {
+  id
+  pages
+}
+
+fragment UserBookReads on user_book_reads {
+  id
+  progress
+  progress_pages
+  started_at
+  finished_at
+  # @genqlient(flatten: true)
+  edition {
+    ...Edition
   }
 }
 
 query GetUserBooksBySlug($slug: String) {
   me {
+    # @genqlient(typename: "UserBooks")
     user_books(where: {book: {slug: {_eq: $slug}}}) {
       status_id
-      book_id
+      # @genqlient(flatten: true)
       book {
-        slug
-        title
+        ...Book
       }
+      # @genqlient(flatten: true)
       edition {
-        id
-        pages
+        ...Edition
       }
+      # @genqlient(flatten: true)
       user_book_reads(order_by: {started_at: desc}, limit: 1) {
-        id
-        progress
-        progress_pages
-        started_at
-        finished_at
-        edition {
-          id
-          pages
-        }
+        ...UserBookReads
+      }
+    }
+  }
+}
+
+query GetUserBooksBySlugOrEdition($slugs: [String!], $editionIds: [Int!], $userId: Int) {
+  books(where: {slug: {_in: $slugs}}) {
+    ...Book
+    # @genqlient(flatten: true)
+    editions(where: {id: {_in: $editionIds}}) {
+      ...Edition
+    }
+    # @genqlient(typename: "UserBooks")
+    user_books(where: {user_id: {_eq: $userId}}) {
+      status_id
+      # @genqlient(flatten: true)
+      book {
+        ...Book
+      }
+      # @genqlient(flatten: true)
+      edition {
+        ...Edition
+      }
+      # @genqlient(flatten: true)
+      user_book_reads(
+        where: {finished_at: {_is_null: true}, edition: {_or: [{id: {_in: $editionIds}}, {reading_format_id: {_neq: 2}}]}}
+        order_by: {started_at: desc}
+        limit: 1
+      ) {
+        ...UserBookReads
       }
     }
   }

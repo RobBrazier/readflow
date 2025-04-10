@@ -1,10 +1,12 @@
 mutation ChangeBookStatus($bookId: Int!, $status: Int) {
+  # @genqlient(typename: "UserBookResponse")
   insert_user_book(object: {book_id: $bookId, status_id: $status}) {
     id
   }
 }
 
 mutation StartBookProgress($bookId: Int!, $pages: Int, $editionId: Int, $startedAt: date) {
+  # @genqlient(typename: "UserBookReadResponse")
   insert_user_book_read(user_book_id: $bookId, user_book_read: {
     progress_pages: $pages,
     edition_id: $editionId,
@@ -15,6 +17,7 @@ mutation StartBookProgress($bookId: Int!, $pages: Int, $editionId: Int, $started
 }
 
 mutation UpdateBookProgress($id: Int!, $pages: Int, $editionId: Int, $startedAt: date) {
+  # @genqlient(typename: "UserBookReadResponse")
   update_user_book_read(id: $id, object: {
     progress_pages: $pages,
     edition_id: $editionId,
@@ -25,6 +28,7 @@ mutation UpdateBookProgress($id: Int!, $pages: Int, $editionId: Int, $startedAt:
 }
 
 mutation FinishBookProgress($id: Int!, $pages: Int, $editionId: Int, $startedAt: date, $finishedAt: date) {
+  # @genqlient(typename: "UserBookReadResponse")
   update_user_book_read(id: $id, object: {
     progress_pages: $pages,
     edition_id: $editionId,

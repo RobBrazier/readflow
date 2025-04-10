@@ -2,4 +2,5 @@ schema: schema.gql
 operations:
   - queries.gql
   - mutations.gql
-generated: ../../internal/target/anilist/generated.go
+generated: ../../target/anilist/generated.go
+client_getter: github.com/RobBrazier/readflow/target/anilist.GetClient

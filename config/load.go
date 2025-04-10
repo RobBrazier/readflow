@@ -5,14 +5,14 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/RobBrazier/readflow/internal"
 	"github.com/adrg/xdg"
 	"github.com/caarlos0/env/v11"
 	"github.com/charmbracelet/log"
+	"github.com/creasty/defaults"
 	"github.com/goccy/go-yaml"
 )
 
-func GetConfigPath(override *string) string {
+func GetConfigPath(override *string, name string) string {
 	// Has the config flag been passed in? - if it's got a value, use it
 	if override != nil {
 		if *override != "" {
@@ -23,7 +23,7 @@ func GetConfigPath(override *string) string {
 	if configPath == "" {
 		// look in the XDG_CONFIG_HOME location
 		var err error
-		configPath, err = xdg.ConfigFile(filepath.Join(internal.NAME, "config.yaml"))
+		configPath, err = xdg.ConfigFile(filepath.Join(name, "config.yaml"))
 
 		if err != nil {
 			// if that doesn't work for some reason, fall back to the current dir
@@ -48,6 +48,9 @@ func LoadConfig(path string) error {
 	log.Debug("Loading config from", "file", path)
 	data, err := os.ReadFile(path)
 	if err != nil {
+		return err
+	}
+	if err := defaults.Set(&config); err != nil {
 		return err
 	}
 	if err := yaml.Unmarshal(data, &config); err != nil {

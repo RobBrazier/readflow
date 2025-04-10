@@ -7,6 +7,7 @@ type Config struct {
 	Targets   []string       `yaml:"targets" env:"TARGETS"`
 	Tokens    TokenConfig    `yaml:"tokens"`
 	SyncDays  int            `yaml:"syncDays" env:"SYNC_DAYS"`
+	Api       ApiConfig      `yaml:"api"`
 }
 
 // ColumnConfig represents the columns configuration
@@ -24,6 +25,11 @@ type DatabaseConfig struct {
 type TokenConfig struct {
 	Anilist   string `yaml:"anilist" env:"TOKEN_ANILIST"`
 	Hardcover string `yaml:"hardcover" env:"TOKEN_HARDCOVER"`
+}
+
+type ApiConfig struct {
+	AnilistEndpoint   string `yaml:"anilistEndpoint" default:"https://graphql.anilist.co"`
+	HardcoverEndpoint string `yaml:"hardcoverEndpoint" default:"https://api.hardcover.app/v1/graphql"`
 }
 
 var (
@@ -53,6 +59,10 @@ func GetTargets() []string {
 
 func GetTokens() TokenConfig {
 	return config.Tokens
+}
+
+func GetApiConfig() ApiConfig {
+	return config.Api
 }
 
 func GetSyncDays() int {

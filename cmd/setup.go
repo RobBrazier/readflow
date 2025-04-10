@@ -1,13 +1,15 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"slices"
 	"strings"
 
-	"github.com/RobBrazier/readflow/internal/config"
+	"github.com/RobBrazier/readflow/config"
+	"github.com/RobBrazier/readflow/internal"
 	"github.com/RobBrazier/readflow/internal/form"
-	"github.com/RobBrazier/readflow/internal/target"
+	"github.com/RobBrazier/readflow/target"
 	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/log"
@@ -129,10 +131,10 @@ var setupCmd = &cobra.Command{
 	},
 }
 
-func getTarget(name string) target.SyncTarget {
-	for _, target := range *target.GetTargets() {
-		if target.GetName() == name {
-			return target
+func getTarget(name string) internal.SyncTarget {
+	for targetName, target := range target.GetTargets() {
+		if targetName == name {
+			return target(context.Background())
 		}
 	}
 	return nil

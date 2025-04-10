@@ -3,8 +3,8 @@ package sync
 import (
 	"sync"
 
-	"github.com/RobBrazier/readflow/internal/source"
-	"github.com/RobBrazier/readflow/internal/target"
+	"github.com/RobBrazier/readflow/internal"
+	"github.com/RobBrazier/readflow/internal/model"
 	"github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
 )
@@ -19,13 +19,12 @@ type SyncAction interface {
 
 type syncAction struct {
 	log     *log.Logger
-	targets []target.SyncTarget
-	source  source.Source
+	targets []internal.SyncTarget
+	source  internal.SyncSource
 }
 
 func (a *syncAction) Sync() ([]SyncResult, error) {
 	// if the chapters column doesn't exist in config, fetch the name and store it
-	a.source.Init()
 	recentReads, err := a.source.GetRecentReads()
 	cobra.CheckErr(err)
 	var wg sync.WaitGroup
@@ -38,24 +37,24 @@ func (a *syncAction) Sync() ([]SyncResult, error) {
 	return []SyncResult{}, nil
 }
 
-func (a *syncAction) processTarget(t target.SyncTarget, reads []source.BookContext, wg *sync.WaitGroup) {
+func (a *syncAction) processTarget(t internal.SyncTarget, reads []model.Book, wg *sync.WaitGroup) {
 	defer wg.Done()
-	for _, book := range reads {
-		name := book.Current.BookName
+	processed, err := t.ProcessReads(reads)
+	if err != nil {
+		log.Error("error processing reads", "err", err)
+		return
+	}
+	for _, book := range processed {
+		name := book.Name
 		log := log.With("target", t.GetName(), "book", name)
-		if !t.ShouldProcess(book) {
-			log.Debug("Skipping processing of ineligible book")
-			continue
-		}
-		log.Info("Processing")
-		err := t.UpdateReadStatus(book)
+		err := t.UpdateStatus(book)
 		if err != nil {
 			log.Error("failed to update reading status", "error", err)
 		}
 	}
 }
 
-func NewSyncAction(enabledSource source.Source, targets []target.SyncTarget) SyncAction {
+func NewSyncAction(enabledSource internal.SyncSource, targets []internal.SyncTarget) SyncAction {
 	return &syncAction{
 		targets: targets,
 		source:  enabledSource,
