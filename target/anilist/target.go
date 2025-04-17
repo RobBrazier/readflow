@@ -6,6 +6,8 @@ import (
 	"github.com/RobBrazier/readflow/internal"
 )
 
+//go:generate go run github.com/Khan/genqlient ../../schemas/anilist/genqlient.yaml
+
 type anilistTarget struct {
 	internal.Target
 }

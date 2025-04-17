@@ -75,13 +75,18 @@ func (s databaseSource) findChaptersColumn() bool {
 	return true
 }
 
-func (s databaseSource) GetRecentReads() (books []model.Book, err error) {
+func (s databaseSource) GetRecentReads() ([]model.Book, error) {
 	db := s.getDb()
 	defer db.Close()
+
+	books := []model.Book{}
 
 	chaptersColumn := s.getChaptersColumn()
 
 	recentReads, err := queries.GetRecentReads(db, s.getSyncDays(), chaptersColumn)
+	if err != nil {
+		return nil, err
+	}
 
 	for _, read := range recentReads {
 		book := MapToBook(read)

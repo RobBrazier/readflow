@@ -24,6 +24,7 @@ var rootCmd = &cobra.Command{
 	},
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		if verbose {
+			log.SetReportCaller(true)
 			log.SetLevel(log.DebugLevel)
 		}
 	},

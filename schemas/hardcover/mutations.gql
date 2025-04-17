@@ -1,34 +1,34 @@
-mutation ChangeBookStatus($bookId: Int!, $status: Int) {
-  # @genqlient(typename: "UserBookResponse")
-  insert_user_book(object: {book_id: $bookId, status_id: $status}) {
+mutation CreateUserBook($bookId: Int!, $status: Int, $editionId: Int) {
+  insert_user_book(object: {book_id: $bookId, status_id: $status, edition_id: $editionId}) {
     id
+    error
+    user_book {
+      user_book_reads {
+        ...UserBookReads
+      }
+    }
   }
 }
 
-mutation StartBookProgress($bookId: Int!, $pages: Int, $editionId: Int, $startedAt: date) {
-  # @genqlient(typename: "UserBookReadResponse")
-  insert_user_book_read(user_book_id: $bookId, user_book_read: {
-    progress_pages: $pages,
-    edition_id: $editionId,
-    started_at: $startedAt,
-  }) {
+mutation ChangeBookStatus($userBookId: Int!, $status: Int) {
+  update_user_book(id: $userBookId, object: {status_id: $status}) {
     id
+    error
   }
 }
 
 mutation UpdateBookProgress($id: Int!, $pages: Int, $editionId: Int, $startedAt: date) {
-  # @genqlient(typename: "UserBookReadResponse")
   update_user_book_read(id: $id, object: {
     progress_pages: $pages,
     edition_id: $editionId,
     started_at: $startedAt,
   }) {
     id
+    error
   }
 }
 
 mutation FinishBookProgress($id: Int!, $pages: Int, $editionId: Int, $startedAt: date, $finishedAt: date) {
-  # @genqlient(typename: "UserBookReadResponse")
   update_user_book_read(id: $id, object: {
     progress_pages: $pages,
     edition_id: $editionId,
@@ -36,5 +36,6 @@ mutation FinishBookProgress($id: Int!, $pages: Int, $editionId: Int, $startedAt:
     finished_at: $finishedAt,
   }) {
     id
+    error
   }
 }

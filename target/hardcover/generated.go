@@ -32,12 +32,188 @@ func (v *Book) GetTitle() string { return v.Title }
 
 // ChangeBookStatusResponse is returned by ChangeBookStatus on success.
 type ChangeBookStatusResponse struct {
-	// insert_user_book
-	Insert_user_book UserBookResponse `json:"insert_user_book"`
+	// update_user_book
+	Update_user_book ChangeBookStatusUpdate_user_bookUserBookIdType `json:"update_user_book"`
 }
 
-// GetInsert_user_book returns ChangeBookStatusResponse.Insert_user_book, and is useful for accessing the field via an interface.
-func (v *ChangeBookStatusResponse) GetInsert_user_book() UserBookResponse { return v.Insert_user_book }
+// GetUpdate_user_book returns ChangeBookStatusResponse.Update_user_book, and is useful for accessing the field via an interface.
+func (v *ChangeBookStatusResponse) GetUpdate_user_book() ChangeBookStatusUpdate_user_bookUserBookIdType {
+	return v.Update_user_book
+}
+
+// ChangeBookStatusUpdate_user_bookUserBookIdType includes the requested fields of the GraphQL type UserBookIdType.
+type ChangeBookStatusUpdate_user_bookUserBookIdType struct {
+	Id    int    `json:"id"`
+	Error string `json:"error"`
+}
+
+// GetId returns ChangeBookStatusUpdate_user_bookUserBookIdType.Id, and is useful for accessing the field via an interface.
+func (v *ChangeBookStatusUpdate_user_bookUserBookIdType) GetId() int { return v.Id }
+
+// GetError returns ChangeBookStatusUpdate_user_bookUserBookIdType.Error, and is useful for accessing the field via an interface.
+func (v *ChangeBookStatusUpdate_user_bookUserBookIdType) GetError() string { return v.Error }
+
+// CreateUserBookInsert_user_bookUserBookIdType includes the requested fields of the GraphQL type UserBookIdType.
+type CreateUserBookInsert_user_bookUserBookIdType struct {
+	Id        int                                                             `json:"id"`
+	Error     string                                                          `json:"error"`
+	User_book CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_books `json:"user_book"`
+}
+
+// GetId returns CreateUserBookInsert_user_bookUserBookIdType.Id, and is useful for accessing the field via an interface.
+func (v *CreateUserBookInsert_user_bookUserBookIdType) GetId() int { return v.Id }
+
+// GetError returns CreateUserBookInsert_user_bookUserBookIdType.Error, and is useful for accessing the field via an interface.
+func (v *CreateUserBookInsert_user_bookUserBookIdType) GetError() string { return v.Error }
+
+// GetUser_book returns CreateUserBookInsert_user_bookUserBookIdType.User_book, and is useful for accessing the field via an interface.
+func (v *CreateUserBookInsert_user_bookUserBookIdType) GetUser_book() CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_books {
+	return v.User_book
+}
+
+// CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_books includes the requested fields of the GraphQL type user_books.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "user_books"
+type CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_books struct {
+	// An array relationship
+	User_book_reads []CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads `json:"user_book_reads"`
+}
+
+// GetUser_book_reads returns CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_books.User_book_reads, and is useful for accessing the field via an interface.
+func (v *CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_books) GetUser_book_reads() []CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads {
+	return v.User_book_reads
+}
+
+// CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads includes the requested fields of the GraphQL type user_book_reads.
+// The GraphQL type's documentation follows.
+//
+// columns and relationships of "user_book_reads"
+type CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads struct {
+	UserBookReads `json:"-"`
+}
+
+// GetId returns CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads.Id, and is useful for accessing the field via an interface.
+func (v *CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads) GetId() int {
+	return v.UserBookReads.Id
+}
+
+// GetProgress returns CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads.Progress, and is useful for accessing the field via an interface.
+func (v *CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads) GetProgress() float32 {
+	return v.UserBookReads.Progress
+}
+
+// GetProgress_pages returns CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads.Progress_pages, and is useful for accessing the field via an interface.
+func (v *CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads) GetProgress_pages() int {
+	return v.UserBookReads.Progress_pages
+}
+
+// GetStarted_at returns CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads.Started_at, and is useful for accessing the field via an interface.
+func (v *CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads) GetStarted_at() time.Time {
+	return v.UserBookReads.Started_at
+}
+
+// GetFinished_at returns CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads.Finished_at, and is useful for accessing the field via an interface.
+func (v *CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads) GetFinished_at() time.Time {
+	return v.UserBookReads.Finished_at
+}
+
+// GetEdition returns CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads.Edition, and is useful for accessing the field via an interface.
+func (v *CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads) GetEdition() Edition {
+	return v.UserBookReads.Edition
+}
+
+func (v *CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.UserBookReads)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalCreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads struct {
+	Id int `json:"id"`
+
+	Progress float32 `json:"progress"`
+
+	Progress_pages int `json:"progress_pages"`
+
+	Started_at json.RawMessage `json:"started_at"`
+
+	Finished_at json.RawMessage `json:"finished_at"`
+
+	Edition Edition `json:"edition"`
+}
+
+func (v *CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads) __premarshalJSON() (*__premarshalCreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads, error) {
+	var retval __premarshalCreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads
+
+	retval.Id = v.UserBookReads.Id
+	retval.Progress = v.UserBookReads.Progress
+	retval.Progress_pages = v.UserBookReads.Progress_pages
+	{
+
+		dst := &retval.Started_at
+		src := v.UserBookReads.Started_at
+		var err error
+		*dst, err = MarshalHardcoverDate(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads.UserBookReads.Started_at: %w", err)
+		}
+	}
+	{
+
+		dst := &retval.Finished_at
+		src := v.UserBookReads.Finished_at
+		var err error
+		*dst, err = MarshalHardcoverDate(
+			&src)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"unable to marshal CreateUserBookInsert_user_bookUserBookIdTypeUser_bookUser_booksUser_book_reads.UserBookReads.Finished_at: %w", err)
+		}
+	}
+	retval.Edition = v.UserBookReads.Edition
+	return &retval, nil
+}
+
+// CreateUserBookResponse is returned by CreateUserBook on success.
+type CreateUserBookResponse struct {
+	// insert_user_book
+	Insert_user_book CreateUserBookInsert_user_bookUserBookIdType `json:"insert_user_book"`
+}
+
+// GetInsert_user_book returns CreateUserBookResponse.Insert_user_book, and is useful for accessing the field via an interface.
+func (v *CreateUserBookResponse) GetInsert_user_book() CreateUserBookInsert_user_bookUserBookIdType {
+	return v.Insert_user_book
+}
 
 // Edition includes the GraphQL fields of editions requested by the fragment Edition.
 // The GraphQL type's documentation follows.
@@ -57,13 +233,25 @@ func (v *Edition) GetPages() int { return v.Pages }
 // FinishBookProgressResponse is returned by FinishBookProgress on success.
 type FinishBookProgressResponse struct {
 	// update_user_book_read
-	Update_user_book_read UserBookReadResponse `json:"update_user_book_read"`
+	Update_user_book_read FinishBookProgressUpdate_user_book_readUserBookReadIdType `json:"update_user_book_read"`
 }
 
 // GetUpdate_user_book_read returns FinishBookProgressResponse.Update_user_book_read, and is useful for accessing the field via an interface.
-func (v *FinishBookProgressResponse) GetUpdate_user_book_read() UserBookReadResponse {
+func (v *FinishBookProgressResponse) GetUpdate_user_book_read() FinishBookProgressUpdate_user_book_readUserBookReadIdType {
 	return v.Update_user_book_read
 }
+
+// FinishBookProgressUpdate_user_book_readUserBookReadIdType includes the requested fields of the GraphQL type UserBookReadIdType.
+type FinishBookProgressUpdate_user_book_readUserBookReadIdType struct {
+	Id    int    `json:"id"`
+	Error string `json:"error"`
+}
+
+// GetId returns FinishBookProgressUpdate_user_book_readUserBookReadIdType.Id, and is useful for accessing the field via an interface.
+func (v *FinishBookProgressUpdate_user_book_readUserBookReadIdType) GetId() int { return v.Id }
+
+// GetError returns FinishBookProgressUpdate_user_book_readUserBookReadIdType.Error, and is useful for accessing the field via an interface.
+func (v *FinishBookProgressUpdate_user_book_readUserBookReadIdType) GetError() string { return v.Error }
 
 // GetCurrentUserMeUsers includes the requested fields of the GraphQL type users.
 // The GraphQL type's documentation follows.
@@ -84,18 +272,6 @@ type GetCurrentUserResponse struct {
 
 // GetMe returns GetCurrentUserResponse.Me, and is useful for accessing the field via an interface.
 func (v *GetCurrentUserResponse) GetMe() []GetCurrentUserMeUsers { return v.Me }
-
-// GetUserBooksBySlugMeUsers includes the requested fields of the GraphQL type users.
-// The GraphQL type's documentation follows.
-//
-// columns and relationships of "users"
-type GetUserBooksBySlugMeUsers struct {
-	// An array relationship
-	User_books []UserBooks `json:"user_books"`
-}
-
-// GetUser_books returns GetUserBooksBySlugMeUsers.User_books, and is useful for accessing the field via an interface.
-func (v *GetUserBooksBySlugMeUsers) GetUser_books() []UserBooks { return v.User_books }
 
 // GetUserBooksBySlugOrEditionBooks includes the requested fields of the GraphQL type books.
 // The GraphQL type's documentation follows.
@@ -191,43 +367,28 @@ func (v *GetUserBooksBySlugOrEditionResponse) GetBooks() []GetUserBooksBySlugOrE
 	return v.Books
 }
 
-// GetUserBooksBySlugResponse is returned by GetUserBooksBySlug on success.
-type GetUserBooksBySlugResponse struct {
-	// execute function "me" which returns "users"
-	Me []GetUserBooksBySlugMeUsers `json:"me"`
-}
-
-// GetMe returns GetUserBooksBySlugResponse.Me, and is useful for accessing the field via an interface.
-func (v *GetUserBooksBySlugResponse) GetMe() []GetUserBooksBySlugMeUsers { return v.Me }
-
-// StartBookProgressResponse is returned by StartBookProgress on success.
-type StartBookProgressResponse struct {
-	Insert_user_book_read UserBookReadResponse `json:"insert_user_book_read"`
-}
-
-// GetInsert_user_book_read returns StartBookProgressResponse.Insert_user_book_read, and is useful for accessing the field via an interface.
-func (v *StartBookProgressResponse) GetInsert_user_book_read() UserBookReadResponse {
-	return v.Insert_user_book_read
-}
-
 // UpdateBookProgressResponse is returned by UpdateBookProgress on success.
 type UpdateBookProgressResponse struct {
 	// update_user_book_read
-	Update_user_book_read UserBookReadResponse `json:"update_user_book_read"`
+	Update_user_book_read UpdateBookProgressUpdate_user_book_readUserBookReadIdType `json:"update_user_book_read"`
 }
 
 // GetUpdate_user_book_read returns UpdateBookProgressResponse.Update_user_book_read, and is useful for accessing the field via an interface.
-func (v *UpdateBookProgressResponse) GetUpdate_user_book_read() UserBookReadResponse {
+func (v *UpdateBookProgressResponse) GetUpdate_user_book_read() UpdateBookProgressUpdate_user_book_readUserBookReadIdType {
 	return v.Update_user_book_read
 }
 
-// UserBookReadResponse includes the requested fields of the GraphQL type UserBookReadIdType.
-type UserBookReadResponse struct {
-	Id int `json:"id"`
+// UpdateBookProgressUpdate_user_book_readUserBookReadIdType includes the requested fields of the GraphQL type UserBookReadIdType.
+type UpdateBookProgressUpdate_user_book_readUserBookReadIdType struct {
+	Id    int    `json:"id"`
+	Error string `json:"error"`
 }
 
-// GetId returns UserBookReadResponse.Id, and is useful for accessing the field via an interface.
-func (v *UserBookReadResponse) GetId() int { return v.Id }
+// GetId returns UpdateBookProgressUpdate_user_book_readUserBookReadIdType.Id, and is useful for accessing the field via an interface.
+func (v *UpdateBookProgressUpdate_user_book_readUserBookReadIdType) GetId() int { return v.Id }
+
+// GetError returns UpdateBookProgressUpdate_user_book_readUserBookReadIdType.Error, and is useful for accessing the field via an interface.
+func (v *UpdateBookProgressUpdate_user_book_readUserBookReadIdType) GetError() string { return v.Error }
 
 // UserBookReads includes the GraphQL fields of user_book_reads requested by the fragment UserBookReads.
 // The GraphQL type's documentation follows.
@@ -364,19 +525,12 @@ func (v *UserBookReads) __premarshalJSON() (*__premarshalUserBookReads, error) {
 	return &retval, nil
 }
 
-// UserBookResponse includes the requested fields of the GraphQL type UserBookIdType.
-type UserBookResponse struct {
-	Id int `json:"id"`
-}
-
-// GetId returns UserBookResponse.Id, and is useful for accessing the field via an interface.
-func (v *UserBookResponse) GetId() int { return v.Id }
-
 // UserBooks includes the requested fields of the GraphQL type user_books.
 // The GraphQL type's documentation follows.
 //
 // columns and relationships of "user_books"
 type UserBooks struct {
+	Id        int `json:"id"`
 	Status_id int `json:"status_id"`
 	// An object relationship
 	Book Book `json:"book"`
@@ -385,6 +539,9 @@ type UserBooks struct {
 	// An array relationship
 	User_book_reads []UserBookReads `json:"user_book_reads"`
 }
+
+// GetId returns UserBooks.Id, and is useful for accessing the field via an interface.
+func (v *UserBooks) GetId() int { return v.Id }
 
 // GetStatus_id returns UserBooks.Status_id, and is useful for accessing the field via an interface.
 func (v *UserBooks) GetStatus_id() int { return v.Status_id }
@@ -400,15 +557,31 @@ func (v *UserBooks) GetUser_book_reads() []UserBookReads { return v.User_book_re
 
 // __ChangeBookStatusInput is used internally by genqlient
 type __ChangeBookStatusInput struct {
-	BookId int `json:"bookId"`
-	Status int `json:"status"`
+	UserBookId int `json:"userBookId"`
+	Status     int `json:"status"`
 }
 
-// GetBookId returns __ChangeBookStatusInput.BookId, and is useful for accessing the field via an interface.
-func (v *__ChangeBookStatusInput) GetBookId() int { return v.BookId }
+// GetUserBookId returns __ChangeBookStatusInput.UserBookId, and is useful for accessing the field via an interface.
+func (v *__ChangeBookStatusInput) GetUserBookId() int { return v.UserBookId }
 
 // GetStatus returns __ChangeBookStatusInput.Status, and is useful for accessing the field via an interface.
 func (v *__ChangeBookStatusInput) GetStatus() int { return v.Status }
+
+// __CreateUserBookInput is used internally by genqlient
+type __CreateUserBookInput struct {
+	BookId    int `json:"bookId"`
+	Status    int `json:"status"`
+	EditionId int `json:"editionId"`
+}
+
+// GetBookId returns __CreateUserBookInput.BookId, and is useful for accessing the field via an interface.
+func (v *__CreateUserBookInput) GetBookId() int { return v.BookId }
+
+// GetStatus returns __CreateUserBookInput.Status, and is useful for accessing the field via an interface.
+func (v *__CreateUserBookInput) GetStatus() int { return v.Status }
+
+// GetEditionId returns __CreateUserBookInput.EditionId, and is useful for accessing the field via an interface.
+func (v *__CreateUserBookInput) GetEditionId() int { return v.EditionId }
 
 // __FinishBookProgressInput is used internally by genqlient
 type __FinishBookProgressInput struct {
@@ -534,14 +707,6 @@ func (v *__FinishBookProgressInput) __premarshalJSON() (*__premarshal__FinishBoo
 	return &retval, nil
 }
 
-// __GetUserBooksBySlugInput is used internally by genqlient
-type __GetUserBooksBySlugInput struct {
-	Slug string `json:"slug"`
-}
-
-// GetSlug returns __GetUserBooksBySlugInput.Slug, and is useful for accessing the field via an interface.
-func (v *__GetUserBooksBySlugInput) GetSlug() string { return v.Slug }
-
 // __GetUserBooksBySlugOrEditionInput is used internally by genqlient
 type __GetUserBooksBySlugOrEditionInput struct {
 	Slugs      []string `json:"slugs"`
@@ -557,98 +722,6 @@ func (v *__GetUserBooksBySlugOrEditionInput) GetEditionIds() []int { return v.Ed
 
 // GetUserId returns __GetUserBooksBySlugOrEditionInput.UserId, and is useful for accessing the field via an interface.
 func (v *__GetUserBooksBySlugOrEditionInput) GetUserId() int { return v.UserId }
-
-// __StartBookProgressInput is used internally by genqlient
-type __StartBookProgressInput struct {
-	BookId    int       `json:"bookId"`
-	Pages     int       `json:"pages"`
-	EditionId int       `json:"editionId"`
-	StartedAt time.Time `json:"-"`
-}
-
-// GetBookId returns __StartBookProgressInput.BookId, and is useful for accessing the field via an interface.
-func (v *__StartBookProgressInput) GetBookId() int { return v.BookId }
-
-// GetPages returns __StartBookProgressInput.Pages, and is useful for accessing the field via an interface.
-func (v *__StartBookProgressInput) GetPages() int { return v.Pages }
-
-// GetEditionId returns __StartBookProgressInput.EditionId, and is useful for accessing the field via an interface.
-func (v *__StartBookProgressInput) GetEditionId() int { return v.EditionId }
-
-// GetStartedAt returns __StartBookProgressInput.StartedAt, and is useful for accessing the field via an interface.
-func (v *__StartBookProgressInput) GetStartedAt() time.Time { return v.StartedAt }
-
-func (v *__StartBookProgressInput) UnmarshalJSON(b []byte) error {
-
-	if string(b) == "null" {
-		return nil
-	}
-
-	var firstPass struct {
-		*__StartBookProgressInput
-		StartedAt json.RawMessage `json:"startedAt"`
-		graphql.NoUnmarshalJSON
-	}
-	firstPass.__StartBookProgressInput = v
-
-	err := json.Unmarshal(b, &firstPass)
-	if err != nil {
-		return err
-	}
-
-	{
-		dst := &v.StartedAt
-		src := firstPass.StartedAt
-		if len(src) != 0 && string(src) != "null" {
-			err = UnmarshalHardcoverDate(
-				src, dst)
-			if err != nil {
-				return fmt.Errorf(
-					"unable to unmarshal __StartBookProgressInput.StartedAt: %w", err)
-			}
-		}
-	}
-	return nil
-}
-
-type __premarshal__StartBookProgressInput struct {
-	BookId int `json:"bookId"`
-
-	Pages int `json:"pages"`
-
-	EditionId int `json:"editionId"`
-
-	StartedAt json.RawMessage `json:"startedAt"`
-}
-
-func (v *__StartBookProgressInput) MarshalJSON() ([]byte, error) {
-	premarshaled, err := v.__premarshalJSON()
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(premarshaled)
-}
-
-func (v *__StartBookProgressInput) __premarshalJSON() (*__premarshal__StartBookProgressInput, error) {
-	var retval __premarshal__StartBookProgressInput
-
-	retval.BookId = v.BookId
-	retval.Pages = v.Pages
-	retval.EditionId = v.EditionId
-	{
-
-		dst := &retval.StartedAt
-		src := v.StartedAt
-		var err error
-		*dst, err = MarshalHardcoverDate(
-			&src)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"unable to marshal __StartBookProgressInput.StartedAt: %w", err)
-		}
-	}
-	return &retval, nil
-}
 
 // __UpdateBookProgressInput is used internally by genqlient
 type __UpdateBookProgressInput struct {
@@ -744,24 +817,25 @@ func (v *__UpdateBookProgressInput) __premarshalJSON() (*__premarshal__UpdateBoo
 
 // The mutation executed by ChangeBookStatus.
 const ChangeBookStatus_Operation = `
-mutation ChangeBookStatus ($bookId: Int!, $status: Int) {
-	insert_user_book(object: {book_id:$bookId,status_id:$status}) {
+mutation ChangeBookStatus ($userBookId: Int!, $status: Int) {
+	update_user_book(id: $userBookId, object: {status_id:$status}) {
 		id
+		error
 	}
 }
 `
 
 func ChangeBookStatus(
 	ctx_ context.Context,
-	bookId int,
+	userBookId int,
 	status int,
 ) (data_ *ChangeBookStatusResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "ChangeBookStatus",
 		Query:  ChangeBookStatus_Operation,
 		Variables: &__ChangeBookStatusInput{
-			BookId: bookId,
-			Status: status,
+			UserBookId: userBookId,
+			Status:     status,
 		},
 	}
 	var client_ graphql.Client
@@ -783,11 +857,75 @@ func ChangeBookStatus(
 	return data_, err_
 }
 
+// The mutation executed by CreateUserBook.
+const CreateUserBook_Operation = `
+mutation CreateUserBook ($bookId: Int!, $status: Int, $editionId: Int) {
+	insert_user_book(object: {book_id:$bookId,status_id:$status,edition_id:$editionId}) {
+		id
+		error
+		user_book {
+			user_book_reads {
+				... UserBookReads
+			}
+		}
+	}
+}
+fragment UserBookReads on user_book_reads {
+	id
+	progress
+	progress_pages
+	started_at
+	finished_at
+	edition {
+		... Edition
+	}
+}
+fragment Edition on editions {
+	id
+	pages
+}
+`
+
+func CreateUserBook(
+	ctx_ context.Context,
+	bookId int,
+	status int,
+	editionId int,
+) (data_ *CreateUserBookResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "CreateUserBook",
+		Query:  CreateUserBook_Operation,
+		Variables: &__CreateUserBookInput{
+			BookId:    bookId,
+			Status:    status,
+			EditionId: editionId,
+		},
+	}
+	var client_ graphql.Client
+
+	client_, err_ = GetClient(ctx_)
+	if err_ != nil {
+		return nil, err_
+	}
+
+	data_ = &CreateUserBookResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
 // The mutation executed by FinishBookProgress.
 const FinishBookProgress_Operation = `
 mutation FinishBookProgress ($id: Int!, $pages: Int, $editionId: Int, $startedAt: date, $finishedAt: date) {
 	update_user_book_read(id: $id, object: {progress_pages:$pages,edition_id:$editionId,started_at:$startedAt,finished_at:$finishedAt}) {
 		id
+		error
 	}
 }
 `
@@ -865,75 +1003,6 @@ func GetCurrentUser(
 	return data_, err_
 }
 
-// The query executed by GetUserBooksBySlug.
-const GetUserBooksBySlug_Operation = `
-query GetUserBooksBySlug ($slug: String) {
-	me {
-		user_books(where: {book:{slug:{_eq:$slug}}}) {
-			status_id
-			book {
-				... Book
-			}
-			edition {
-				... Edition
-			}
-			user_book_reads(order_by: {started_at:desc}, limit: 1) {
-				... UserBookReads
-			}
-		}
-	}
-}
-fragment Book on books {
-	id
-	slug
-	title
-}
-fragment Edition on editions {
-	id
-	pages
-}
-fragment UserBookReads on user_book_reads {
-	id
-	progress
-	progress_pages
-	started_at
-	finished_at
-	edition {
-		... Edition
-	}
-}
-`
-
-func GetUserBooksBySlug(
-	ctx_ context.Context,
-	slug string,
-) (data_ *GetUserBooksBySlugResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "GetUserBooksBySlug",
-		Query:  GetUserBooksBySlug_Operation,
-		Variables: &__GetUserBooksBySlugInput{
-			Slug: slug,
-		},
-	}
-	var client_ graphql.Client
-
-	client_, err_ = GetClient(ctx_)
-	if err_ != nil {
-		return nil, err_
-	}
-
-	data_ = &GetUserBooksBySlugResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
 // The query executed by GetUserBooksBySlugOrEdition.
 const GetUserBooksBySlugOrEdition_Operation = `
 query GetUserBooksBySlugOrEdition ($slugs: [String!], $editionIds: [Int!], $userId: Int) {
@@ -943,6 +1012,7 @@ query GetUserBooksBySlugOrEdition ($slugs: [String!], $editionIds: [Int!], $user
 			... Edition
 		}
 		user_books(where: {user_id:{_eq:$userId}}) {
+			id
 			status_id
 			book {
 				... Book
@@ -950,7 +1020,7 @@ query GetUserBooksBySlugOrEdition ($slugs: [String!], $editionIds: [Int!], $user
 			edition {
 				... Edition
 			}
-			user_book_reads(where: {finished_at:{_is_null:true},edition:{_or:[{id:{_in:$editionIds}},{reading_format_id:{_neq:2}}]}}, order_by: {started_at:desc}, limit: 1) {
+			user_book_reads(where: {edition:{_or:[{id:{_in:$editionIds}},{reading_format_id:{_neq:2}}]}}, order_by: {started_at:desc}, limit: 1) {
 				... UserBookReads
 			}
 		}
@@ -1011,56 +1081,12 @@ func GetUserBooksBySlugOrEdition(
 	return data_, err_
 }
 
-// The mutation executed by StartBookProgress.
-const StartBookProgress_Operation = `
-mutation StartBookProgress ($bookId: Int!, $pages: Int, $editionId: Int, $startedAt: date) {
-	insert_user_book_read(user_book_id: $bookId, user_book_read: {progress_pages:$pages,edition_id:$editionId,started_at:$startedAt}) {
-		id
-	}
-}
-`
-
-func StartBookProgress(
-	ctx_ context.Context,
-	bookId int,
-	pages int,
-	editionId int,
-	startedAt time.Time,
-) (data_ *StartBookProgressResponse, err_ error) {
-	req_ := &graphql.Request{
-		OpName: "StartBookProgress",
-		Query:  StartBookProgress_Operation,
-		Variables: &__StartBookProgressInput{
-			BookId:    bookId,
-			Pages:     pages,
-			EditionId: editionId,
-			StartedAt: startedAt,
-		},
-	}
-	var client_ graphql.Client
-
-	client_, err_ = GetClient(ctx_)
-	if err_ != nil {
-		return nil, err_
-	}
-
-	data_ = &StartBookProgressResponse{}
-	resp_ := &graphql.Response{Data: data_}
-
-	err_ = client_.MakeRequest(
-		ctx_,
-		req_,
-		resp_,
-	)
-
-	return data_, err_
-}
-
 // The mutation executed by UpdateBookProgress.
 const UpdateBookProgress_Operation = `
 mutation UpdateBookProgress ($id: Int!, $pages: Int, $editionId: Int, $startedAt: date) {
 	update_user_book_read(id: $id, object: {progress_pages:$pages,edition_id:$editionId,started_at:$startedAt}) {
 		id
+		error
 	}
 }
 `

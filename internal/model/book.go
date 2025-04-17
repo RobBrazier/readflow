@@ -26,6 +26,7 @@ type Book struct {
 	Progress     BookProgress
 	ChapterCount int
 	Series       BookSeries
+	Metadata     map[string]any
 }
 
 func (b Book) getCurrentChapters() int {

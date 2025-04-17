@@ -11,6 +11,7 @@ require (
 	github.com/charmbracelet/log v0.4.1
 	github.com/cli/browser v1.3.0
 	github.com/creasty/defaults v1.8.0
+	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
 	github.com/goccy/go-yaml v1.17.1
 	github.com/hashicorp/go-retryablehttp v0.7.7
 	github.com/jmoiron/sqlx v1.4.0
@@ -29,7 +30,6 @@ require (
 	github.com/charmbracelet/x/cellbuf v0.0.13 // indirect
 	github.com/charmbracelet/x/exp/strings v0.0.0-20250407102404-92fd13048199 // indirect
 	github.com/charmbracelet/x/term v0.2.1 // indirect
-	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/erikgeiser/coninput v0.0.0-20211004153227-1c3628e74d0f // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
