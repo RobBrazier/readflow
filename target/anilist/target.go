@@ -1,4 +1,4 @@
-package target
+package anilist
 
 import (
 	"context"
@@ -8,15 +8,15 @@ import (
 	"github.com/Khan/genqlient/graphql"
 	"github.com/RobBrazier/readflow/config"
 	"github.com/RobBrazier/readflow/source"
-	"github.com/RobBrazier/readflow/target/anilist"
+	"github.com/RobBrazier/readflow/target"
 	"github.com/charmbracelet/log"
 )
 
-//go:generate go run github.com/Khan/genqlient ../schemas/anilist/genqlient.yaml
+//go:generate go run github.com/Khan/genqlient ../../schemas/anilist/genqlient.yaml
 
 type AnilistTarget struct {
-	GraphQLTarget
-	Target
+	target.GraphQLTarget
+	target.Target
 	client graphql.Client
 	ctx    context.Context
 	log    *log.Logger
@@ -35,7 +35,7 @@ func (t AnilistTarget) Login() (string, error) {
 
 func (t *AnilistTarget) getClient() graphql.Client {
 	if t.client == nil {
-		t.client = t.GraphQLTarget.getClient(t.apiUrl, t.Token())
+		t.client = t.GraphQLTarget.GetClient(t.ApiUrl, t.Token())
 	}
 	return t.client
 }
@@ -105,7 +105,7 @@ func (t *AnilistTarget) UpdateReadStatus(book source.BookContext) error {
 	}
 	ctx := t.ctx
 	client := t.getClient()
-	current, err := anilist.GetUserMediaById(ctx, client, anilistId)
+	current, err := GetUserMediaById(ctx, client, anilistId)
 	if err != nil {
 		return err
 	}
@@ -129,13 +129,13 @@ func (t *AnilistTarget) UpdateReadStatus(book source.BookContext) error {
 		return nil
 	}
 	if status == "" {
-		status = anilist.MediaListStatusCurrent
+		status = MediaListStatusCurrent
 	}
 	if estimatedChapter == maxChapters {
-		status = anilist.MediaListStatusCompleted
+		status = MediaListStatusCompleted
 	}
 	t.log.Info("Updating progress for", "book", bookName, "volume", localVolumes, "chapter", estimatedChapter)
-	_, err = anilist.UpdateProgress(ctx, client, anilistId, estimatedChapter, localVolumes, status)
+	_, err = UpdateProgress(ctx, client, anilistId, estimatedChapter, localVolumes, status)
 	if err != nil {
 		t.log.Error("error updating progress", "error", err)
 		return err
@@ -144,16 +144,13 @@ func (t *AnilistTarget) UpdateReadStatus(book source.BookContext) error {
 	return nil
 }
 
-func NewAnilistTarget(ctx context.Context) SyncTarget {
+func NewTarget(ctx context.Context) target.SyncTarget {
 	name := "anilist"
 	logger := log.WithPrefix(name)
 	target := &AnilistTarget{
-		ctx: ctx,
-		log: logger,
-		Target: Target{
-			name:   name,
-			apiUrl: "https://graphql.anilist.co",
-		},
+		ctx:    ctx,
+		log:    logger,
+		Target: target.NewTarget(name, "https://graphql.anilist.co"),
 	}
 	return target
 }

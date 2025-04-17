@@ -1,4 +1,4 @@
-package target
+package hardcover
 
 import (
 	"context"
@@ -9,15 +9,15 @@ import (
 	"github.com/Khan/genqlient/graphql"
 	"github.com/RobBrazier/readflow/config"
 	"github.com/RobBrazier/readflow/source"
-	"github.com/RobBrazier/readflow/target/hardcover"
+	"github.com/RobBrazier/readflow/target"
 	"github.com/charmbracelet/log"
 )
 
-//go:generate go run github.com/Khan/genqlient ../schemas/hardcover/genqlient.yaml
+//go:generate go run github.com/Khan/genqlient ../../schemas/hardcover/genqlient.yaml
 
 type HardcoverTarget struct {
-	Target
-	GraphQLTarget
+	target.Target
+	target.GraphQLTarget
 	ctx    context.Context
 	client graphql.Client
 	log    *log.Logger
@@ -39,7 +39,7 @@ func (t HardcoverTarget) Login() (string, error) {
 
 func (t *HardcoverTarget) getClient() graphql.Client {
 	if t.client == nil {
-		t.client = t.GraphQLTarget.getClient(t.apiUrl, t.Token())
+		t.client = t.GraphQLTarget.GetClient(t.ApiUrl, t.Token())
 	}
 	return t.client
 }
@@ -62,7 +62,7 @@ func (t HardcoverTarget) ShouldProcess(book source.BookContext) bool {
 
 // Yes this is absolutely horrible, but the generated code is horrible too...
 func (t *HardcoverTarget) getCurrentBookProgress(slug string) (*hardcoverProgress, error) {
-	current, err := hardcover.GetUserBooksBySlug(t.ctx, t.getClient(), slug)
+	current, err := GetUserBooksBySlug(t.ctx, t.getClient(), slug)
 	if err != nil {
 		return nil, err
 	}
@@ -105,12 +105,12 @@ func (t *HardcoverTarget) updateProgress(readId, bookId, pages, edition, status 
 	ctx := t.ctx
 	client := t.getClient()
 	if status != 2 { // in progress
-		_, err := hardcover.ChangeBookStatus(ctx, client, bookId, 2)
+		_, err := ChangeBookStatus(ctx, client, bookId, 2)
 		if err != nil {
 			return err
 		}
 	}
-	_, err := hardcover.UpdateBookProgress(ctx, client, readId, pages, edition, startTime)
+	_, err := UpdateBookProgress(ctx, client, readId, pages, edition, startTime)
 	return err
 }
 
@@ -118,11 +118,11 @@ func (t *HardcoverTarget) finishProgress(readId, bookId, pages, edition int, sta
 	finishTime := time.Now()
 	ctx := t.ctx
 	client := t.getClient()
-	_, err := hardcover.FinishBookProgress(ctx, client, readId, pages, edition, startTime, finishTime)
+	_, err := FinishBookProgress(ctx, client, readId, pages, edition, startTime, finishTime)
 	if err != nil {
 		return err
 	}
-	_, err = hardcover.ChangeBookStatus(ctx, client, bookId, 3) // finished
+	_, err = ChangeBookStatus(ctx, client, bookId, 3) // finished
 	return err
 }
 
@@ -131,12 +131,12 @@ func (t *HardcoverTarget) startProgress(bookId, pages, edition, status int) erro
 	ctx := t.ctx
 	client := t.getClient()
 	if status != 2 { // in progress
-		_, err := hardcover.ChangeBookStatus(ctx, client, bookId, 2)
+		_, err := ChangeBookStatus(ctx, client, bookId, 2)
 		if err != nil {
 			return err
 		}
 	}
-	_, err := hardcover.StartBookProgress(ctx, client, bookId, pages, edition, startTime)
+	_, err := StartBookProgress(ctx, client, bookId, pages, edition, startTime)
 	return err
 }
 
@@ -195,16 +195,13 @@ func (t *HardcoverTarget) UpdateReadStatus(book source.BookContext) error {
 	return nil
 }
 
-func NewHardcoverTarget(ctx context.Context) SyncTarget {
+func NewTarget(ctx context.Context) target.SyncTarget {
 	name := "hardcover"
 	logger := log.WithPrefix(name)
 	target := &HardcoverTarget{
-		ctx: ctx,
-		log: logger,
-		Target: Target{
-			name:   name,
-			apiUrl: "https://api.hardcover.app/v1/graphql",
-		},
+		ctx:    ctx,
+		log:    logger,
+		Target: target.NewTarget(name, "https://api.hardcover.app/v1/graphql"),
 	}
 	return target
 }

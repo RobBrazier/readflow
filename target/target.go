@@ -1,11 +1,9 @@
 package target
 
 import (
-	"context"
 	"fmt"
 	"log/slog"
 	"net/http"
-	"slices"
 
 	"github.com/Khan/genqlient/graphql"
 	"github.com/RobBrazier/readflow/source"
@@ -15,8 +13,15 @@ import (
 
 type Target struct {
 	name   string
-	apiUrl string
+	ApiUrl string
 	SyncTarget
+}
+
+func NewTarget(name, url string) Target {
+	return Target{
+		name:   name,
+		ApiUrl: url,
+	}
 }
 
 type GraphQLTarget struct{}
@@ -39,7 +44,7 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	return t.wrapped.RoundTrip(req)
 }
 
-func (g *GraphQLTarget) getClient(url, token string) graphql.Client {
+func (g *GraphQLTarget) GetClient(url, token string) graphql.Client {
 	retryClient := retryablehttp.NewClient()
 	retryClient.HTTPClient = &http.Client{
 		Transport: &authTransport{
@@ -54,28 +59,4 @@ func (g *GraphQLTarget) getClient(url, token string) graphql.Client {
 
 func (t *Target) Name() string {
 	return t.name
-}
-
-type SyncTargetFunc func(ctx context.Context) SyncTarget
-
-func TargetProvider(fn SyncTargetFunc) SyncTargetFunc {
-	return func(ctx context.Context) SyncTarget {
-		return fn(ctx)
-	}
-}
-
-func GetTargets() map[string]SyncTargetFunc {
-	return map[string]SyncTargetFunc{
-		"anilist":   TargetProvider(NewAnilistTarget),
-		"hardcover": TargetProvider(NewHardcoverTarget),
-	}
-}
-
-func GetActiveTargets(enabled []string, ctx context.Context) (active []SyncTarget) {
-	for name, target := range GetTargets() {
-		if slices.Contains(enabled, name) {
-			active = append(active, target(ctx))
-		}
-	}
-	return active
 }

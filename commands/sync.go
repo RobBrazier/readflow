@@ -8,9 +8,9 @@ import (
 	"slices"
 
 	"github.com/RobBrazier/readflow/config"
+	"github.com/RobBrazier/readflow/internal/factory"
 	"github.com/RobBrazier/readflow/internal/sync"
 	"github.com/RobBrazier/readflow/source"
-	"github.com/RobBrazier/readflow/target"
 	"github.com/charmbracelet/log"
 	"github.com/urfave/cli/v3"
 )
@@ -22,7 +22,7 @@ type SyncCommand struct {
 	dryrun bool
 }
 
-func (c SyncCommand) validate() error {
+func (c SyncCommand) validate(allowedTargets []string) error {
 	var errs []error
 	cfgSource := c.cfg.Source
 	cfgTargets := c.cfg.Targets
@@ -31,10 +31,8 @@ func (c SyncCommand) validate() error {
 	if _, ok := sources[cfgSource]; !ok {
 		errs = append(errs, errors.New(fmt.Sprintf("Invalid source [%s] provided in configuration. Allowed values: %v", cfgSource, allowedSources)))
 	}
-	targets := target.GetTargets()
-	allowedTargets := slices.Collect(maps.Keys(targets))
 	for _, t := range cfgTargets {
-		if _, ok := targets[t]; !ok {
+		if !slices.Contains(allowedTargets, t) {
 			errs = append(errs, errors.New(fmt.Sprintf("Invalid target [%s] provided in configuration. Allowed values: %v", t, allowedTargets)))
 		}
 	}
@@ -50,14 +48,17 @@ func (c SyncCommand) Run() error {
 
 	log.Debug("sync called", "source", cfgSource, "targets", cfgTargets)
 
+	targetFactory := factory.NewTargetFactory(c.ctx)
+	allowedTargets := targetFactory.GetAvailable()
+
 	// run validation to ensure that valid source / targets are provided
-	err := c.validate()
+	err := c.validate(allowedTargets)
 	if err != nil {
 		return err
 	}
 
 	syncSource := source.GetActiveSource(cfgSource, c.ctx)
-	syncTargets := target.GetActiveTargets(cfgTargets, c.ctx)
+	syncTargets := targetFactory.GetTargets(cfgTargets)
 
 	action := sync.NewSyncAction(*syncSource, syncTargets, c.dryrun)
 	results, err := action.Sync()

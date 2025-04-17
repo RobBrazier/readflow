@@ -1,10 +1,3 @@
-query GetCurrentUser {
-  me {
-    name
-    username
-  }
-}
-
 query GetUserBooksBySlug($slug: String) {
   me {
     user_books(where: {book: {slug: {_eq: $slug}}}) {
@@ -20,6 +13,36 @@ query GetUserBooksBySlug($slug: String) {
       }
       user_book_reads(order_by: {started_at: desc}, limit: 1) {
         id
+        user_book_id
+        progress
+        progress_pages
+        started_at
+        finished_at
+        edition {
+          id
+          pages
+        }
+      }
+    }
+  }
+}
+
+query GetUserBooksBySlugAndEdition($slug: String, $editionId: Int) {
+  me {
+    user_books(where: {book: {slug: {_eq: $slug}}}) {
+      status_id
+      book_id
+      book {
+        slug
+        title
+      }
+      edition {
+        id
+        pages
+      }
+      user_book_reads(order_by: {started_at: desc}, limit: 1, where: {edition_id: { _eq: $editionId }}) {
+        id
+        user_book_id
         progress
         progress_pages
         started_at

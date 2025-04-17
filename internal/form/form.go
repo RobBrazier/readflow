@@ -6,8 +6,8 @@ import (
 	"maps"
 	"strconv"
 
+	"github.com/RobBrazier/readflow/internal/factory"
 	"github.com/RobBrazier/readflow/source"
-	"github.com/RobBrazier/readflow/target"
 	"github.com/charmbracelet/huh"
 )
 
@@ -44,9 +44,9 @@ func SourceSelect(ctx context.Context, value *string) *huh.Select[string] {
 }
 
 func TargetSelect(ctx context.Context, value *[]string) *huh.MultiSelect[string] {
-	targets := target.GetTargets()
+	targets := factory.NewTargetFactory(ctx).GetAvailable()
 	options := []huh.Option[string]{}
-	for name := range maps.Keys(targets) {
+	for _, name := range targets {
 		label := getOptionLabel(name, targetLabels)
 		option := huh.NewOption(label, name)
 

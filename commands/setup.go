@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/RobBrazier/readflow/config"
+	"github.com/RobBrazier/readflow/internal/factory"
 	"github.com/RobBrazier/readflow/internal/form"
-	"github.com/RobBrazier/readflow/target"
 	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/log"
@@ -20,18 +20,10 @@ import (
 )
 
 type SetupCommand struct {
-	ctx context.Context
-	cfg *config.Config
-	cmd *cli.Command
-}
-
-func (c SetupCommand) getTarget(name string) target.SyncTarget {
-	for targetName, target := range target.GetTargets() {
-		if targetName == name {
-			return target(c.ctx)
-		}
-	}
-	return nil
+	ctx     context.Context
+	cfg     *config.Config
+	cmd     *cli.Command
+	targets factory.TargetFactory
 }
 
 type tokenLink struct {
@@ -139,14 +131,13 @@ func (c SetupCommand) createReauthGroups(tokens []*tokenLink) []*huh.Group {
 		authGroups    []*huh.Group
 		groups        []*huh.Group
 	)
-	targets := target.GetTargets()
 	tokenMap := make(map[string]*tokenLink)
 	for _, token := range tokens {
 		tokenMap[token.Name] = token
 	}
-	for name, targetFn := range targets {
+	for _, name := range c.targets.GetAvailable() {
 		title := cases.Title(language.English).String(name)
-		target := targetFn(c.ctx)
+		target, _ := c.targets.GetTarget(name)
 
 		token := tokenMap[name]
 		shouldFetch := token.ShouldFetch
@@ -187,9 +178,10 @@ func (c SetupCommand) createReauthGroups(tokens []*tokenLink) []*huh.Group {
 func NewSetupCommand(ctx context.Context, cmd *cli.Command) error {
 	cfg := config.GetFromContext(ctx)
 	command := SetupCommand{
-		ctx: ctx,
-		cmd: cmd,
-		cfg: cfg,
+		ctx:     ctx,
+		cmd:     cmd,
+		cfg:     cfg,
+		targets: factory.NewTargetFactory(ctx),
 	}
 	return command.Run()
 }
