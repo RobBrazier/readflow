@@ -13,6 +13,7 @@ require (
 	github.com/goccy/go-yaml v1.15.10
 	github.com/hashicorp/go-retryablehttp v0.7.7
 	github.com/jmoiron/sqlx v1.4.0
+	github.com/joho/godotenv v1.5.1
 	github.com/spf13/cobra v1.8.1
 	modernc.org/sqlite v1.34.2
 )
