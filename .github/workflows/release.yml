@@ -38,15 +38,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Generate a changelog
-        uses: orhun/git-cliff-action@4a4a951bc43fafe41cd2348d181853f52356bee7 # v4
-        with:
-          config: cliff.toml
-          args: --current --strip all \
+        run: >
+          git cliff --config=cliff.toml --current --strip all \
             --github-repo ${{ github.repository }} \
             --github-token ${{ secrets.GITHUB_TOKEN }}
         env:
-          OUTPUT: RELEASE_NOTES.md
-          GITHUB_REPO: ${{ github.repository }}
+          GIT_CLIFF_OUTPUT: RELEASE_NOTES.md
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@9ed2f89a662bf1735a48bc8557fd212fa902bebf # v6
         with:

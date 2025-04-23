@@ -15,6 +15,7 @@ require (
 	github.com/goccy/go-yaml v1.17.1
 	github.com/hashicorp/go-retryablehttp v0.7.7
 	github.com/jmoiron/sqlx v1.4.0
+	github.com/joho/godotenv v1.5.1
 	github.com/spf13/cobra v1.9.1
 	modernc.org/sqlite v1.37.0
 )

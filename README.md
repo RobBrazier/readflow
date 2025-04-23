@@ -97,6 +97,7 @@ docker pull ghcr.io/robbrazier/readflow
 | CRON_SCHEDULE       | @hourly           | See [crontab.guru](https://crontab.guru/#@hourly) for syntax                                                        |
 | TOKEN_ANILIST       |                   | Anilist token - Retrieve from [here](https://anilist.co/api/v2/oauth/authorize?client_id=21288&response_type=token) |
 | TOKEN_HARDCOVER     |                   | Hardcover token - Retrieve from [here](https://hardcover.app/account/api)                                           |
+| SYNC_DAYS           | 1                 | Number of days of reading history to sync                                                                           |
 <!-- markdownlint-restore -->
 
 ### Run modes

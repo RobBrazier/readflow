@@ -10,6 +10,7 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/creasty/defaults"
 	"github.com/goccy/go-yaml"
+	_ "github.com/joho/godotenv/autoload"
 )
 
 func GetConfigPath(override *string, name string) string {
