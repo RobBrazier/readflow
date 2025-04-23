@@ -22,6 +22,7 @@ readflow
 # DB Browser for SQLite project file
 *.sqbpro
 **/*.db
+pull.sh
 
 # Dependency directories (remove the comment below to include it)
 # vendor/

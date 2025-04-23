@@ -1,0 +1,48 @@
+type: http_request
+model: http_request
+id: rq_tzAqb6rQJG
+createdAt: 2025-04-17T19:40:20.752155297
+updatedAt: 2025-04-17T20:16:37.386816265
+workspaceId: wk_eZ8MWofvu7
+folderId: fl_3XmdLSmjJK
+authentication:
+  disabled: false
+  token: ${[ API_TOKEN ]}
+authenticationType: bearer
+body:
+  query: |
+    mutation FinishBookProgress($id: Int!, $pages: Int, $editionId: Int, $startedAt: date, $finishedAt: date) {
+      update_user_book_read(id: $id, object: {
+        progress_pages: $pages,
+        edition_id: $editionId,
+        started_at: $startedAt,
+        finished_at: $finishedAt,
+      }) {
+        id
+        error
+      }
+    }
+  variables: |-
+    {
+      "id": 0,
+      "pages": 1,
+      "editionId": 0,
+      "startedAt": "1990-01-01",
+      "finishedAt": "1990-01-01"
+    }
+bodyType: graphql
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: d64ZJ9DiZm
+- enabled: true
+  name: ''
+  value: ''
+  id: nUacnHTfk2
+method: POST
+name: FinishBookProgress
+sortPriority: 3000.0
+url: https://${[ API_SUBDOMAIN ]}.hardcover.app/v1/graphql
+urlParameters: []

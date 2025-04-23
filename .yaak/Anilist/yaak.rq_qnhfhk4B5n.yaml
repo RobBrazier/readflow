@@ -1,0 +1,46 @@
+type: http_request
+model: http_request
+id: rq_qnhfhk4B5n
+createdAt: 2025-04-17T20:05:23.493974830
+updatedAt: 2025-04-17T20:15:40.411295802
+workspaceId: wk_Ad2QL2FK2S
+folderId: fl_DBFYrZbXLy
+authentication:
+  accessTokenUrl: https://anilist.co/api/v2/oauth/token
+  authorizationUrl: https://anilist.co/api/v2/oauth/authorize
+  clientId: ${[ CLIENT_ID ]}
+  clientSecret: ${[ CLIENT_SECRET ]}
+  credentials: body
+  grantType: authorization_code
+  redirectUri: https://anilist.co/api/v2/oauth/pin
+authenticationType: oauth2
+body:
+  query: |
+    mutation UpdateProgress($mediaId: Int, $progress: Int, $progressVolumes: Int, $status: MediaListStatus) {
+      SaveMediaListEntry(progress: $progress, progressVolumes: $progressVolumes, mediaId: $mediaId, status: $status) {
+        id
+        mediaId
+        progress
+        progressVolumes
+        status
+      }
+    }
+  variables: |-
+    {
+      "mediaId": 125828,
+      "progress": 82,
+      "progressVolumes": 10,
+      "status": "CURRENT"
+    }
+bodyType: graphql
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: r5bqhHDTU5
+method: POST
+name: UpdateProgress
+sortPriority: 0.0
+url: https://graphql.anilist.co
+urlParameters: []

@@ -1,0 +1,10 @@
+type: workspace
+model: workspace
+id: wk_Ad2QL2FK2S
+createdAt: 2025-04-17T19:47:20.975352591
+updatedAt: 2025-04-17T19:47:20.975352982
+name: Anilist
+description: ''
+settingValidateCertificates: true
+settingFollowRedirects: true
+settingRequestTimeout: 0

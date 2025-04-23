@@ -111,6 +111,8 @@ input BookMappingInput {
 	platform_id: Int!
 }
 input BookSeriesDtoInput {
+	collection_book_ids: [Int]
+	compilation: Boolean
 	details: String
 	featured: Boolean
 	name: String
@@ -136,6 +138,23 @@ input CharacterDtoInput {
 	position: Int!
 	spoiler: Boolean!
 }
+type CharacterIdType {
+	character: characters
+	errors: [String]
+	id: Int
+}
+input CharacterInput {
+	biography: String
+	gender_id: Int
+	has_disability: Boolean
+	image_id: Int
+	is_lgbtq: Boolean
+	is_poc: Boolean
+	locked: Boolean
+	name: String
+	slug: String
+	state: String
+}
 type CollectionImportIdType {
 	collection_import: collection_imports
 	id: Int
@@ -152,9 +171,6 @@ input CollectionImportInput {
 type CollectionImportResultIdType {
 	collection_import_result: collection_import_results
 	id: Int
-}
-type ConfirmationEmailReturnType {
-	message: String
 }
 input ContributionInputType {
 	author_id: Int!
@@ -179,6 +195,9 @@ input DatesReadInput {
 	progress_seconds: Int
 	reading_format_id: Int
 	started_at: date
+}
+type DeleteFollowedPromptType {
+	success: Boolean!
 }
 type DeleteListType {
 	success: Boolean!
@@ -209,6 +228,11 @@ type FollowedListType {
 	followed_list: followed_lists
 	id: Int
 }
+type FollowedPromptType {
+	errors: [String]
+	followed_prompt: followed_prompts
+	id: Int
+}
 type FollowedUserType {
 	error: String
 	followed_user: users
@@ -218,9 +242,27 @@ type FollowedUserType {
 	user: users
 	user_id: Int
 }
+input GoalConditionInput {
+	authorBipoc: Int
+	authorGenderIds: [Int]
+	authorLgbtqia: Int
+	bookCategoryIds: [Int]
+	readingFormatId: Int
+}
 type GoalIdType {
+	errors: [String]
 	goal: goals
 	id: Int
+}
+input GoalInput {
+	archived: Boolean
+	conditions: GoalConditionInput!
+	description: String!
+	end_date: date!
+	goal: Int!
+	metric: String!
+	privacy_setting_id: Int
+	start_date: date!
 }
 type ImageIdType {
 	id: Int!
@@ -249,95 +291,6 @@ input Int_comparison_exp {
 	_lte: Int
 	_neq: Int
 	_nin: [Int!]
-}
-type LetterbooksAuthorBook {
-	book_id: Int!
-	position: Int!
-}
-input LetterbooksAuthorCondition {
-	author_id: Int!
-}
-type LetterbooksAuthorOutput {
-	filtered_books: Int!
-	letterbooks: [LetterbooksAuthorBook]!
-	total_books: Int!
-}
-input LetterbooksBookCondition {
-	max_release_date: date
-	min_release_date: date
-}
-type LetterbooksGoalBook {
-	book_id: Int!
-	position: Int!
-	user_book_read_id: Int!
-}
-input LetterbooksGoalCondition {
-	goal_id: Int!
-}
-type LetterbooksGoalOutput {
-	filtered_books: Int!
-	letterbooks: [LetterbooksGoalBook]!
-	total_books: Int!
-}
-type LetterbooksLibraryBook {
-	book_id: Int!
-	position: Int!
-	user_book_id: Int!
-}
-input LetterbooksLibraryCondition {
-	status_id: Int
-	user_id: Int!
-}
-type LetterbooksLibraryOutput {
-	filtered_books: Int!
-	letterbooks: [LetterbooksLibraryBook]!
-	total_books: Int!
-}
-type LetterbooksListBook {
-	book_id: Int!
-	list_book_id: Int!
-	position: Int!
-}
-input LetterbooksListCondition {
-	list_id: Int!
-}
-input LetterbooksListOrder {
-	direction: String!
-	fieldname: String!
-}
-type LetterbooksListOutput {
-	filtered_books: Int!
-	letterbooks: [LetterbooksListBook]!
-	total_books: Int!
-}
-type LetterbooksPromptBook {
-	book_id: Int!
-	position: Int!
-}
-input LetterbooksPromptCondition {
-	prompt_id: Int!
-}
-type LetterbooksPromptOutput {
-	filtered_books: Int!
-	letterbooks: [LetterbooksPromptBook]!
-	total_books: Int!
-}
-type LetterbooksTagBook {
-	book_id: Int!
-	position: Int!
-}
-input LetterbooksTagCondition {
-	tag_category_slug: String!
-	tag_slug: String!
-}
-input LetterbooksTagOrder {
-	direction: String!
-	fieldname: String!
-}
-type LetterbooksTagOutput {
-	filtered_books: Int!
-	letterbooks: [LetterbooksTagBook]!
-	total_books: Int!
 }
 type LikeDeleteType {
 	likes_count: Int!
@@ -418,9 +371,14 @@ type PublisherIdType {
 	publisher: publishers
 }
 input PublisherInputType {
+	canonical_id: Int
+	locked: Boolean
 	name: String
+	slug: String
+	state: String
 }
 input ReadingJournalCreateType {
+	action_at: date
 	book_id: Int!
 	edition_id: Int
 	entry: String
@@ -435,6 +393,7 @@ type ReadingJournalOutput {
 	reading_journal: reading_journals
 }
 input ReadingJournalUpdateType {
+	action_at: date
 	edition_id: Int
 	entry: String
 	event: String
@@ -460,10 +419,12 @@ type ReportOutput {
 	errors: [String]
 }
 type SearchOutput {
+	error: String
+	ids: [Int]
 	page: Int
 	per_page: Int
-	query: String!
-	query_type: String!
+	query: String
+	query_type: String
 	results: jsonb
 }
 type SeriesIdType {
@@ -483,9 +444,6 @@ input SeriesInputType {
 	name: String
 	slug: String
 	state: String
-}
-type SignedImageUrlType {
-	url: String!
 }
 """
 Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'.
@@ -563,6 +521,7 @@ type TagsType {
 	tags: [BasicTagType]!
 }
 type TrendingBookType {
+	error: String
 	ids: [Int]
 }
 input UpdatePromptInput {
@@ -634,10 +593,6 @@ type UserBooksReadUpsertType {
 	error: String
 	user_book: user_books
 	user_book_id: Int
-}
-type UserForgotPasswordType {
-	error: String
-	valid: Boolean!
 }
 type UserIdType {
 	errors: [String]
@@ -3154,6 +3109,12 @@ type books {
 		"""
 		path: String
 	): json!
+	cached_featured_series(
+		"""
+		JSON select path
+		"""
+		path: String
+	): jsonb
 	cached_header_image(
 		"""
 		JSON select path
@@ -3336,6 +3297,11 @@ type books {
 		where: editions_bool_exp
 	): [editions!]!
 	editions_count: Int!
+	"""
+	An object relationship
+	"""
+	featured_book_series: book_series
+	featured_book_series_id: Int
 	header_image_id: Int
 	headline: String
 	id: Int!
@@ -3577,6 +3543,35 @@ type books {
 	"""
 	An array relationship
 	"""
+	taggable_counts(
+		"""
+		distinct select on columns
+		"""
+		distinct_on: [taggable_counts_select_column!]
+
+		"""
+		limit the number of rows returned
+		"""
+		limit: Int
+
+		"""
+		skip the first n rows. Use only with order_by
+		"""
+		offset: Int
+
+		"""
+		sort the rows by one or more columns
+		"""
+		order_by: [taggable_counts_order_by!]
+
+		"""
+		filter the rows returned
+		"""
+		where: taggable_counts_bool_exp
+	): [taggable_counts!]!
+	"""
+	An array relationship
+	"""
 	taggings(
 		"""
 		distinct select on columns
@@ -3773,6 +3768,7 @@ type books_avg_fields {
 	default_ebook_edition_id: Float
 	default_physical_edition_id: Float
 	editions_count: Float
+	featured_book_series_id: Float
 	header_image_id: Float
 	id: Float
 	image_id: Float
@@ -3804,6 +3800,7 @@ input books_avg_order_by {
 	default_ebook_edition_id: order_by
 	default_physical_edition_id: order_by
 	editions_count: order_by
+	featured_book_series_id: order_by
 	header_image_id: order_by
 	id: order_by
 	image_id: order_by
@@ -3838,6 +3835,7 @@ input books_bool_exp {
 	book_status: book_statuses_bool_exp
 	book_status_id: smallint_comparison_exp
 	cached_contributors: json_comparison_exp
+	cached_featured_series: jsonb_comparison_exp
 	cached_header_image: jsonb_comparison_exp
 	cached_image: jsonb_comparison_exp
 	cached_tags: json_comparison_exp
@@ -3863,6 +3861,8 @@ input books_bool_exp {
 	dto_external: json_comparison_exp
 	editions: editions_bool_exp
 	editions_count: Int_comparison_exp
+	featured_book_series: book_series_bool_exp
+	featured_book_series_id: Int_comparison_exp
 	header_image_id: Int_comparison_exp
 	headline: String_comparison_exp
 	id: Int_comparison_exp
@@ -3892,6 +3892,7 @@ input books_bool_exp {
 	slug: String_comparison_exp
 	state: String_comparison_exp
 	subtitle: String_comparison_exp
+	taggable_counts: taggable_counts_bool_exp
 	taggings: taggings_bool_exp
 	taggings_aggregate: taggings_aggregate_bool_exp
 	title: String_comparison_exp
@@ -3919,6 +3920,7 @@ type books_max_fields {
 	default_physical_edition_id: Int
 	description: String
 	editions_count: Int
+	featured_book_series_id: Int
 	header_image_id: Int
 	headline: String
 	id: Int
@@ -3959,6 +3961,7 @@ input books_max_order_by {
 	default_physical_edition_id: order_by
 	description: order_by
 	editions_count: order_by
+	featured_book_series_id: order_by
 	header_image_id: order_by
 	headline: order_by
 	id: order_by
@@ -3999,6 +4002,7 @@ type books_min_fields {
 	default_physical_edition_id: Int
 	description: String
 	editions_count: Int
+	featured_book_series_id: Int
 	header_image_id: Int
 	headline: String
 	id: Int
@@ -4039,6 +4043,7 @@ input books_min_order_by {
 	default_physical_edition_id: order_by
 	description: order_by
 	editions_count: order_by
+	featured_book_series_id: order_by
 	header_image_id: order_by
 	headline: order_by
 	id: order_by
@@ -4076,6 +4081,7 @@ input books_order_by {
 	book_status: book_statuses_order_by
 	book_status_id: order_by
 	cached_contributors: order_by
+	cached_featured_series: order_by
 	cached_header_image: order_by
 	cached_image: order_by
 	cached_tags: order_by
@@ -4100,6 +4106,8 @@ input books_order_by {
 	dto_external: order_by
 	editions_aggregate: editions_aggregate_order_by
 	editions_count: order_by
+	featured_book_series: book_series_order_by
+	featured_book_series_id: order_by
 	header_image_id: order_by
 	headline: order_by
 	id: order_by
@@ -4127,6 +4135,7 @@ input books_order_by {
 	slug: order_by
 	state: order_by
 	subtitle: order_by
+	taggable_counts_aggregate: taggable_counts_aggregate_order_by
 	taggings_aggregate: taggings_aggregate_order_by
 	title: order_by
 	updated_at: order_by
@@ -4163,6 +4172,10 @@ enum books_select_column {
 	column name
 	"""
 	cached_contributors
+	"""
+	column name
+	"""
+	cached_featured_series
 	"""
 	column name
 	"""
@@ -4227,6 +4240,10 @@ enum books_select_column {
 	column name
 	"""
 	editions_count
+	"""
+	column name
+	"""
+	featured_book_series_id
 	"""
 	column name
 	"""
@@ -4381,6 +4398,7 @@ type books_stddev_fields {
 	default_ebook_edition_id: Float
 	default_physical_edition_id: Float
 	editions_count: Float
+	featured_book_series_id: Float
 	header_image_id: Float
 	id: Float
 	image_id: Float
@@ -4412,6 +4430,7 @@ input books_stddev_order_by {
 	default_ebook_edition_id: order_by
 	default_physical_edition_id: order_by
 	editions_count: order_by
+	featured_book_series_id: order_by
 	header_image_id: order_by
 	id: order_by
 	image_id: order_by
@@ -4443,6 +4462,7 @@ type books_stddev_pop_fields {
 	default_ebook_edition_id: Float
 	default_physical_edition_id: Float
 	editions_count: Float
+	featured_book_series_id: Float
 	header_image_id: Float
 	id: Float
 	image_id: Float
@@ -4474,6 +4494,7 @@ input books_stddev_pop_order_by {
 	default_ebook_edition_id: order_by
 	default_physical_edition_id: order_by
 	editions_count: order_by
+	featured_book_series_id: order_by
 	header_image_id: order_by
 	id: order_by
 	image_id: order_by
@@ -4505,6 +4526,7 @@ type books_stddev_samp_fields {
 	default_ebook_edition_id: Float
 	default_physical_edition_id: Float
 	editions_count: Float
+	featured_book_series_id: Float
 	header_image_id: Float
 	id: Float
 	image_id: Float
@@ -4536,6 +4558,7 @@ input books_stddev_samp_order_by {
 	default_ebook_edition_id: order_by
 	default_physical_edition_id: order_by
 	editions_count: order_by
+	featured_book_series_id: order_by
 	header_image_id: order_by
 	id: order_by
 	image_id: order_by
@@ -4575,6 +4598,7 @@ input books_stream_cursor_value_input {
 	book_category_id: Int
 	book_status_id: smallint
 	cached_contributors: json
+	cached_featured_series: jsonb
 	cached_header_image: jsonb
 	cached_image: jsonb
 	cached_tags: json
@@ -4591,6 +4615,7 @@ input books_stream_cursor_value_input {
 	dto_combined: json
 	dto_external: json
 	editions_count: Int
+	featured_book_series_id: Int
 	header_image_id: Int
 	headline: String
 	id: Int
@@ -4633,6 +4658,7 @@ type books_sum_fields {
 	default_ebook_edition_id: Int
 	default_physical_edition_id: Int
 	editions_count: Int
+	featured_book_series_id: Int
 	header_image_id: Int
 	id: Int
 	image_id: Int
@@ -4664,6 +4690,7 @@ input books_sum_order_by {
 	default_ebook_edition_id: order_by
 	default_physical_edition_id: order_by
 	editions_count: order_by
+	featured_book_series_id: order_by
 	header_image_id: order_by
 	id: order_by
 	image_id: order_by
@@ -4695,6 +4722,7 @@ type books_var_pop_fields {
 	default_ebook_edition_id: Float
 	default_physical_edition_id: Float
 	editions_count: Float
+	featured_book_series_id: Float
 	header_image_id: Float
 	id: Float
 	image_id: Float
@@ -4726,6 +4754,7 @@ input books_var_pop_order_by {
 	default_ebook_edition_id: order_by
 	default_physical_edition_id: order_by
 	editions_count: order_by
+	featured_book_series_id: order_by
 	header_image_id: order_by
 	id: order_by
 	image_id: order_by
@@ -4757,6 +4786,7 @@ type books_var_samp_fields {
 	default_ebook_edition_id: Float
 	default_physical_edition_id: Float
 	editions_count: Float
+	featured_book_series_id: Float
 	header_image_id: Float
 	id: Float
 	image_id: Float
@@ -4788,6 +4818,7 @@ input books_var_samp_order_by {
 	default_ebook_edition_id: order_by
 	default_physical_edition_id: order_by
 	editions_count: order_by
+	featured_book_series_id: order_by
 	header_image_id: order_by
 	id: order_by
 	image_id: order_by
@@ -4819,6 +4850,7 @@ type books_variance_fields {
 	default_ebook_edition_id: Float
 	default_physical_edition_id: Float
 	editions_count: Float
+	featured_book_series_id: Float
 	header_image_id: Float
 	id: Float
 	image_id: Float
@@ -4850,6 +4882,7 @@ input books_variance_order_by {
 	default_ebook_edition_id: order_by
 	default_physical_edition_id: order_by
 	editions_count: order_by
+	featured_book_series_id: order_by
 	header_image_id: order_by
 	id: order_by
 	image_id: order_by
@@ -4978,12 +5011,14 @@ type characters {
 	image_id: Int
 	is_lgbtq: Boolean
 	is_poc: Boolean
+	locked: Boolean
 	name: String!
 	object_type: String!
 	openlibrary_url: String
 	slug: String!
 	state: String!
 	updated_at: timestamp!
+	user_id: Int
 }
 """
 Boolean expression to filter rows from the table "characters". All fields are combined with a logical 'AND'.
@@ -5008,12 +5043,14 @@ input characters_bool_exp {
 	image_id: Int_comparison_exp
 	is_lgbtq: Boolean_comparison_exp
 	is_poc: Boolean_comparison_exp
+	locked: Boolean_comparison_exp
 	name: String_comparison_exp
 	object_type: String_comparison_exp
 	openlibrary_url: String_comparison_exp
 	slug: String_comparison_exp
 	state: String_comparison_exp
 	updated_at: timestamp_comparison_exp
+	user_id: Int_comparison_exp
 }
 """
 Ordering options when selecting data from "characters".
@@ -5034,12 +5071,14 @@ input characters_order_by {
 	image_id: order_by
 	is_lgbtq: order_by
 	is_poc: order_by
+	locked: order_by
 	name: order_by
 	object_type: order_by
 	openlibrary_url: order_by
 	slug: order_by
 	state: order_by
 	updated_at: order_by
+	user_id: order_by
 }
 """
 select columns of table "characters"
@@ -5096,6 +5135,10 @@ enum characters_select_column {
 	"""
 	column name
 	"""
+	locked
+	"""
+	column name
+	"""
 	name
 	"""
 	column name
@@ -5117,6 +5160,10 @@ enum characters_select_column {
 	column name
 	"""
 	updated_at
+	"""
+	column name
+	"""
+	user_id
 }
 """
 Streaming cursor of the table "characters"
@@ -5147,12 +5194,14 @@ input characters_stream_cursor_value_input {
 	image_id: Int
 	is_lgbtq: Boolean
 	is_poc: Boolean
+	locked: Boolean
 	name: String
 	object_type: String
 	openlibrary_url: String
 	slug: String
 	state: String
 	updated_at: timestamp
+	user_id: Int
 }
 scalar citext
 """
@@ -8658,12 +8707,6 @@ input goals_aggregate_order_by {
 	variance: goals_variance_order_by
 }
 """
-append existing jsonb value of filtered columns with new jsonb value
-"""
-input goals_append_input {
-	conditions: jsonb
-}
-"""
 order by avg() on columns of table "goals"
 """
 input goals_avg_order_by {
@@ -8695,55 +8738,6 @@ input goals_bool_exp {
 	state: String_comparison_exp
 	user: users_bool_exp
 	user_id: Int_comparison_exp
-}
-"""
-unique or primary key constraints on table "goals"
-"""
-enum goals_constraint {
-	"""
-	unique or primary key constraint on columns "id"
-	"""
-	goals_pkey
-}
-"""
-delete the field or element with specified path (for JSON arrays, negative integers count from the end)
-"""
-input goals_delete_at_path_input {
-	conditions: [String!]
-}
-"""
-delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
-"""
-input goals_delete_elem_input {
-	conditions: Int
-}
-"""
-delete key/value pair or string element. key/value pairs are matched based on their key value
-"""
-input goals_delete_key_input {
-	conditions: String
-}
-"""
-input type for incrementing numeric columns in table "goals"
-"""
-input goals_inc_input {
-	goal: Int
-	privacy_setting_id: Int
-	user_id: Int
-}
-"""
-input type for inserting data into table "goals"
-"""
-input goals_insert_input {
-	archived: Boolean
-	conditions: jsonb
-	description: String
-	end_date: date
-	goal: Int
-	metric: String
-	privacy_setting_id: Int
-	start_date: date
-	user_id: Int
 }
 """
 order by max() on columns of table "goals"
@@ -8791,14 +8785,6 @@ type goals_mutation_response {
 	returning: [goals!]!
 }
 """
-on_conflict condition type for table "goals"
-"""
-input goals_on_conflict {
-	constraint: goals_constraint!
-	update_columns: [goals_update_column!]! = []
-	where: goals_bool_exp
-}
-"""
 Ordering options when selecting data from "goals".
 """
 input goals_order_by {
@@ -8817,18 +8803,6 @@ input goals_order_by {
 	state: order_by
 	user: users_order_by
 	user_id: order_by
-}
-"""
-primary key columns input for table: goals
-"""
-input goals_pk_columns_input {
-	id: Int!
-}
-"""
-prepend existing jsonb value of filtered columns with new jsonb value
-"""
-input goals_prepend_input {
-	conditions: jsonb
 }
 """
 select columns of table "goals"
@@ -8886,20 +8860,6 @@ enum goals_select_column {
 	column name
 	"""
 	user_id
-}
-"""
-input type for updating data in table "goals"
-"""
-input goals_set_input {
-	archived: Boolean
-	conditions: jsonb
-	description: String
-	end_date: date
-	goal: Int
-	metric: String
-	privacy_setting_id: Int
-	start_date: date
-	user_id: Int
 }
 """
 order by stddev() on columns of table "goals"
@@ -8971,81 +8931,6 @@ input goals_sum_order_by {
 	privacy_setting_id: order_by
 	progress: order_by
 	user_id: order_by
-}
-"""
-update columns of table "goals"
-"""
-enum goals_update_column {
-	"""
-	column name
-	"""
-	archived
-	"""
-	column name
-	"""
-	conditions
-	"""
-	column name
-	"""
-	description
-	"""
-	column name
-	"""
-	end_date
-	"""
-	column name
-	"""
-	goal
-	"""
-	column name
-	"""
-	metric
-	"""
-	column name
-	"""
-	privacy_setting_id
-	"""
-	column name
-	"""
-	start_date
-	"""
-	column name
-	"""
-	user_id
-}
-input goals_updates {
-	"""
-	append existing jsonb value of filtered columns with new jsonb value
-	"""
-	_append: goals_append_input
-	"""
-	delete the field or element with specified path (for JSON arrays, negative integers count from the end)
-	"""
-	_delete_at_path: goals_delete_at_path_input
-	"""
-	delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
-	"""
-	_delete_elem: goals_delete_elem_input
-	"""
-	delete key/value pair or string element. key/value pairs are matched based on their key value
-	"""
-	_delete_key: goals_delete_key_input
-	"""
-	increments the numeric columns with given value of the filtered values
-	"""
-	_inc: goals_inc_input
-	"""
-	prepend existing jsonb value of filtered columns with new jsonb value
-	"""
-	_prepend: goals_prepend_input
-	"""
-	sets the columns of the filtered rows to the given values
-	"""
-	_set: goals_set_input
-	"""
-	filter the rows which have to be updated
-	"""
-	where: goals_bool_exp!
 }
 """
 order by var_pop() on columns of table "goals"
@@ -11052,6 +10937,10 @@ type mutation_root {
 	"""
 	delete_followed_list(list_id: Int!): DeleteListType
 	"""
+	delete_followed_prompt
+	"""
+	delete_followed_prompt(prompt_id: Int!): DeleteFollowedPromptType
+	"""
 	delete data from the table: "followed_prompts"
 	"""
 	delete_followed_prompts(
@@ -11158,10 +11047,6 @@ type mutation_root {
 	"""
 	edition_owned(id: Int!): ListBookIdType
 	"""
-	email_user_confirmation
-	"""
-	email_user_confirmation: ConfirmationEmailReturnType
-	"""
 	email_user_delete_confirmation
 	"""
 	email_user_delete_confirmation: SuccessType
@@ -11181,6 +11066,10 @@ type mutation_root {
 	insert_book_mapping
 	"""
 	insert_book_mapping(object: BookMappingInput!): BookMappingIdType
+	"""
+	insert_character
+	"""
+	insert_character(character: CharacterInput!): CharacterIdType
 	"""
 	insert_collection_import
 	"""
@@ -11222,33 +11111,9 @@ type mutation_root {
 	"""
 	insert_followed_user(user_id: Int!): FollowedUserType
 	"""
-	insert data into the table: "goals"
+	insert_goal
 	"""
-	insert_goals(
-		"""
-		the rows to be inserted
-		"""
-		objects: [goals_insert_input!]!
-
-		"""
-		upsert condition
-		"""
-		on_conflict: goals_on_conflict
-	): goals_mutation_response
-	"""
-	insert a single row into the table: "goals"
-	"""
-	insert_goals_one(
-		"""
-		the row to be inserted
-		"""
-		object: goals_insert_input!
-
-		"""
-		upsert condition
-		"""
-		on_conflict: goals_on_conflict
-	): goals
+	insert_goal(object: GoalInput!): GoalIdType
 	"""
 	insert_image
 	"""
@@ -11300,7 +11165,7 @@ type mutation_root {
 	"""
 	insert_publisher
 	"""
-	insert_publisher(object: PublisherInputType!): PublisherIdType
+	insert_publisher(publisher: PublisherInputType!): PublisherIdType
 	"""
 	insert_reading_journal
 	"""
@@ -11391,6 +11256,10 @@ type mutation_root {
 	"""
 	update_book(book: BookInput!, id: Int!): BookIdType
 	"""
+	update_character
+	"""
+	update_character(character: CharacterInput!, id: Int!): CharacterIdType
+	"""
 	update data of the table: "collection_import_results"
 	"""
 	update_collection_import_results(
@@ -11479,101 +11348,13 @@ type mutation_root {
 		updates: [followed_prompts_updates!]!
 	): [followed_prompts_mutation_response]
 	"""
+	update_goal
+	"""
+	update_goal(id: Int!, object: GoalInput!): GoalIdType
+	"""
 	update_goal_progress
 	"""
 	update_goal_progress(id: Int!): GoalIdType
-	"""
-	update data of the table: "goals"
-	"""
-	update_goals(
-		"""
-		append existing jsonb value of filtered columns with new jsonb value
-		"""
-		_append: goals_append_input
-
-		"""
-		delete the field or element with specified path (for JSON arrays, negative integers count from the end)
-		"""
-		_delete_at_path: goals_delete_at_path_input
-
-		"""
-		delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
-		"""
-		_delete_elem: goals_delete_elem_input
-
-		"""
-		delete key/value pair or string element. key/value pairs are matched based on their key value
-		"""
-		_delete_key: goals_delete_key_input
-
-		"""
-		increments the numeric columns with given value of the filtered values
-		"""
-		_inc: goals_inc_input
-
-		"""
-		prepend existing jsonb value of filtered columns with new jsonb value
-		"""
-		_prepend: goals_prepend_input
-
-		"""
-		sets the columns of the filtered rows to the given values
-		"""
-		_set: goals_set_input
-
-		"""
-		filter the rows which have to be updated
-		"""
-		where: goals_bool_exp!
-	): goals_mutation_response
-	"""
-	update single row of the table: "goals"
-	"""
-	update_goals_by_pk(
-		"""
-		append existing jsonb value of filtered columns with new jsonb value
-		"""
-		_append: goals_append_input
-
-		"""
-		delete the field or element with specified path (for JSON arrays, negative integers count from the end)
-		"""
-		_delete_at_path: goals_delete_at_path_input
-
-		"""
-		delete the array element with specified index (negative integers count from the end). throws an error if top level container is not an array
-		"""
-		_delete_elem: goals_delete_elem_input
-
-		"""
-		delete key/value pair or string element. key/value pairs are matched based on their key value
-		"""
-		_delete_key: goals_delete_key_input
-
-		"""
-		increments the numeric columns with given value of the filtered values
-		"""
-		_inc: goals_inc_input
-
-		"""
-		prepend existing jsonb value of filtered columns with new jsonb value
-		"""
-		_prepend: goals_prepend_input
-
-		"""
-		sets the columns of the filtered rows to the given values
-		"""
-		_set: goals_set_input
-	pk_columns: goals_pk_columns_input!): goals
-	"""
-	update multiples rows of table: "goals"
-	"""
-	update_goals_many(
-		"""
-		updates to execute, in order
-		"""
-		updates: [goals_updates!]!
-	): [goals_mutation_response]
 	"""
 	update_list
 	"""
@@ -11725,6 +11506,10 @@ type mutation_root {
 		updates: [prompt_answers_updates!]!
 	): [prompt_answers_mutation_response]
 	"""
+	update_publisher
+	"""
+	update_publisher(id: Int!, publisher: PublisherInputType!): PublisherIdType
+	"""
 	update_reading_journal
 	"""
 	update_reading_journal(id: Int!, object: ReadingJournalUpdateType!): ReadingJournalOutput
@@ -11757,6 +11542,10 @@ type mutation_root {
 	"""
 	upsert_followed_list(list_id: Int!): FollowedListType
 	"""
+	upsert_followed_prompt
+	"""
+	upsert_followed_prompt(prompt_id: Int!): FollowedPromptType
+	"""
 	upsert_like
 	"""
 	upsert_like(likeable_id: Int!, likeable_type: String): LikeType
@@ -11768,10 +11557,6 @@ type mutation_root {
 	upsert_user_book_read
 	"""
 	upsert_user_book_reads(datesRead: [DatesReadInput]!, user_book_id: Int!): UserBooksReadUpsertType
-	"""
-	user_forgot_password
-	"""
-	user_forgot_password(email: String!): UserForgotPasswordType
 	"""
 	user_login
 	"""
@@ -14309,6 +14094,7 @@ input prompts_variance_order_by {
 columns and relationships of "publishers"
 """
 type publishers {
+	canonical_id: Int
 	created_at: timestamp!
 	"""
 	An array relationship
@@ -14341,6 +14127,7 @@ type publishers {
 	): [editions!]!
 	editions_count: Int!
 	id: bigint!
+	locked: Boolean!
 	name: String
 	parent_id: Int
 	"""
@@ -14350,6 +14137,7 @@ type publishers {
 	slug: String!
 	state: String!
 	updated_at: timestamp!
+	user_id: Int
 }
 """
 Boolean expression to filter rows from the table "publishers". All fields are combined with a logical 'AND'.
@@ -14358,36 +14146,46 @@ input publishers_bool_exp {
 	_and: [publishers_bool_exp!]
 	_not: publishers_bool_exp
 	_or: [publishers_bool_exp!]
+	canonical_id: Int_comparison_exp
 	created_at: timestamp_comparison_exp
 	editions: editions_bool_exp
 	editions_count: Int_comparison_exp
 	id: bigint_comparison_exp
+	locked: Boolean_comparison_exp
 	name: String_comparison_exp
 	parent_id: Int_comparison_exp
 	parent_publisher: publishers_bool_exp
 	slug: String_comparison_exp
 	state: String_comparison_exp
 	updated_at: timestamp_comparison_exp
+	user_id: Int_comparison_exp
 }
 """
 Ordering options when selecting data from "publishers".
 """
 input publishers_order_by {
+	canonical_id: order_by
 	created_at: order_by
 	editions_aggregate: editions_aggregate_order_by
 	editions_count: order_by
 	id: order_by
+	locked: order_by
 	name: order_by
 	parent_id: order_by
 	parent_publisher: publishers_order_by
 	slug: order_by
 	state: order_by
 	updated_at: order_by
+	user_id: order_by
 }
 """
 select columns of table "publishers"
 """
 enum publishers_select_column {
+	"""
+	column name
+	"""
+	canonical_id
 	"""
 	column name
 	"""
@@ -14400,6 +14198,10 @@ enum publishers_select_column {
 	column name
 	"""
 	id
+	"""
+	column name
+	"""
+	locked
 	"""
 	column name
 	"""
@@ -14420,6 +14222,10 @@ enum publishers_select_column {
 	column name
 	"""
 	updated_at
+	"""
+	column name
+	"""
+	user_id
 }
 """
 Streaming cursor of the table "publishers"
@@ -14438,14 +14244,17 @@ input publishers_stream_cursor_input {
 Initial value of the column from where the streaming should start
 """
 input publishers_stream_cursor_value_input {
+	canonical_id: Int
 	created_at: timestamp
 	editions_count: Int
 	id: bigint
+	locked: Boolean
 	name: String
 	parent_id: Int
 	slug: String
 	state: String
 	updated_at: timestamp
+	user_id: Int
 }
 type query_root {
 	"""
@@ -14907,7 +14716,7 @@ type query_root {
 	"""
 	books_trending
 	"""
-	books_trending(from: date!, limit: Int, offset: Int, to: date): TrendingBookType
+	books_trending(from: date!, limit: Int!, offset: Int!, to: date!): TrendingBookType
 	"""
 	fetch data from the table: "characters"
 	"""
@@ -15417,10 +15226,6 @@ type query_root {
 	"""
 	goals_by_pk(id: Int!): goals
 	"""
-	image_url_signed
-	"""
-	image_url_signed(url: String!): SignedImageUrlType
-	"""
 	An array relationship
 	"""
 	images(
@@ -15486,21 +15291,6 @@ type query_root {
 	fetch data from the table: "languages" using primary key columns
 	"""
 	languages_by_pk(id: Int!): languages
-	letterbooks_author(book_conditions: LetterbooksBookCondition!, conditions: LetterbooksAuthorCondition!, context: String!, limit: Int!, order: LetterbooksListOrder!, start: Int!): LetterbooksAuthorOutput
-	letterbooks_goal(book_conditions: LetterbooksBookCondition!, conditions: LetterbooksGoalCondition!, context: String!, limit: Int!, order: LetterbooksListOrder!, start: Int!): LetterbooksGoalOutput
-	"""
-	letterbooks_library
-	"""
-	letterbooks_library(book_conditions: LetterbooksBookCondition!, conditions: LetterbooksLibraryCondition!, context: String!, limit: Int!, order: LetterbooksListOrder!, start: Int!): LetterbooksLibraryOutput
-	"""
-	letterbooks_list
-	"""
-	letterbooks_list(book_conditions: LetterbooksBookCondition!, conditions: LetterbooksListCondition!, context: String!, limit: Int!, order: LetterbooksListOrder!, start: Int!): LetterbooksListOutput
-	letterbooks_prompt(book_conditions: LetterbooksBookCondition!, conditions: LetterbooksPromptCondition!, context: String!, limit: Int!, order: LetterbooksListOrder!, start: Int!): LetterbooksPromptOutput
-	"""
-	letterbooks_tag
-	"""
-	letterbooks_tag(book_conditions: LetterbooksBookCondition!, conditions: LetterbooksTagCondition!, context: String!, limit: Int!, order: LetterbooksTagOrder!, start: Int!): LetterbooksTagOutput
 	"""
 	An array relationship
 	"""
@@ -16240,7 +16030,7 @@ type query_root {
 	referrals_for_user
 	"""
 	referrals_for_user(end_date: date, limit: Int!, start_date: date, user_id: Int!): [ReferralType]
-	search(page: Int, per_page: Int, query: String!, query_type: String): SearchOutput
+	search(fields: String, page: Int, per_page: Int, query: String!, query_type: String, sort: String, weights: String): SearchOutput
 	"""
 	fetch data from the table: "series"
 	"""
@@ -16311,6 +16101,39 @@ type query_root {
 	fetch data from the table: "tag_categories" using primary key columns
 	"""
 	tag_categories_by_pk(id: bigint!): tag_categories
+	"""
+	An array relationship
+	"""
+	taggable_counts(
+		"""
+		distinct select on columns
+		"""
+		distinct_on: [taggable_counts_select_column!]
+
+		"""
+		limit the number of rows returned
+		"""
+		limit: Int
+
+		"""
+		skip the first n rows. Use only with order_by
+		"""
+		offset: Int
+
+		"""
+		sort the rows by one or more columns
+		"""
+		order_by: [taggable_counts_order_by!]
+
+		"""
+		filter the rows returned
+		"""
+		where: taggable_counts_bool_exp
+	): [taggable_counts!]!
+	"""
+	fetch data from the table: "taggable_counts" using primary key columns
+	"""
+	taggable_counts_by_pk(id: bigint!): taggable_counts
 	"""
 	An array relationship
 	"""
@@ -20616,6 +20439,58 @@ type subscription_root {
 	"""
 	An array relationship
 	"""
+	taggable_counts(
+		"""
+		distinct select on columns
+		"""
+		distinct_on: [taggable_counts_select_column!]
+
+		"""
+		limit the number of rows returned
+		"""
+		limit: Int
+
+		"""
+		skip the first n rows. Use only with order_by
+		"""
+		offset: Int
+
+		"""
+		sort the rows by one or more columns
+		"""
+		order_by: [taggable_counts_order_by!]
+
+		"""
+		filter the rows returned
+		"""
+		where: taggable_counts_bool_exp
+	): [taggable_counts!]!
+	"""
+	fetch data from the table: "taggable_counts" using primary key columns
+	"""
+	taggable_counts_by_pk(id: bigint!): taggable_counts
+	"""
+	fetch data from the table in a streaming manner: "taggable_counts"
+	"""
+	taggable_counts_stream(
+		"""
+		maximum number of rows returned in a single batch
+		"""
+		batch_size: Int!
+
+		"""
+		cursor to stream the results returned by the query
+		"""
+		cursor: [taggable_counts_stream_cursor_input]!
+
+		"""
+		filter the rows returned
+		"""
+		where: taggable_counts_bool_exp
+	): [taggable_counts!]!
+	"""
+	An array relationship
+	"""
 	taggings(
 		"""
 		distinct select on columns
@@ -21462,6 +21337,253 @@ input tag_categories_stream_cursor_value_input {
 	slug: String
 }
 """
+columns and relationships of "taggable_counts"
+"""
+type taggable_counts {
+	"""
+	An object relationship
+	"""
+	book: books
+	count: Int!
+	created_at: timestamp!
+	hardcover_tagged: Boolean!
+	id: bigint!
+	spoiler_ratio: float8
+	"""
+	An object relationship
+	"""
+	tag: tags
+	tag_id: Int!
+	taggable_id: bigint!
+	taggable_type: String!
+	updated_at: timestamp!
+}
+"""
+order by aggregate values of table "taggable_counts"
+"""
+input taggable_counts_aggregate_order_by {
+	avg: taggable_counts_avg_order_by
+	count: order_by
+	max: taggable_counts_max_order_by
+	min: taggable_counts_min_order_by
+	stddev: taggable_counts_stddev_order_by
+	stddev_pop: taggable_counts_stddev_pop_order_by
+	stddev_samp: taggable_counts_stddev_samp_order_by
+	sum: taggable_counts_sum_order_by
+	var_pop: taggable_counts_var_pop_order_by
+	var_samp: taggable_counts_var_samp_order_by
+	variance: taggable_counts_variance_order_by
+}
+"""
+order by avg() on columns of table "taggable_counts"
+"""
+input taggable_counts_avg_order_by {
+	count: order_by
+	id: order_by
+	spoiler_ratio: order_by
+	tag_id: order_by
+	taggable_id: order_by
+}
+"""
+Boolean expression to filter rows from the table "taggable_counts". All fields are combined with a logical 'AND'.
+"""
+input taggable_counts_bool_exp {
+	_and: [taggable_counts_bool_exp!]
+	_not: taggable_counts_bool_exp
+	_or: [taggable_counts_bool_exp!]
+	book: books_bool_exp
+	count: Int_comparison_exp
+	created_at: timestamp_comparison_exp
+	hardcover_tagged: Boolean_comparison_exp
+	id: bigint_comparison_exp
+	spoiler_ratio: float8_comparison_exp
+	tag: tags_bool_exp
+	tag_id: Int_comparison_exp
+	taggable_id: bigint_comparison_exp
+	taggable_type: String_comparison_exp
+	updated_at: timestamp_comparison_exp
+}
+"""
+order by max() on columns of table "taggable_counts"
+"""
+input taggable_counts_max_order_by {
+	count: order_by
+	created_at: order_by
+	id: order_by
+	spoiler_ratio: order_by
+	tag_id: order_by
+	taggable_id: order_by
+	taggable_type: order_by
+	updated_at: order_by
+}
+"""
+order by min() on columns of table "taggable_counts"
+"""
+input taggable_counts_min_order_by {
+	count: order_by
+	created_at: order_by
+	id: order_by
+	spoiler_ratio: order_by
+	tag_id: order_by
+	taggable_id: order_by
+	taggable_type: order_by
+	updated_at: order_by
+}
+"""
+Ordering options when selecting data from "taggable_counts".
+"""
+input taggable_counts_order_by {
+	book: books_order_by
+	count: order_by
+	created_at: order_by
+	hardcover_tagged: order_by
+	id: order_by
+	spoiler_ratio: order_by
+	tag: tags_order_by
+	tag_id: order_by
+	taggable_id: order_by
+	taggable_type: order_by
+	updated_at: order_by
+}
+"""
+select columns of table "taggable_counts"
+"""
+enum taggable_counts_select_column {
+	"""
+	column name
+	"""
+	count
+	"""
+	column name
+	"""
+	created_at
+	"""
+	column name
+	"""
+	hardcover_tagged
+	"""
+	column name
+	"""
+	id
+	"""
+	column name
+	"""
+	spoiler_ratio
+	"""
+	column name
+	"""
+	tag_id
+	"""
+	column name
+	"""
+	taggable_id
+	"""
+	column name
+	"""
+	taggable_type
+	"""
+	column name
+	"""
+	updated_at
+}
+"""
+order by stddev() on columns of table "taggable_counts"
+"""
+input taggable_counts_stddev_order_by {
+	count: order_by
+	id: order_by
+	spoiler_ratio: order_by
+	tag_id: order_by
+	taggable_id: order_by
+}
+"""
+order by stddev_pop() on columns of table "taggable_counts"
+"""
+input taggable_counts_stddev_pop_order_by {
+	count: order_by
+	id: order_by
+	spoiler_ratio: order_by
+	tag_id: order_by
+	taggable_id: order_by
+}
+"""
+order by stddev_samp() on columns of table "taggable_counts"
+"""
+input taggable_counts_stddev_samp_order_by {
+	count: order_by
+	id: order_by
+	spoiler_ratio: order_by
+	tag_id: order_by
+	taggable_id: order_by
+}
+"""
+Streaming cursor of the table "taggable_counts"
+"""
+input taggable_counts_stream_cursor_input {
+	"""
+	Stream column input with initial value
+	"""
+	initial_value: taggable_counts_stream_cursor_value_input!
+	"""
+	cursor ordering
+	"""
+	ordering: cursor_ordering
+}
+"""
+Initial value of the column from where the streaming should start
+"""
+input taggable_counts_stream_cursor_value_input {
+	count: Int
+	created_at: timestamp
+	hardcover_tagged: Boolean
+	id: bigint
+	spoiler_ratio: float8
+	tag_id: Int
+	taggable_id: bigint
+	taggable_type: String
+	updated_at: timestamp
+}
+"""
+order by sum() on columns of table "taggable_counts"
+"""
+input taggable_counts_sum_order_by {
+	count: order_by
+	id: order_by
+	spoiler_ratio: order_by
+	tag_id: order_by
+	taggable_id: order_by
+}
+"""
+order by var_pop() on columns of table "taggable_counts"
+"""
+input taggable_counts_var_pop_order_by {
+	count: order_by
+	id: order_by
+	spoiler_ratio: order_by
+	tag_id: order_by
+	taggable_id: order_by
+}
+"""
+order by var_samp() on columns of table "taggable_counts"
+"""
+input taggable_counts_var_samp_order_by {
+	count: order_by
+	id: order_by
+	spoiler_ratio: order_by
+	tag_id: order_by
+	taggable_id: order_by
+}
+"""
+order by variance() on columns of table "taggable_counts"
+"""
+input taggable_counts_variance_order_by {
+	count: order_by
+	id: order_by
+	spoiler_ratio: order_by
+	tag_id: order_by
+	taggable_id: order_by
+}
+"""
 columns and relationships of "taggings"
 """
 type taggings {
@@ -22243,6 +22365,7 @@ input update_user_input {
 	activity_privacy_settings_id: Int
 	bio: String
 	birthdate: date
+	cover: String
 	current_password: String
 	email: String
 	image: String
@@ -25222,6 +25345,12 @@ type users {
 		where: user_blocks_bool_exp
 	): [user_blocks!]!
 	books_count: Int!
+	cached_cover(
+		"""
+		JSON select path
+		"""
+		path: String
+	): jsonb!
 	cached_genres(
 		"""
 		JSON select path
@@ -26053,6 +26182,7 @@ input users_bool_exp {
 	birthdate: date_comparison_exp
 	blocked_users: user_blocks_bool_exp
 	books_count: Int_comparison_exp
+	cached_cover: jsonb_comparison_exp
 	cached_genres: jsonb_comparison_exp
 	cached_image: jsonb_comparison_exp
 	collection_imports: collection_imports_bool_exp
@@ -26217,6 +26347,7 @@ input users_order_by {
 	birthdate: order_by
 	blocked_users_aggregate: user_blocks_aggregate_order_by
 	books_count: order_by
+	cached_cover: order_by
 	cached_genres: order_by
 	cached_image: order_by
 	collection_imports_aggregate: collection_imports_aggregate_order_by
@@ -26306,6 +26437,10 @@ enum users_select_column {
 	column name
 	"""
 	books_count
+	"""
+	column name
+	"""
+	cached_cover
 	"""
 	column name
 	"""
@@ -26534,6 +26669,7 @@ input users_stream_cursor_value_input {
 	bio: String
 	birthdate: date
 	books_count: Int
+	cached_cover: jsonb
 	cached_genres: jsonb
 	cached_image: jsonb
 	confirmation_sent_at: timestamp

@@ -1,0 +1,10 @@
+type: workspace
+model: workspace
+id: wk_eZ8MWofvu7
+createdAt: 2025-04-17T19:29:25.973399170
+updatedAt: 2025-04-17T19:29:25.973399611
+name: Hardcover
+description: ''
+settingValidateCertificates: true
+settingFollowRedirects: true
+settingRequestTimeout: 0

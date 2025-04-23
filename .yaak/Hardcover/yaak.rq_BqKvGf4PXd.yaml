@@ -1,0 +1,40 @@
+type: http_request
+model: http_request
+id: rq_BqKvGf4PXd
+createdAt: 2025-04-17T19:39:06.575399491
+updatedAt: 2025-04-17T20:16:37.386635034
+workspaceId: wk_eZ8MWofvu7
+folderId: fl_3XmdLSmjJK
+authentication:
+  disabled: false
+  token: ${[ API_TOKEN ]}
+authenticationType: bearer
+body:
+  query: |-
+    mutation ChangeBookStatus($userBookId: Int!, $status: Int) {
+      update_user_book(id: $userBookId, object: {status_id: $status}) {
+        id
+        error
+      }
+    }
+  variables: |-
+    {
+      "userBookId": 0,
+      "status": 1
+    }
+bodyType: graphql
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: d64ZJ9DiZm
+- enabled: true
+  name: ''
+  value: ''
+  id: nUacnHTfk2
+method: POST
+name: ChangeBookStatus
+sortPriority: 1000.0
+url: https://${[ API_SUBDOMAIN ]}.hardcover.app/v1/graphql
+urlParameters: []

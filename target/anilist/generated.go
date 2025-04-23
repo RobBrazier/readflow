@@ -4,6 +4,7 @@ package anilist
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/Khan/genqlient/graphql"
 )
@@ -39,65 +40,75 @@ func (v *GetCurrentUserViewerUser) GetName() string { return v.Name }
 //
 // Anime or Manga
 type GetUserMediaByIdMedia struct {
-	// The amount of volumes the manga has when complete
-	Volumes int `json:"volumes"`
-	// The amount of chapters the manga has when complete
-	Chapters int `json:"chapters"`
-	// The authenticated user's media list entry for the media
-	MediaListEntry GetUserMediaByIdMediaMediaListEntryMediaList `json:"mediaListEntry"`
-	// The official titles of the media in various languages
-	Title GetUserMediaByIdMediaTitle `json:"title"`
+	MediaEntry `json:"-"`
 }
 
 // GetVolumes returns GetUserMediaByIdMedia.Volumes, and is useful for accessing the field via an interface.
-func (v *GetUserMediaByIdMedia) GetVolumes() int { return v.Volumes }
+func (v *GetUserMediaByIdMedia) GetVolumes() int { return v.MediaEntry.Volumes }
 
 // GetChapters returns GetUserMediaByIdMedia.Chapters, and is useful for accessing the field via an interface.
-func (v *GetUserMediaByIdMedia) GetChapters() int { return v.Chapters }
+func (v *GetUserMediaByIdMedia) GetChapters() int { return v.MediaEntry.Chapters }
 
 // GetMediaListEntry returns GetUserMediaByIdMedia.MediaListEntry, and is useful for accessing the field via an interface.
-func (v *GetUserMediaByIdMedia) GetMediaListEntry() GetUserMediaByIdMediaMediaListEntryMediaList {
-	return v.MediaListEntry
+func (v *GetUserMediaByIdMedia) GetMediaListEntry() MediaEntryMediaListEntryMediaList {
+	return v.MediaEntry.MediaListEntry
 }
 
 // GetTitle returns GetUserMediaByIdMedia.Title, and is useful for accessing the field via an interface.
-func (v *GetUserMediaByIdMedia) GetTitle() GetUserMediaByIdMediaTitle { return v.Title }
+func (v *GetUserMediaByIdMedia) GetTitle() MediaEntryTitleMediaTitle { return v.MediaEntry.Title }
 
-// GetUserMediaByIdMediaMediaListEntryMediaList includes the requested fields of the GraphQL type MediaList.
-// The GraphQL type's documentation follows.
-//
-// List of anime or manga
-type GetUserMediaByIdMediaMediaListEntryMediaList struct {
-	// The amount of volumes read by the user
-	ProgressVolumes int `json:"progressVolumes"`
-	// The amount of episodes/chapters consumed by the user
-	Progress int `json:"progress"`
-	// The watching/reading status
-	Status MediaListStatus `json:"status"`
+func (v *GetUserMediaByIdMedia) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*GetUserMediaByIdMedia
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.GetUserMediaByIdMedia = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.MediaEntry)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-// GetProgressVolumes returns GetUserMediaByIdMediaMediaListEntryMediaList.ProgressVolumes, and is useful for accessing the field via an interface.
-func (v *GetUserMediaByIdMediaMediaListEntryMediaList) GetProgressVolumes() int {
-	return v.ProgressVolumes
+type __premarshalGetUserMediaByIdMedia struct {
+	Volumes int `json:"volumes"`
+
+	Chapters int `json:"chapters"`
+
+	MediaListEntry MediaEntryMediaListEntryMediaList `json:"mediaListEntry"`
+
+	Title MediaEntryTitleMediaTitle `json:"title"`
 }
 
-// GetProgress returns GetUserMediaByIdMediaMediaListEntryMediaList.Progress, and is useful for accessing the field via an interface.
-func (v *GetUserMediaByIdMediaMediaListEntryMediaList) GetProgress() int { return v.Progress }
-
-// GetStatus returns GetUserMediaByIdMediaMediaListEntryMediaList.Status, and is useful for accessing the field via an interface.
-func (v *GetUserMediaByIdMediaMediaListEntryMediaList) GetStatus() MediaListStatus { return v.Status }
-
-// GetUserMediaByIdMediaTitle includes the requested fields of the GraphQL type MediaTitle.
-// The GraphQL type's documentation follows.
-//
-// The official titles of the media in various languages
-type GetUserMediaByIdMediaTitle struct {
-	// The currently authenticated users preferred title language. Default romaji for non-authenticated
-	UserPreferred string `json:"userPreferred"`
+func (v *GetUserMediaByIdMedia) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
 }
 
-// GetUserPreferred returns GetUserMediaByIdMediaTitle.UserPreferred, and is useful for accessing the field via an interface.
-func (v *GetUserMediaByIdMediaTitle) GetUserPreferred() string { return v.UserPreferred }
+func (v *GetUserMediaByIdMedia) __premarshalJSON() (*__premarshalGetUserMediaByIdMedia, error) {
+	var retval __premarshalGetUserMediaByIdMedia
+
+	retval.Volumes = v.MediaEntry.Volumes
+	retval.Chapters = v.MediaEntry.Chapters
+	retval.MediaListEntry = v.MediaEntry.MediaListEntry
+	retval.Title = v.MediaEntry.Title
+	return &retval, nil
+}
 
 // GetUserMediaByIdResponse is returned by GetUserMediaById on success.
 type GetUserMediaByIdResponse struct {
@@ -107,6 +118,161 @@ type GetUserMediaByIdResponse struct {
 
 // GetMedia returns GetUserMediaByIdResponse.Media, and is useful for accessing the field via an interface.
 func (v *GetUserMediaByIdResponse) GetMedia() GetUserMediaByIdMedia { return v.Media }
+
+// GetUserMediaByIdsPage includes the requested fields of the GraphQL type Page.
+// The GraphQL type's documentation follows.
+//
+// Page of data
+type GetUserMediaByIdsPage struct {
+	Media []GetUserMediaByIdsPageMedia `json:"media"`
+}
+
+// GetMedia returns GetUserMediaByIdsPage.Media, and is useful for accessing the field via an interface.
+func (v *GetUserMediaByIdsPage) GetMedia() []GetUserMediaByIdsPageMedia { return v.Media }
+
+// GetUserMediaByIdsPageMedia includes the requested fields of the GraphQL type Media.
+// The GraphQL type's documentation follows.
+//
+// Anime or Manga
+type GetUserMediaByIdsPageMedia struct {
+	MediaEntry `json:"-"`
+}
+
+// GetVolumes returns GetUserMediaByIdsPageMedia.Volumes, and is useful for accessing the field via an interface.
+func (v *GetUserMediaByIdsPageMedia) GetVolumes() int { return v.MediaEntry.Volumes }
+
+// GetChapters returns GetUserMediaByIdsPageMedia.Chapters, and is useful for accessing the field via an interface.
+func (v *GetUserMediaByIdsPageMedia) GetChapters() int { return v.MediaEntry.Chapters }
+
+// GetMediaListEntry returns GetUserMediaByIdsPageMedia.MediaListEntry, and is useful for accessing the field via an interface.
+func (v *GetUserMediaByIdsPageMedia) GetMediaListEntry() MediaEntryMediaListEntryMediaList {
+	return v.MediaEntry.MediaListEntry
+}
+
+// GetTitle returns GetUserMediaByIdsPageMedia.Title, and is useful for accessing the field via an interface.
+func (v *GetUserMediaByIdsPageMedia) GetTitle() MediaEntryTitleMediaTitle { return v.MediaEntry.Title }
+
+func (v *GetUserMediaByIdsPageMedia) UnmarshalJSON(b []byte) error {
+
+	if string(b) == "null" {
+		return nil
+	}
+
+	var firstPass struct {
+		*GetUserMediaByIdsPageMedia
+		graphql.NoUnmarshalJSON
+	}
+	firstPass.GetUserMediaByIdsPageMedia = v
+
+	err := json.Unmarshal(b, &firstPass)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(
+		b, &v.MediaEntry)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type __premarshalGetUserMediaByIdsPageMedia struct {
+	Volumes int `json:"volumes"`
+
+	Chapters int `json:"chapters"`
+
+	MediaListEntry MediaEntryMediaListEntryMediaList `json:"mediaListEntry"`
+
+	Title MediaEntryTitleMediaTitle `json:"title"`
+}
+
+func (v *GetUserMediaByIdsPageMedia) MarshalJSON() ([]byte, error) {
+	premarshaled, err := v.__premarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(premarshaled)
+}
+
+func (v *GetUserMediaByIdsPageMedia) __premarshalJSON() (*__premarshalGetUserMediaByIdsPageMedia, error) {
+	var retval __premarshalGetUserMediaByIdsPageMedia
+
+	retval.Volumes = v.MediaEntry.Volumes
+	retval.Chapters = v.MediaEntry.Chapters
+	retval.MediaListEntry = v.MediaEntry.MediaListEntry
+	retval.Title = v.MediaEntry.Title
+	return &retval, nil
+}
+
+// GetUserMediaByIdsResponse is returned by GetUserMediaByIds on success.
+type GetUserMediaByIdsResponse struct {
+	Page GetUserMediaByIdsPage `json:"Page"`
+}
+
+// GetPage returns GetUserMediaByIdsResponse.Page, and is useful for accessing the field via an interface.
+func (v *GetUserMediaByIdsResponse) GetPage() GetUserMediaByIdsPage { return v.Page }
+
+// MediaEntry includes the GraphQL fields of Media requested by the fragment MediaEntry.
+// The GraphQL type's documentation follows.
+//
+// Anime or Manga
+type MediaEntry struct {
+	// The amount of volumes the manga has when complete
+	Volumes int `json:"volumes"`
+	// The amount of chapters the manga has when complete
+	Chapters int `json:"chapters"`
+	// The authenticated user's media list entry for the media
+	MediaListEntry MediaEntryMediaListEntryMediaList `json:"mediaListEntry"`
+	// The official titles of the media in various languages
+	Title MediaEntryTitleMediaTitle `json:"title"`
+}
+
+// GetVolumes returns MediaEntry.Volumes, and is useful for accessing the field via an interface.
+func (v *MediaEntry) GetVolumes() int { return v.Volumes }
+
+// GetChapters returns MediaEntry.Chapters, and is useful for accessing the field via an interface.
+func (v *MediaEntry) GetChapters() int { return v.Chapters }
+
+// GetMediaListEntry returns MediaEntry.MediaListEntry, and is useful for accessing the field via an interface.
+func (v *MediaEntry) GetMediaListEntry() MediaEntryMediaListEntryMediaList { return v.MediaListEntry }
+
+// GetTitle returns MediaEntry.Title, and is useful for accessing the field via an interface.
+func (v *MediaEntry) GetTitle() MediaEntryTitleMediaTitle { return v.Title }
+
+// MediaEntryMediaListEntryMediaList includes the requested fields of the GraphQL type MediaList.
+// The GraphQL type's documentation follows.
+//
+// List of anime or manga
+type MediaEntryMediaListEntryMediaList struct {
+	// The amount of volumes read by the user
+	ProgressVolumes int `json:"progressVolumes"`
+	// The amount of episodes/chapters consumed by the user
+	Progress int `json:"progress"`
+	// The watching/reading status
+	Status MediaListStatus `json:"status"`
+}
+
+// GetProgressVolumes returns MediaEntryMediaListEntryMediaList.ProgressVolumes, and is useful for accessing the field via an interface.
+func (v *MediaEntryMediaListEntryMediaList) GetProgressVolumes() int { return v.ProgressVolumes }
+
+// GetProgress returns MediaEntryMediaListEntryMediaList.Progress, and is useful for accessing the field via an interface.
+func (v *MediaEntryMediaListEntryMediaList) GetProgress() int { return v.Progress }
+
+// GetStatus returns MediaEntryMediaListEntryMediaList.Status, and is useful for accessing the field via an interface.
+func (v *MediaEntryMediaListEntryMediaList) GetStatus() MediaListStatus { return v.Status }
+
+// MediaEntryTitleMediaTitle includes the requested fields of the GraphQL type MediaTitle.
+// The GraphQL type's documentation follows.
+//
+// The official titles of the media in various languages
+type MediaEntryTitleMediaTitle struct {
+	// The currently authenticated users preferred title language. Default romaji for non-authenticated
+	UserPreferred string `json:"userPreferred"`
+}
+
+// GetUserPreferred returns MediaEntryTitleMediaTitle.UserPreferred, and is useful for accessing the field via an interface.
+func (v *MediaEntryTitleMediaTitle) GetUserPreferred() string { return v.UserPreferred }
 
 // Media list watching/reading status enum.
 type MediaListStatus string
@@ -188,6 +354,14 @@ type __GetUserMediaByIdInput struct {
 // GetMediaId returns __GetUserMediaByIdInput.MediaId, and is useful for accessing the field via an interface.
 func (v *__GetUserMediaByIdInput) GetMediaId() int { return v.MediaId }
 
+// __GetUserMediaByIdsInput is used internally by genqlient
+type __GetUserMediaByIdsInput struct {
+	MediaIds []int `json:"mediaIds"`
+}
+
+// GetMediaIds returns __GetUserMediaByIdsInput.MediaIds, and is useful for accessing the field via an interface.
+func (v *__GetUserMediaByIdsInput) GetMediaIds() []int { return v.MediaIds }
+
 // __UpdateProgressInput is used internally by genqlient
 type __UpdateProgressInput struct {
 	MediaId         int             `json:"mediaId"`
@@ -248,16 +422,19 @@ func GetCurrentUser(
 const GetUserMediaById_Operation = `
 query GetUserMediaById ($mediaId: Int) {
 	Media(id: $mediaId, type: MANGA) {
-		volumes
-		chapters
-		mediaListEntry {
-			progressVolumes
-			progress
-			status
-		}
-		title {
-			userPreferred
-		}
+		... MediaEntry
+	}
+}
+fragment MediaEntry on Media {
+	volumes
+	chapters
+	mediaListEntry {
+		progressVolumes
+		progress
+		status
+	}
+	title {
+		userPreferred
 	}
 }
 `
@@ -281,6 +458,59 @@ func GetUserMediaById(
 	}
 
 	data_ = &GetUserMediaByIdResponse{}
+	resp_ := &graphql.Response{Data: data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return data_, err_
+}
+
+// The query executed by GetUserMediaByIds.
+const GetUserMediaByIds_Operation = `
+query GetUserMediaByIds ($mediaIds: [Int]) {
+	Page {
+		media(id_in: $mediaIds) {
+			... MediaEntry
+		}
+	}
+}
+fragment MediaEntry on Media {
+	volumes
+	chapters
+	mediaListEntry {
+		progressVolumes
+		progress
+		status
+	}
+	title {
+		userPreferred
+	}
+}
+`
+
+func GetUserMediaByIds(
+	ctx_ context.Context,
+	mediaIds []int,
+) (data_ *GetUserMediaByIdsResponse, err_ error) {
+	req_ := &graphql.Request{
+		OpName: "GetUserMediaByIds",
+		Query:  GetUserMediaByIds_Operation,
+		Variables: &__GetUserMediaByIdsInput{
+			MediaIds: mediaIds,
+		},
+	}
+	var client_ graphql.Client
+
+	client_, err_ = GetClient(ctx_)
+	if err_ != nil {
+		return nil, err_
+	}
+
+	data_ = &GetUserMediaByIdsResponse{}
 	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(

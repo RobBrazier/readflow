@@ -1,0 +1,38 @@
+type: http_request
+model: http_request
+id: rq_5c93acK5gz
+createdAt: 2025-04-17T20:25:12.360832352
+updatedAt: 2025-04-17T20:25:58.554963719
+workspaceId: wk_eZ8MWofvu7
+folderId: fl_3XmdLSmjJK
+authentication:
+  disabled: false
+  token: ${[ API_TOKEN ]}
+authenticationType: bearer
+body:
+  query: |
+    mutation DeleteUserBook($userBookId: Int!) {
+      delete_user_book(id: $userBookId) {
+        id
+      }
+    }
+  variables: |-
+    {
+      "userBookId": 6945028
+    }
+bodyType: graphql
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: d64ZJ9DiZm
+- enabled: true
+  name: ''
+  value: ''
+  id: nUacnHTfk2
+method: POST
+name: DeleteUserBook
+sortPriority: 3000.001
+url: https://${[ API_SUBDOMAIN ]}.hardcover.app/v1/graphql
+urlParameters: []

@@ -1,0 +1,63 @@
+type: http_request
+model: http_request
+id: rq_rYKWjfAvwh
+createdAt: 2025-04-17T19:37:58.429109620
+updatedAt: 2025-04-17T20:16:37.386574259
+workspaceId: wk_eZ8MWofvu7
+folderId: fl_3XmdLSmjJK
+authentication:
+  disabled: false
+  token: ${[ API_TOKEN ]}
+authenticationType: bearer
+body:
+  query: |
+    fragment Edition on editions {
+      id
+      pages
+    }
+
+    fragment UserBookReads on user_book_reads {
+      id
+      progress
+      progress_pages
+      started_at
+      finished_at
+      # @genqlient(flatten: true)
+      edition {
+        ...Edition
+      }
+    }
+
+    mutation CreateUserBook($bookId: Int!, $status: Int, $editionId: Int) {
+      insert_user_book(object: {book_id: $bookId, status_id: $status, edition_id: $editionId}) {
+        id
+        error
+        user_book {
+          user_book_reads {
+            ...UserBookReads
+          }
+        }
+      }
+    }
+  variables: |-
+    {
+      "bookId": 0,
+      "status": 1,
+      "editionId": 0
+    }
+bodyType: graphql
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: d64ZJ9DiZm
+- enabled: true
+  name: ''
+  value: ''
+  id: nUacnHTfk2
+method: POST
+name: CreateUserBook
+sortPriority: 0.0
+url: https://${[ API_SUBDOMAIN ]}.hardcover.app/v1/graphql
+urlParameters: []

@@ -1,0 +1,53 @@
+type: http_request
+model: http_request
+id: rq_RTSjbPG7Pf
+createdAt: 2025-04-17T20:00:49.682318799
+updatedAt: 2025-04-17T20:16:00.506191516
+workspaceId: wk_Ad2QL2FK2S
+folderId: fl_kjgsLHGqAM
+authentication:
+  accessTokenUrl: https://anilist.co/api/v2/oauth/token
+  authorizationUrl: https://anilist.co/api/v2/oauth/authorize
+  clientId: ${[ CLIENT_ID ]}
+  clientSecret: ${[ CLIENT_SECRET ]}
+  grantType: authorization_code
+  redirectUri: https://anilist.co/api/v2/oauth/pin
+authenticationType: oauth2
+body:
+  query: |
+    fragment MediaEntry on Media {
+      volumes
+      chapters
+      mediaListEntry {
+        progressVolumes
+        progress
+        status
+      }
+      title {
+        userPreferred
+      }
+    }
+
+    query GetUserMediaByIds($mediaIds: [Int]) {
+      Page {
+        media(id_in: $mediaIds) {
+          ...MediaEntry
+        }
+      }
+    }
+  variables: |-
+    {
+      "mediaIds": [86238, 125828]
+    }
+bodyType: graphql
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: r5bqhHDTU5
+method: POST
+name: GetUserMediaByIds
+sortPriority: 500.0
+url: https://graphql.anilist.co
+urlParameters: []

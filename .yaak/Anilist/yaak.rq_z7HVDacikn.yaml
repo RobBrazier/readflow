@@ -1,0 +1,36 @@
+type: http_request
+model: http_request
+id: rq_z7HVDacikn
+createdAt: 2025-04-17T19:48:45.964353141
+updatedAt: 2025-04-17T20:15:59.090532441
+workspaceId: wk_Ad2QL2FK2S
+folderId: fl_kjgsLHGqAM
+authentication:
+  accessTokenUrl: https://anilist.co/api/v2/oauth/token
+  authorizationUrl: https://anilist.co/api/v2/oauth/authorize
+  clientId: ${[ CLIENT_ID ]}
+  clientSecret: ${[ CLIENT_SECRET ]}
+  credentials: body
+  grantType: authorization_code
+  redirectUri: https://anilist.co/api/v2/oauth/pin
+authenticationType: oauth2
+body:
+  query: |-
+    query GetCurrentUser {
+      Viewer {
+        id
+        name
+      }
+    }
+bodyType: graphql
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: r5bqhHDTU5
+method: POST
+name: GetCurrentUser
+sortPriority: 1000.0
+url: https://graphql.anilist.co
+urlParameters: []

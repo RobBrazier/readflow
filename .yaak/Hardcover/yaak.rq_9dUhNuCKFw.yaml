@@ -1,0 +1,72 @@
+type: http_request
+model: http_request
+id: rq_9dUhNuCKFw
+createdAt: 2025-04-17T20:26:47.944351700
+updatedAt: 2025-04-17T20:28:25.698999839
+workspaceId: wk_eZ8MWofvu7
+folderId: fl_q5CeGoUyDG
+authentication:
+  disabled: false
+  token: ${[ API_TOKEN ]}
+authenticationType: bearer
+body:
+  query: |
+    fragment Book on books {
+      id
+      slug
+      title
+    }
+
+    fragment Edition on editions {
+      id
+      pages
+    }
+
+    query GetAllUserBooks($userId: Int) {
+      user_books(where: {user_id: {_eq: $userId}}) {
+        id
+        status_id
+        book {
+          ...Book
+        }
+        edition {
+          ...Edition
+        }
+        user_book_reads(
+          order_by: {started_at: desc}
+        ) {
+          ...UserBookReads
+        }
+      }
+    }
+
+    fragment UserBookReads on user_book_reads {
+      id
+      progress
+      progress_pages
+      started_at
+      finished_at
+      edition {
+        ...Edition
+      }
+    }
+  variables: |-
+    {
+      "userId": ${[ USER_ID ]}
+    }
+bodyType: graphql
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: d64ZJ9DiZm
+- enabled: true
+  name: ''
+  value: ''
+  id: nUacnHTfk2
+method: POST
+name: GetAllUserBooks
+sortPriority: 1000.001
+url: https://${[ API_SUBDOMAIN ]}.hardcover.app/v1/graphql
+urlParameters: []

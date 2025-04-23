@@ -1,3 +1,16 @@
+fragment MediaEntry on Media {
+  volumes
+  chapters
+  mediaListEntry {
+    progressVolumes
+    progress
+    status
+  }
+  title {
+    userPreferred
+  }
+}
+
 query GetCurrentUser {
   Viewer {
     id
@@ -8,15 +21,14 @@ query GetCurrentUser {
 
 query GetUserMediaById($mediaId: Int) {
   Media(id: $mediaId, type: MANGA) {
-    volumes
-    chapters
-    mediaListEntry {
-      progressVolumes
-      progress
-      status
-    }
-    title {
-      userPreferred
+    ...MediaEntry
+  }
+}
+
+query GetUserMediaByIds($mediaIds: [Int]) {
+  Page {
+    media(id_in: $mediaIds) {
+      ...MediaEntry
     }
   }
 }

@@ -1,0 +1,88 @@
+type: http_request
+model: http_request
+id: rq_vXQdDqCzRq
+createdAt: 2025-04-17T19:36:27.644797362
+updatedAt: 2025-04-17T20:16:24.635575205
+workspaceId: wk_eZ8MWofvu7
+folderId: fl_q5CeGoUyDG
+authentication:
+  disabled: false
+  token: ${[ API_TOKEN ]}
+authenticationType: bearer
+body:
+  query: |
+    fragment Book on books {
+      id
+      slug
+      title
+    }
+
+    fragment Edition on editions {
+      id
+      pages
+    }
+
+    fragment UserBookReads on user_book_reads {
+      id
+      progress
+      progress_pages
+      started_at
+      finished_at
+      # @genqlient(flatten: true)
+      edition {
+        ...Edition
+      }
+    }
+
+    query GetUserBooksBySlugOrEdition($slugs: [String!], $editionIds: [Int!], $userId: Int) {
+      books(where: {slug: {_in: $slugs}}) {
+        ...Book
+        # @genqlient(flatten: true)
+        editions(where: {id: {_in: $editionIds}}) {
+          ...Edition
+        }
+        # @genqlient(typename: "UserBooks")
+        user_books(where: {user_id: {_eq: $userId}}) {
+          id
+          status_id
+          # @genqlient(flatten: true)
+          book {
+            ...Book
+          }
+          # @genqlient(flatten: true)
+          edition {
+            ...Edition
+          }
+          # @genqlient(flatten: true)
+          user_book_reads(
+            where: {edition: {_or: [{id: {_in: $editionIds}}, {reading_format_id: {_neq: 2}}]}}
+            order_by: {started_at: desc}
+            limit: 1
+          ) {
+            ...UserBookReads
+          }
+        }
+      }
+    }
+  variables: |-
+    {
+      "slugs": ["dungeon-crawler-carl"],
+      "editionIds": [],
+      "userId": ${[ USER_ID ]}
+    }
+bodyType: graphql
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: d64ZJ9DiZm
+- enabled: true
+  name: ''
+  value: ''
+  id: nUacnHTfk2
+method: POST
+name: GetUserBooksBySlugOrEdition
+sortPriority: 1000.0
+url: https://${[ API_SUBDOMAIN ]}.hardcover.app/v1/graphql
+urlParameters: []

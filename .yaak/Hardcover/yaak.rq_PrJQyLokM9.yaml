@@ -1,0 +1,35 @@
+type: http_request
+model: http_request
+id: rq_PrJQyLokM9
+createdAt: 2025-04-17T19:30:34.712750916
+updatedAt: 2025-04-17T20:24:06.381684199
+workspaceId: wk_eZ8MWofvu7
+folderId: fl_q5CeGoUyDG
+authentication:
+  disabled: false
+  token: ${[ API_TOKEN ]}
+authenticationType: bearer
+body:
+  query: |-
+    query GetCurrentUser {
+      me {
+        id
+        username
+      }
+    }
+bodyType: graphql
+description: ''
+headers:
+- enabled: true
+  name: Content-Type
+  value: application/json
+  id: d64ZJ9DiZm
+- enabled: true
+  name: ''
+  value: ''
+  id: nUacnHTfk2
+method: POST
+name: GetCurrentUser
+sortPriority: 0.0
+url: https://${[ API_SUBDOMAIN ]}.hardcover.app/v1/graphql
+urlParameters: []
