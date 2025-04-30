@@ -6,7 +6,7 @@ import (
 	"github.com/RobBrazier/readflow/internal"
 	"github.com/RobBrazier/readflow/internal/model"
 	"github.com/charmbracelet/log"
-	"github.com/spf13/cobra"
+	"github.com/davecgh/go-spew/spew"
 )
 
 type SyncResult struct {
@@ -26,7 +26,17 @@ type syncAction struct {
 func (a *syncAction) Sync() ([]SyncResult, error) {
 	// if the chapters column doesn't exist in config, fetch the name and store it
 	recentReads, err := a.source.GetRecentReads()
-	cobra.CheckErr(err)
+	if err != nil {
+		return nil, err
+	}
+
+	titles := []string{}
+	for _, read := range recentReads {
+		titles = append(titles, read.Name)
+	}
+	if len(titles) > 0 {
+		log.Info("Found recent reads", "count", len(titles), "titles", titles)
+	}
 	var wg sync.WaitGroup
 	for _, t := range a.targets {
 		wg.Add(1)
@@ -47,6 +57,7 @@ func (a *syncAction) processTarget(t internal.SyncTarget, reads []model.Book, wg
 	for _, book := range processed {
 		name := book.Name
 		log := log.With("target", t.GetName(), "book", name)
+		log.Debug("Updating status for", "book", spew.Sdump(book))
 		err := t.UpdateStatus(book)
 		if err != nil {
 			log.Error("failed to update reading status", "error", err)

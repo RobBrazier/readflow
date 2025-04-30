@@ -4,6 +4,7 @@ import (
 	"embed"
 	"fmt"
 
+	"github.com/charmbracelet/log"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -49,7 +50,8 @@ func GetRecentReads(db *sqlx.DB, syncDays int, chaptersColumn string) ([]Databas
 	if err != nil {
 		return nil, err
 	}
-	daysToQuery := fmt.Sprintf("-%d day", syncDays)
+	daysToQuery := fmt.Sprintf("-%d days", syncDays)
+	log.Debug("days to query", "days", daysToQuery)
 	err = db.Select(&books, query, daysToQuery)
 	if err != nil {
 		return nil, err

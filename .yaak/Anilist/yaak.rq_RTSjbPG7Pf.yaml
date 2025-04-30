@@ -2,7 +2,7 @@ type: http_request
 model: http_request
 id: rq_RTSjbPG7Pf
 createdAt: 2025-04-17T20:00:49.682318799
-updatedAt: 2025-04-17T20:16:00.506191516
+updatedAt: 2025-04-30T18:37:28.877226600
 workspaceId: wk_Ad2QL2FK2S
 folderId: fl_kjgsLHGqAM
 authentication:
@@ -16,6 +16,7 @@ authenticationType: oauth2
 body:
   query: |
     fragment MediaEntry on Media {
+      id
       volumes
       chapters
       mediaListEntry {
@@ -37,7 +38,7 @@ body:
     }
   variables: |-
     {
-      "mediaIds": [86238, 125828]
+      "mediaIds": [86238, 125828, 187873]
     }
 bodyType: graphql
 description: ''

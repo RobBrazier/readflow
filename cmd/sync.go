@@ -7,6 +7,7 @@ import (
 	"maps"
 	"slices"
 
+	"github.com/RobBrazier/readflow/config"
 	"github.com/RobBrazier/readflow/internal"
 	"github.com/RobBrazier/readflow/internal/sync"
 	"github.com/RobBrazier/readflow/source"
@@ -16,6 +17,7 @@ import (
 )
 
 var activeSource string
+var targetOverrides []string
 
 // syncCmd represents the sync command
 var syncCmd = &cobra.Command{
@@ -27,16 +29,13 @@ var syncCmd = &cobra.Command{
 			availableSources := slices.Collect(maps.Keys(source.GetSources()))
 			return errors.New(fmt.Sprintf("Invalid source. Available sources: %v", availableSources))
 		}
+		enabledTargets := config.GetTargets()
+		if len(targetOverrides) > 0 {
+			enabledTargets = targetOverrides
+		}
 		log.Debug("sync called", "source", enabledSource.GetName())
-		reads, err := enabledSource.GetRecentReads()
-		if err != nil {
-			return err
-		}
-		for _, read := range reads {
-			log.Info("recent reads", "val", read)
-		}
 		targetNames := []string{}
-		activeTargets := target.GetActiveTargets(cmd.Context())
+		activeTargets := target.GetActiveTargets(cmd.Context(), enabledTargets)
 		for _, target := range activeTargets {
 			targetNames = append(targetNames, target.GetName())
 		}
@@ -61,4 +60,6 @@ func getEnabledSource(ctx context.Context) internal.SyncSource {
 
 func init() {
 	rootCmd.AddCommand(syncCmd)
+
+	syncCmd.Flags().StringArrayVarP(&targetOverrides, "targets", "t", nil, "targets")
 }

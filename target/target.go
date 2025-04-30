@@ -4,7 +4,6 @@ import (
 	"context"
 	"slices"
 
-	"github.com/RobBrazier/readflow/config"
 	"github.com/RobBrazier/readflow/internal"
 	"github.com/RobBrazier/readflow/target/anilist"
 	"github.com/RobBrazier/readflow/target/hardcover"
@@ -22,9 +21,8 @@ func GetTargets() map[string]TargetFunc {
 	return targets
 }
 
-func GetActiveTargets(ctx context.Context) []internal.SyncTarget {
+func GetActiveTargets(ctx context.Context, selectedTargets []string) []internal.SyncTarget {
 	var active []internal.SyncTarget
-	selectedTargets := config.GetTargets()
 	log.Info("selected target", "target", selectedTargets)
 	for name, target := range targets {
 		if slices.Contains(selectedTargets, name) {

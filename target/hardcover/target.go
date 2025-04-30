@@ -10,7 +10,6 @@ import (
 	"github.com/RobBrazier/readflow/internal"
 	"github.com/RobBrazier/readflow/internal/model"
 	"github.com/charmbracelet/log"
-	"github.com/davecgh/go-spew/spew"
 )
 
 //go:generate go run github.com/Khan/genqlient ../../schemas/hardcover/genqlient.yaml
@@ -85,10 +84,13 @@ func (t hardcoverTarget) updateFromRemote(book *model.Book, hardcoverBook *GetUs
 	book.Metadata["status"] = STATUS_WANT_TO_READ
 	book.Metadata["startedAt"] = time.Now()
 	if len(editions) > 0 {
+		// grab the number of pages from the linked edition
+		// this edition will either be the one matching the book's edition id or the most popular one
 		book.Metadata["pages"] = editions[0].Pages
 	}
 
 	if len(books) == 0 {
+		// the book isn't in any existing list, can't fetch any more data
 		return
 	}
 	userBook := books[0]
@@ -96,6 +98,7 @@ func (t hardcoverTarget) updateFromRemote(book *model.Book, hardcoverBook *GetUs
 	book.Metadata["userBookId"] = userBook.Id
 	reads := userBook.User_book_reads
 	if len(reads) == 0 {
+		// it's in a TBR list, but not started reading yet
 		return
 	}
 	latestRead := reads[0]
@@ -200,8 +203,6 @@ func (t hardcoverTarget) ensureBookStatus(bookStatus ReadStatus, userBookId int,
 }
 
 func (t hardcoverTarget) UpdateStatus(book model.Book) error {
-	log.Info("updating status for", "book", spew.Sdump(book))
-
 	localProgress := math.Round(book.Progress.Local)
 	remoteProgress := math.Round(book.Progress.Remote)
 
