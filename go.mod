@@ -8,7 +8,7 @@ require (
 	github.com/caarlos0/env/v11 v11.3.1
 	github.com/charmbracelet/bubbles v0.21.0
 	github.com/charmbracelet/huh v0.7.0
-	github.com/charmbracelet/log v0.4.0
+	github.com/charmbracelet/log v0.4.2
 	github.com/cli/browser v1.3.0
 	github.com/goccy/go-yaml v1.18.0
 	github.com/hashicorp/go-retryablehttp v0.7.7
