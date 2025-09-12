@@ -1,4 +1,4 @@
-FROM docker.io/alpine:20240923
+FROM docker.io/alpine:20250108
 ENV READFLOW_DOCKER="1" \
 	SOURCE="database" \
 	COLUMN_CHAPTER="false" \
