@@ -11,7 +11,7 @@ require (
 	github.com/charmbracelet/log v0.4.0
 	github.com/cli/browser v1.3.0
 	github.com/goccy/go-yaml v1.18.0
-	github.com/hashicorp/go-retryablehttp v0.7.7
+	github.com/hashicorp/go-retryablehttp v0.7.8
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/joho/godotenv v1.5.1
 	github.com/spf13/cobra v1.8.1
