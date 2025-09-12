@@ -23,7 +23,7 @@ jobs:
           fetch-depth: 0
       - name: Install tools with mise
         uses: jdx/mise-action@5ac50f778e26fac95da98d50503682459e86d566 # v3
-      - uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4
+      - uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
         with:
           path: |
             ~/.cache/go-build
@@ -32,7 +32,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
       - name: Log in to the Container registry
-        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3
+        uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -45,7 +45,7 @@ jobs:
         env:
           GIT_CLIFF_OUTPUT: RELEASE_NOTES.md
       - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@9ed2f89a662bf1735a48bc8557fd212fa902bebf # v6
+        uses: goreleaser/goreleaser-action@e435ccd777264be153ace6237001ef4d979d3a7a # v6
         with:
           version: "~> v2"
           args: release --clean --release-notes=RELEASE_NOTES.md
