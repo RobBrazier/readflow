@@ -1,9 +1,6 @@
 package source
 
 import (
-	"sync"
-	"sync/atomic"
-
 	"github.com/RobBrazier/readflow/internal/config"
 )
 
@@ -11,11 +8,6 @@ type Source interface {
 	Init() error
 	GetRecentReads() ([]BookContext, error)
 }
-
-var (
-	sources     atomic.Pointer[map[string]Source]
-	sourcesOnce sync.Once
-)
 
 type Book struct {
 	BookID          int      `db:"book_id"`
@@ -35,22 +27,8 @@ type BookContext struct {
 	Previous []Book
 }
 
-func GetSources() map[string]Source {
-	s := sources.Load()
-	if s == nil {
-		sourcesOnce.Do(func() {
-			sources.CompareAndSwap(nil, &map[string]Source{
-				"database": NewDatabaseSource(),
-			})
-		})
-		s = sources.Load()
+func GetSources(config config.Config, days int) map[string]Source {
+	return map[string]Source{
+		"database": NewDatabaseSource(config.Source.Database, days),
 	}
-	return *s
-}
-
-func GetActiveSources() []string {
-	active := []string{}
-	selectedSources := config.GetSource()
-	active = append(active, selectedSources)
-	return active
 }

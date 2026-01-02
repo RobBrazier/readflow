@@ -126,6 +126,15 @@ const (
 	MediaListStatusRepeating MediaListStatus = "REPEATING"
 )
 
+var AllMediaListStatus = []MediaListStatus{
+	MediaListStatusCurrent,
+	MediaListStatusPlanning,
+	MediaListStatusCompleted,
+	MediaListStatusDropped,
+	MediaListStatusPaused,
+	MediaListStatusRepeating,
+}
+
 // UpdateProgressResponse is returned by UpdateProgress on success.
 type UpdateProgressResponse struct {
 	// Create or update a media list entry
@@ -199,7 +208,7 @@ func (v *__UpdateProgressInput) GetProgressVolumes() int { return v.ProgressVolu
 // GetStatus returns __UpdateProgressInput.Status, and is useful for accessing the field via an interface.
 func (v *__UpdateProgressInput) GetStatus() MediaListStatus { return v.Status }
 
-// The query or mutation executed by GetCurrentUser.
+// The query executed by GetCurrentUser.
 const GetCurrentUser_Operation = `
 query GetCurrentUser {
 	Viewer {
@@ -212,15 +221,14 @@ query GetCurrentUser {
 func GetCurrentUser(
 	ctx_ context.Context,
 	client_ graphql.Client,
-) (*GetCurrentUserResponse, error) {
+) (data_ *GetCurrentUserResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "GetCurrentUser",
 		Query:  GetCurrentUser_Operation,
 	}
-	var err_ error
 
-	var data_ GetCurrentUserResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &GetCurrentUserResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -228,10 +236,10 @@ func GetCurrentUser(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by GetUserMediaById.
+// The query executed by GetUserMediaById.
 const GetUserMediaById_Operation = `
 query GetUserMediaById ($mediaId: Int) {
 	Media(id: $mediaId, type: MANGA) {
@@ -253,7 +261,7 @@ func GetUserMediaById(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	mediaId int,
-) (*GetUserMediaByIdResponse, error) {
+) (data_ *GetUserMediaByIdResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "GetUserMediaById",
 		Query:  GetUserMediaById_Operation,
@@ -261,10 +269,9 @@ func GetUserMediaById(
 			MediaId: mediaId,
 		},
 	}
-	var err_ error
 
-	var data_ GetUserMediaByIdResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &GetUserMediaByIdResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -272,10 +279,10 @@ func GetUserMediaById(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by UpdateProgress.
+// The mutation executed by UpdateProgress.
 const UpdateProgress_Operation = `
 mutation UpdateProgress ($mediaId: Int, $progress: Int, $progressVolumes: Int, $status: MediaListStatus) {
 	SaveMediaListEntry(progress: $progress, progressVolumes: $progressVolumes, mediaId: $mediaId, status: $status) {
@@ -295,7 +302,7 @@ func UpdateProgress(
 	progress int,
 	progressVolumes int,
 	status MediaListStatus,
-) (*UpdateProgressResponse, error) {
+) (data_ *UpdateProgressResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "UpdateProgress",
 		Query:  UpdateProgress_Operation,
@@ -306,10 +313,9 @@ func UpdateProgress(
 			Status:          status,
 		},
 	}
-	var err_ error
 
-	var data_ UpdateProgressResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &UpdateProgressResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -317,5 +323,5 @@ func UpdateProgress(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }

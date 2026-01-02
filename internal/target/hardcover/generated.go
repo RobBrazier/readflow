@@ -688,7 +688,7 @@ func (v *__UpdateBookProgressInput) __premarshalJSON() (*__premarshal__UpdateBoo
 	return &retval, nil
 }
 
-// The query or mutation executed by ChangeBookStatus.
+// The mutation executed by ChangeBookStatus.
 const ChangeBookStatus_Operation = `
 mutation ChangeBookStatus ($bookId: Int!, $status: Int) {
 	insert_user_book(object: {book_id:$bookId,status_id:$status}) {
@@ -702,7 +702,7 @@ func ChangeBookStatus(
 	client_ graphql.Client,
 	bookId int,
 	status int,
-) (*ChangeBookStatusResponse, error) {
+) (data_ *ChangeBookStatusResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "ChangeBookStatus",
 		Query:  ChangeBookStatus_Operation,
@@ -711,10 +711,9 @@ func ChangeBookStatus(
 			Status: status,
 		},
 	}
-	var err_ error
 
-	var data_ ChangeBookStatusResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &ChangeBookStatusResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -722,10 +721,10 @@ func ChangeBookStatus(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by FinishBookProgress.
+// The mutation executed by FinishBookProgress.
 const FinishBookProgress_Operation = `
 mutation FinishBookProgress ($id: Int!, $pages: Int, $editionId: Int, $startedAt: date, $finishedAt: date) {
 	update_user_book_read(id: $id, object: {progress_pages:$pages,edition_id:$editionId,started_at:$startedAt,finished_at:$finishedAt}) {
@@ -742,7 +741,7 @@ func FinishBookProgress(
 	editionId int,
 	startedAt time.Time,
 	finishedAt time.Time,
-) (*FinishBookProgressResponse, error) {
+) (data_ *FinishBookProgressResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "FinishBookProgress",
 		Query:  FinishBookProgress_Operation,
@@ -754,10 +753,9 @@ func FinishBookProgress(
 			FinishedAt: finishedAt,
 		},
 	}
-	var err_ error
 
-	var data_ FinishBookProgressResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &FinishBookProgressResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -765,10 +763,10 @@ func FinishBookProgress(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by GetCurrentUser.
+// The query executed by GetCurrentUser.
 const GetCurrentUser_Operation = `
 query GetCurrentUser {
 	me {
@@ -781,15 +779,14 @@ query GetCurrentUser {
 func GetCurrentUser(
 	ctx_ context.Context,
 	client_ graphql.Client,
-) (*GetCurrentUserResponse, error) {
+) (data_ *GetCurrentUserResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "GetCurrentUser",
 		Query:  GetCurrentUser_Operation,
 	}
-	var err_ error
 
-	var data_ GetCurrentUserResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &GetCurrentUserResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -797,10 +794,10 @@ func GetCurrentUser(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by GetUserBooksBySlug.
+// The query executed by GetUserBooksBySlug.
 const GetUserBooksBySlug_Operation = `
 query GetUserBooksBySlug ($slug: String) {
 	me {
@@ -835,7 +832,7 @@ func GetUserBooksBySlug(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	slug string,
-) (*GetUserBooksBySlugResponse, error) {
+) (data_ *GetUserBooksBySlugResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "GetUserBooksBySlug",
 		Query:  GetUserBooksBySlug_Operation,
@@ -843,10 +840,9 @@ func GetUserBooksBySlug(
 			Slug: slug,
 		},
 	}
-	var err_ error
 
-	var data_ GetUserBooksBySlugResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &GetUserBooksBySlugResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -854,10 +850,10 @@ func GetUserBooksBySlug(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by StartBookProgress.
+// The mutation executed by StartBookProgress.
 const StartBookProgress_Operation = `
 mutation StartBookProgress ($bookId: Int!, $pages: Int, $editionId: Int, $startedAt: date) {
 	insert_user_book_read(user_book_id: $bookId, user_book_read: {progress_pages:$pages,edition_id:$editionId,started_at:$startedAt}) {
@@ -873,7 +869,7 @@ func StartBookProgress(
 	pages int,
 	editionId int,
 	startedAt time.Time,
-) (*StartBookProgressResponse, error) {
+) (data_ *StartBookProgressResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "StartBookProgress",
 		Query:  StartBookProgress_Operation,
@@ -884,10 +880,9 @@ func StartBookProgress(
 			StartedAt: startedAt,
 		},
 	}
-	var err_ error
 
-	var data_ StartBookProgressResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &StartBookProgressResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -895,10 +890,10 @@ func StartBookProgress(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by UpdateBookProgress.
+// The mutation executed by UpdateBookProgress.
 const UpdateBookProgress_Operation = `
 mutation UpdateBookProgress ($id: Int!, $pages: Int, $editionId: Int, $startedAt: date) {
 	update_user_book_read(id: $id, object: {progress_pages:$pages,edition_id:$editionId,started_at:$startedAt}) {
@@ -914,7 +909,7 @@ func UpdateBookProgress(
 	pages int,
 	editionId int,
 	startedAt time.Time,
-) (*UpdateBookProgressResponse, error) {
+) (data_ *UpdateBookProgressResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "UpdateBookProgress",
 		Query:  UpdateBookProgress_Operation,
@@ -925,10 +920,9 @@ func UpdateBookProgress(
 			StartedAt: startedAt,
 		},
 	}
-	var err_ error
 
-	var data_ UpdateBookProgressResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &UpdateBookProgressResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -936,5 +930,5 @@ func UpdateBookProgress(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }

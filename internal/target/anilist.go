@@ -9,18 +9,20 @@ import (
 	"github.com/RobBrazier/readflow/internal/config"
 	"github.com/RobBrazier/readflow/internal/source"
 	"github.com/RobBrazier/readflow/internal/target/anilist"
-	"github.com/charmbracelet/log"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
-//go:generate go run github.com/Khan/genqlient ../../schemas/anilist/genqlient.yaml
+//go:generate go tool genqlient ../../schemas/anilist/genqlient.yaml
 
 type AnilistTarget struct {
 	GraphQLTarget
 	Target
+	config config.AnilistConfig
 	client graphql.Client
 	ctx    context.Context
-	log    *log.Logger
+	log    zerolog.Logger
 }
 
 func dereferenceDefault[T any](pointer *T, defaultValue T) T {
@@ -42,7 +44,7 @@ func (t *AnilistTarget) getClient() graphql.Client {
 }
 
 func (t AnilistTarget) GetToken() string {
-	return config.GetTokens().Anilist
+	return t.config.Token
 }
 
 func (t AnilistTarget) ShouldProcess(book source.BookContext) bool {
@@ -67,8 +69,11 @@ func (t *AnilistTarget) getLocalVolumes(book source.Book, maxVolumes int) int {
 	volume := dereferenceDefault(book.BookSeriesIndex, 1)
 
 	if maxVolumes > 0 && volume > maxVolumes {
-		t.log.Warn("Volume number exceeds the volume count on anilist - capping value", "book", book.BookName, "volume", volume, "max", maxVolumes)
-
+		t.log.Warn().
+			Str("book", book.BookName).
+			Int("volume", volume).
+			Int("max", maxVolumes).
+			Msg("Volume number exceeds the volume count on anilist - capping value")
 	}
 
 	return volume
@@ -93,10 +98,18 @@ func (t *AnilistTarget) getEstimatedNewChapterCount(book source.BookContext, max
 
 	estimatedChapter := localPreviousChapters + latestVolumeChapter
 
-	t.log.Debug("Estimated current chapter", "book", book.Current.BookName, "progress", progress, "chapter", estimatedChapter)
+	log := t.log.With().Str("book", book.Current.BookName).Logger()
+
+	log.Debug().
+		Float64("progress", progress).
+		Int("chapter", estimatedChapter).
+		Msg("Estimated current chapter")
 
 	if maxChapters > 0 && estimatedChapter > maxChapters {
-		t.log.Warn("Estimated chapter exceeds the chapter count on anilist - capping value", "book", book.Current.BookName, "estimated", estimatedChapter, "max", maxChapters)
+		log.Warn().
+			Int("estimated", estimatedChapter).
+			Int("max", maxChapters).
+			Msg("Estimated chapter exceeds the chapter count on anilist - capping value")
 		estimatedChapter = maxChapters
 	}
 
@@ -106,7 +119,7 @@ func (t *AnilistTarget) getEstimatedNewChapterCount(book source.BookContext, max
 func (t *AnilistTarget) UpdateReadStatus(book source.BookContext) error {
 	anilistId, err := strconv.Atoi(*book.Current.AnilistID)
 	if err != nil {
-		t.log.Error("Invalid anilist id", "id", *book.Current.AnilistID)
+		t.log.Error().Str("id", *book.Current.AnilistID).Msg("Invalid anilist id")
 		return err
 	}
 	ctx := t.ctx
@@ -128,10 +141,10 @@ func (t *AnilistTarget) UpdateReadStatus(book source.BookContext) error {
 	localVolumes := t.getLocalVolumes(book.Current, maxVolumes)
 	estimatedChapter := t.getEstimatedNewChapterCount(book, maxChapters)
 
+	log := t.log.With().Str("book", bookName).Logger()
+
 	if localVolumes <= remoteVolumes && estimatedChapter <= remoteChapters {
-		t.log.
-			With("book", bookName, "title", title).
-			Info("Skipping update as target is already up-to-date")
+		log.Info().Str("title", title).Msg("Skipping update as target is already up-to-date")
 		return nil
 	}
 	if status == "" {
@@ -140,22 +153,27 @@ func (t *AnilistTarget) UpdateReadStatus(book source.BookContext) error {
 	if estimatedChapter == maxChapters {
 		status = anilist.MediaListStatusCompleted
 	}
-	t.log.Info("Updating progress for", "book", bookName, "volume", localVolumes, "chapter", estimatedChapter)
+	log.Info().
+		Int("volume", localVolumes).
+		Int("chapter", estimatedChapter).
+		Msg("Updating progress for")
+
 	_, err = anilist.UpdateProgress(ctx, client, anilistId, estimatedChapter, localVolumes, status)
 	if err != nil {
-		t.log.Error("error updating progress", "error", err)
+		log.Error().Err(err).Msg("error updating progress")
 		return err
 	}
 
 	return nil
 }
 
-func NewAnilistTarget() SyncTarget {
+func NewAnilistTarget(ctx context.Context, config config.AnilistConfig) SyncTarget {
 	name := "anilist"
-	logger := log.WithPrefix(name)
+	logger := log.With().Str("target", name).Logger()
 	target := &AnilistTarget{
-		ctx: context.Background(),
-		log: logger,
+		config: config,
+		ctx:    ctx,
+		log:    logger,
 		Target: Target{
 			Name:   name,
 			ApiUrl: "https://graphql.anilist.co",

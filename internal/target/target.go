@@ -1,23 +1,18 @@
 package target
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"net/http"
-	"slices"
-	"sync"
-	"sync/atomic"
 
 	"github.com/Khan/genqlient/graphql"
 	"github.com/RobBrazier/readflow/internal/config"
 	"github.com/RobBrazier/readflow/internal/source"
-	"github.com/charmbracelet/log"
 	"github.com/hashicorp/go-retryablehttp"
-)
+	"github.com/rs/zerolog/log"
 
-var (
-	targets     atomic.Pointer[[]SyncTarget]
-	targetsOnce sync.Once
+	slogzerolog "github.com/samber/slog-zerolog/v2"
 )
 
 type Target struct {
@@ -55,7 +50,13 @@ func (g *GraphQLTarget) getClient(url, token string) graphql.Client {
 			wrapped: http.DefaultTransport,
 		},
 	}
-	retryClient.Logger = slog.New(log.WithPrefix("graphql"))
+	logger := log.With().Str("client", "graphql").Logger()
+	retryClient.Logger = slog.New(
+		slogzerolog.Option{
+			Level:  slog.LevelDebug,
+			Logger: &logger,
+		}.NewZerologHandler(),
+	)
 	httpClient := retryClient.StandardClient()
 	return graphql.NewClient(url, httpClient)
 }
@@ -64,27 +65,9 @@ func (t *Target) GetName() string {
 	return t.Name
 }
 
-func GetTargets() *[]SyncTarget {
-	t := targets.Load()
-	if t == nil {
-		targetsOnce.Do(func() {
-			targets.CompareAndSwap(nil, &[]SyncTarget{
-				NewAnilistTarget(),
-				NewHardcoverTarget(),
-			})
-		})
-		t = targets.Load()
+func GetTargets(ctx context.Context, config config.Config) map[string]SyncTarget {
+	return map[string]SyncTarget{
+		"anilist":   NewAnilistTarget(ctx, config.Target.Anilist),
+		"hardcover": NewHardcoverTarget(ctx, config.Target.Hardcover),
 	}
-	return t
-}
-
-func GetActiveTargets() []SyncTarget {
-	active := []SyncTarget{}
-	selectedTargets := config.GetTargets()
-	for _, target := range *GetTargets() {
-		if slices.Contains(selectedTargets, target.GetName()) {
-			active = append(active, target)
-		}
-	}
-	return active
 }

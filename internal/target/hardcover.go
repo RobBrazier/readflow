@@ -10,18 +10,20 @@ import (
 	"github.com/RobBrazier/readflow/internal/config"
 	"github.com/RobBrazier/readflow/internal/source"
 	"github.com/RobBrazier/readflow/internal/target/hardcover"
-	"github.com/charmbracelet/log"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
-//go:generate go run github.com/Khan/genqlient ../../schemas/hardcover/genqlient.yaml
+//go:generate go tool genqlient ../../schemas/hardcover/genqlient.yaml
 
 type HardcoverTarget struct {
 	Target
 	GraphQLTarget
+	config config.HardcoverConfig
 	ctx    context.Context
 	client graphql.Client
-	log    *log.Logger
+	log    zerolog.Logger
 }
 
 type hardcoverProgress struct {
@@ -46,7 +48,7 @@ func (t *HardcoverTarget) getClient() graphql.Client {
 }
 
 func (t HardcoverTarget) GetToken() string {
-	return config.GetTokens().Hardcover
+	return t.config.Token
 }
 
 func (t *HardcoverTarget) GetCurrentUser() string {
@@ -107,7 +109,10 @@ func (t *HardcoverTarget) getCurrentBookProgress(slug string) (*hardcoverProgres
 	return &result, nil
 }
 
-func (t *HardcoverTarget) updateProgress(readId, bookId, pages, edition, status int, startTime time.Time) error {
+func (t *HardcoverTarget) updateProgress(
+	readId, bookId, pages, edition, status int,
+	startTime time.Time,
+) error {
 	ctx := t.ctx
 	client := t.getClient()
 	if status != 2 { // in progress
@@ -120,11 +125,22 @@ func (t *HardcoverTarget) updateProgress(readId, bookId, pages, edition, status 
 	return err
 }
 
-func (t *HardcoverTarget) finishProgress(readId, bookId, pages, edition int, startTime time.Time) error {
+func (t *HardcoverTarget) finishProgress(
+	readId, bookId, pages, edition int,
+	startTime time.Time,
+) error {
 	finishTime := time.Now()
 	ctx := t.ctx
 	client := t.getClient()
-	_, err := hardcover.FinishBookProgress(ctx, client, readId, pages, edition, startTime, finishTime)
+	_, err := hardcover.FinishBookProgress(
+		ctx,
+		client,
+		readId,
+		pages,
+		edition,
+		startTime,
+		finishTime,
+	)
 	if err != nil {
 		return err
 	}
@@ -160,12 +176,15 @@ func (t *HardcoverTarget) UpdateReadStatus(book source.BookContext) error {
 	}
 	// round to 0 decimal places to match the source progress
 	remoteProgress := math.Round(float64(bookProgress.progress))
-	log := t.log.With("book", book.Current.BookName)
+	log := t.log.With().Str("book", book.Current.BookName).Logger()
 
-	log.Info("Retrieved book data", "localProgress", localProgress, "remoteProgress", remoteProgress)
+	log.Info().
+		Float64("localProgress", localProgress).
+		Float64("remoteProgress", remoteProgress).
+		Msg("Retrieved book data")
 
 	if localProgress <= remoteProgress {
-		log.Info("Skipping update as target is already up-to-date")
+		log.Info().Msg("Skipping update as target is already up-to-date")
 		return nil
 	}
 	pages := float64(bookProgress.pages)
@@ -173,40 +192,47 @@ func (t *HardcoverTarget) UpdateReadStatus(book source.BookContext) error {
 	newPagesCount := int(math.Round(pages * progress))
 
 	if bookProgress.readId != nil {
-		log.Info("Updating progress for", "pages", newPagesCount)
+		log.Info().Int("pages", newPagesCount).Msg("Updating progress for")
 		startTime := time.Now()
 		if bookProgress.startTime != nil {
 			startTime = *bookProgress.startTime
 		}
 		if progress == 1 { // 100%
-			log.Info("Marking book as finished", "book", book.Current.BookName)
-			err := t.finishProgress(*bookProgress.readId, bookProgress.bookId, newPagesCount, bookProgress.edition, startTime)
+			log.Info().Str("book", book.Current.BookName).Msg("Marking book as finished")
+			err := t.finishProgress(
+				*bookProgress.readId,
+				bookProgress.bookId,
+				newPagesCount,
+				bookProgress.edition,
+				startTime,
+			)
 			if err != nil {
-				log.Error("error finishing book", "error", err)
+				log.Error().Err(err).Msg("error finishing book")
 			}
 		} else {
 			err := t.updateProgress(*bookProgress.readId, bookProgress.bookId, newPagesCount, bookProgress.edition, bookProgress.status, startTime)
 			if err != nil {
-				log.Error("error updating progress", "error", err)
+				log.Error().Err(err).Msg("error updating progress")
 			}
 		}
 	} else {
-		log.Info("Starting progress for", "pages", newPagesCount)
+		log.Info().Int("pages", newPagesCount).Msg("Starting progress for")
 		err := t.startProgress(bookProgress.bookId, newPagesCount, bookProgress.edition, bookProgress.status)
 		if err != nil {
-			t.log.Error("error starting progress", "error", err)
+			t.log.Error().Err(err).Msg("error starting progress")
 		}
 	}
 
 	return nil
 }
 
-func NewHardcoverTarget() SyncTarget {
+func NewHardcoverTarget(ctx context.Context, config config.HardcoverConfig) SyncTarget {
 	name := "hardcover"
-	logger := log.WithPrefix(name)
+	logger := log.With().Str("target", name).Logger()
 	target := &HardcoverTarget{
-		ctx: context.Background(),
-		log: logger,
+		config: config,
+		ctx:    ctx,
+		log:    logger,
 		Target: Target{
 			Name:   name,
 			ApiUrl: "https://api.hardcover.app/v1/graphql",
