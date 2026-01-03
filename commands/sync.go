@@ -3,7 +3,10 @@ package commands
 import (
 	"context"
 	"fmt"
+	"os"
+	"os/signal"
 	"slices"
+	"syscall"
 	"time"
 
 	"github.com/RobBrazier/readflow/internal/config"
@@ -114,18 +117,27 @@ func SyncCommand() *cli.Command {
 			}
 			if schedule := config.Get().String("sync.schedule"); schedule != "" {
 				c := cron.New()
-				log.Info().Str("schedule", schedule).Msg("Starting scheduled sync")
-				id, err := c.AddFunc(schedule, func() { action.Sync() })
+				log.Info().Msg("Starting scheduled sync")
+				id, err := c.AddFunc(schedule, func() {
+					action.Sync()
+				})
+
 				entry := c.Entry(id)
-				log.Info().Msgf("Next execution: %s", entry.Next)
+				log.Info().Msgf("Next execution: %s", entry.Schedule.Next(time.Now()))
 				if err != nil {
 					log.Error().Err(err).Msg("Unable to schedule cron")
 					return err
 				}
 				c.Start()
-				for len(c.Entries()) > 0 {
-					time.Tick(time.Minute)
-				}
+
+				// Listen to CTRL + C
+				signalChan := make(chan os.Signal, 1)
+				signal.Notify(signalChan, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
+				_ = <-signalChan
+
+				log.Info().Msg("Shutting down")
+
+				c.Stop()
 			}
 
 			return nil
