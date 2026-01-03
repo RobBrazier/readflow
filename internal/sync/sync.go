@@ -25,7 +25,6 @@ func (a *syncAction) Sync() ([]SyncResult, error) {
 	// if the chapters column doesn't exist in config, fetch the name and store it
 	a.source.Init()
 	recentReads, err := a.source.GetRecentReads()
-	log.Info().Msg("Got recent reads")
 	var result []SyncResult
 	if err != nil {
 		return result, err

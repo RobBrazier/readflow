@@ -20,7 +20,6 @@ import (
 type HardcoverTarget struct {
 	Target
 	GraphQLTarget
-	config config.HardcoverConfig
 	ctx    context.Context
 	client graphql.Client
 	log    zerolog.Logger
@@ -48,7 +47,7 @@ func (t *HardcoverTarget) getClient() graphql.Client {
 }
 
 func (t HardcoverTarget) GetToken() string {
-	return t.config.Token
+	return config.Get().String("target.hardcover.token")
 }
 
 func (t *HardcoverTarget) GetCurrentUser() string {
@@ -226,13 +225,12 @@ func (t *HardcoverTarget) UpdateReadStatus(book source.BookContext) error {
 	return nil
 }
 
-func NewHardcoverTarget(ctx context.Context, config config.HardcoverConfig) SyncTarget {
+func NewHardcoverTarget(ctx context.Context) SyncTarget {
 	name := "hardcover"
 	logger := log.With().Str("target", name).Logger()
 	target := &HardcoverTarget{
-		config: config,
-		ctx:    ctx,
-		log:    logger,
+		ctx: ctx,
+		log: logger,
 		Target: Target{
 			Name:   name,
 			ApiUrl: "https://api.hardcover.app/v1/graphql",

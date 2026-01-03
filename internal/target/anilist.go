@@ -19,7 +19,6 @@ import (
 type AnilistTarget struct {
 	GraphQLTarget
 	Target
-	config config.AnilistConfig
 	client graphql.Client
 	ctx    context.Context
 	log    zerolog.Logger
@@ -44,7 +43,7 @@ func (t *AnilistTarget) getClient() graphql.Client {
 }
 
 func (t AnilistTarget) GetToken() string {
-	return t.config.Token
+	return config.Get().String("target.hardcover.token")
 }
 
 func (t AnilistTarget) ShouldProcess(book source.BookContext) bool {
@@ -167,13 +166,12 @@ func (t *AnilistTarget) UpdateReadStatus(book source.BookContext) error {
 	return nil
 }
 
-func NewAnilistTarget(ctx context.Context, config config.AnilistConfig) SyncTarget {
+func NewAnilistTarget(ctx context.Context) SyncTarget {
 	name := "anilist"
 	logger := log.With().Str("target", name).Logger()
 	target := &AnilistTarget{
-		config: config,
-		ctx:    ctx,
-		log:    logger,
+		ctx: ctx,
+		log: logger,
 		Target: Target{
 			Name:   name,
 			ApiUrl: "https://graphql.anilist.co",

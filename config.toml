@@ -1,0 +1,15 @@
+[source]
+enabled = ["database"]
+
+[source.database]
+calibre = "metadata.db"
+calibre_web = "app.db"
+chapter_column = "custom_column_1"
+
+[target]
+enabled = ["hardcover"]
+hardcover = { token = "token without Bearer from https://hardcover.app/account/api" }
+anilist = { token = "token from https://anilist.co/api/v2/oauth/authorize?client_id=21288&response_type=token" }
+
+[sync]
+days = 1

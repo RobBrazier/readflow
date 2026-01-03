@@ -10,8 +10,6 @@ import (
 	"github.com/RobBrazier/readflow/internal/sync"
 	"github.com/RobBrazier/readflow/internal/target"
 	"github.com/rs/zerolog/log"
-	altsrc "github.com/urfave/cli-altsrc/v3"
-	"github.com/urfave/cli-altsrc/v3/yaml"
 	"github.com/urfave/cli/v3"
 )
 
@@ -35,8 +33,7 @@ func validateAllowedValues(flag string, in, allowed []string) error {
 	return nil
 }
 
-func SyncCommand(configFile *string) *cli.Command {
-	configSource := altsrc.NewStringPtrSourcer(configFile)
+func SyncCommand() *cli.Command {
 	return &cli.Command{
 		Name: "sync",
 		Flags: []cli.Flag{
@@ -45,13 +42,8 @@ func SyncCommand(configFile *string) *cli.Command {
 				Aliases: []string{"s"},
 				Value:   []string{"database"},
 				Usage:   fmt.Sprintf("Allowed values: %s", ALLOWED_SOURCES),
-				Sources: cli.NewValueSourceChain(
-					cli.EnvVar("READFLOW_SOURCE"),
-					yaml.YAML("source.enabled", configSource),
-					cli.EnvVar("SOURCE"), // legacy
-				),
-				Validator: func(s []string) error {
-					return validateAllowedValues("source", s, ALLOWED_SOURCES)
+				Action: func(ctx context.Context, c *cli.Command, s []string) error {
+					return config.Set("source.enabled", s)
 				},
 			},
 			&cli.StringSliceFlag{
@@ -59,36 +51,37 @@ func SyncCommand(configFile *string) *cli.Command {
 				Aliases: []string{"t"},
 				Value:   []string{"hardcover"},
 				Usage:   fmt.Sprintf("Allowed values: %s", ALLOWED_TARGETS),
-				Sources: cli.NewValueSourceChain(
-					cli.EnvVar("READFLOW_TARGET"),
-					yaml.YAML("target.enabled", configSource),
-					cli.EnvVar("TARGETS"), // legacy
-				),
-				Validator: func(s []string) error {
-					return validateAllowedValues("target", s, ALLOWED_TARGETS)
+				Action: func(ctx context.Context, c *cli.Command, s []string) error {
+					return config.Set("target.enabled", s)
 				},
 			},
 			&cli.IntFlag{
 				Name:    "days",
 				Aliases: []string{"sync-days", "d"},
 				Value:   7,
-				Sources: cli.NewValueSourceChain(
-					cli.EnvVar("READFLOW_SYNC_DAYS"),
-					yaml.YAML("sync.days", configSource),
-					cli.EnvVar("SYNC_DAYS"), // legacy
-				),
+				Action: func(ctx context.Context, c *cli.Command, i int) error {
+					return config.Set("sync.days", i)
+				},
 			},
 		},
 		Action: func(ctx context.Context, c *cli.Command) error {
-			days := c.Int("days")
-			sources := c.StringSlice("source")
-			targets := c.StringSlice("target")
-			cfg, err := config.LoadConfig(*configFile)
-			if err != nil {
-				log.Error().Err(err).Msg("Unable to load config")
+			days := config.Get().Int("sync.days")
+			sources := config.Get().Strings("source.enabled")
+			if err := validateAllowedValues("source", sources, ALLOWED_SOURCES); err != nil {
+				return err
 			}
-			availableSources := source.GetSources(cfg, days)
-			availableTargets := target.GetTargets(ctx, cfg)
+			targets := config.Get().Strings("target.enabled")
+			if err := validateAllowedValues("target", targets, ALLOWED_TARGETS); err != nil {
+				return err
+			}
+			log.Info().
+				Strs("sources", sources).
+				Strs("targets", targets).
+				Int("days", days).
+				Msg("running with config")
+
+			availableSources := source.GetSources(days)
+			availableTargets := target.GetTargets(ctx)
 
 			var enabledSources []source.Source
 			var enabledTargets []target.SyncTarget
@@ -106,7 +99,7 @@ func SyncCommand(configFile *string) *cli.Command {
 			}
 
 			action := sync.NewSyncAction(enabledSources, enabledTargets)
-			_, err = action.Sync()
+			_, err := action.Sync()
 			if err != nil {
 				return err
 			}

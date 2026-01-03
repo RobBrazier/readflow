@@ -14,7 +14,6 @@ import (
 )
 
 type databaseSource struct {
-	config         config.DatabaseConfig
 	log            zerolog.Logger
 	chaptersColumn string
 	enableChapters bool
@@ -35,8 +34,22 @@ func (s *databaseSource) getReadOnlyDbString(file string) string {
 }
 
 func (s *databaseSource) getDb() *sqlx.DB {
-	db := sqlx.MustConnect("sqlite", s.getReadOnlyDbString(s.config.CalibreWeb))
-	db.MustExec("attach database ? as calibre", s.getReadOnlyDbString(s.config.Calibre))
+	calibreDb := config.Get().String("source.database.calibre")
+	if _, err := os.Stat(calibreDb); err != nil {
+		log.Fatal().
+			Err(err).
+			Str("config key", "source.database.calibre").
+			Msg("Unable to read calibre database")
+	}
+	calibreWebDb := config.Get().String("source.database.calibre_web")
+	if _, err := os.Stat(calibreWebDb); err != nil {
+		log.Fatal().
+			Err(err).
+			Str("config key", "source.database.calibre_web").
+			Msg("Unable to read calibre-web database")
+	}
+	db := sqlx.MustConnect("sqlite", s.getReadOnlyDbString(calibreWebDb))
+	db.MustExec("attach database ? as calibre", s.getReadOnlyDbString(calibreDb))
 	return db
 }
 
@@ -107,12 +120,11 @@ func (s *databaseSource) GetRecentReads() ([]BookContext, error) {
 	return recent, nil
 }
 
-func NewDatabaseSource(config config.DatabaseConfig, days int) Source {
-	chapters := config.Columns.Chapter
+func NewDatabaseSource(days int) Source {
+	chapters := config.Get().String("source.database.chapter_column")
 	enableChapters := chapters != ""
 	logger := log.With().Str("source", "database").Logger()
 	return &databaseSource{
-		config:         config,
 		log:            logger,
 		chaptersColumn: chapters,
 		enableChapters: enableChapters,

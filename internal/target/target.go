@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/Khan/genqlient/graphql"
-	"github.com/RobBrazier/readflow/internal/config"
 	"github.com/RobBrazier/readflow/internal/source"
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/rs/zerolog/log"
@@ -65,9 +64,9 @@ func (t *Target) GetName() string {
 	return t.Name
 }
 
-func GetTargets(ctx context.Context, config config.Config) map[string]SyncTarget {
+func GetTargets(ctx context.Context) map[string]SyncTarget {
 	return map[string]SyncTarget{
-		"anilist":   NewAnilistTarget(ctx, config.Target.Anilist),
-		"hardcover": NewHardcoverTarget(ctx, config.Target.Hardcover),
+		"anilist":   NewAnilistTarget(ctx),
+		"hardcover": NewHardcoverTarget(ctx),
 	}
 }

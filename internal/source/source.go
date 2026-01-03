@@ -1,9 +1,5 @@
 package source
 
-import (
-	"github.com/RobBrazier/readflow/internal/config"
-)
-
 type Source interface {
 	Init() error
 	GetRecentReads() ([]BookContext, error)
@@ -27,8 +23,8 @@ type BookContext struct {
 	Previous []Book
 }
 
-func GetSources(config config.Config, days int) map[string]Source {
+func GetSources(days int) map[string]Source {
 	return map[string]Source{
-		"database": NewDatabaseSource(config.Source.Database, days),
+		"database": NewDatabaseSource(days),
 	}
 }

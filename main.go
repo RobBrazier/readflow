@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/RobBrazier/readflow/commands"
+	"github.com/RobBrazier/readflow/internal/config"
 	"github.com/adrg/xdg"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -14,7 +15,7 @@ import (
 func main() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	configFile, _ := xdg.ConfigFile("readflow/config.yaml")
+	defaultConfigFile, _ := xdg.ConfigFile("readflow/config.toml")
 
 	cmd := cli.Command{
 		Name:        "readflow",
@@ -26,15 +27,10 @@ func main() {
 				Aliases: []string{"debug"},
 			},
 			&cli.StringFlag{
-				Name:        "config",
-				Aliases:     []string{"c"},
-				Value:       configFile,
-				Destination: &configFile,
-				TakesFile:   true,
-				Action: func(ctx context.Context, c *cli.Command, s string) error {
-					log.Debug().Str("file", s).Msg("Using config file")
-					return nil
-				},
+				Name:      "config",
+				Aliases:   []string{"c"},
+				Value:     defaultConfigFile,
+				TakesFile: true,
 			},
 		},
 		Before: func(ctx context.Context, c *cli.Command) (context.Context, error) {
@@ -43,10 +39,11 @@ func main() {
 				level = zerolog.DebugLevel
 			}
 			zerolog.SetGlobalLevel(level)
+			config.Load(c.String("config"))
 			return ctx, nil
 		},
 		Commands: []*cli.Command{
-			commands.SyncCommand(&configFile),
+			commands.SyncCommand(),
 		},
 	}
 
