@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 	"slices"
+	"time"
 
 	"github.com/RobBrazier/readflow/internal/config"
 	"github.com/RobBrazier/readflow/internal/source"
 	"github.com/RobBrazier/readflow/internal/sync"
 	"github.com/RobBrazier/readflow/internal/target"
+	"github.com/robfig/cron/v3"
 	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v3"
 )
@@ -63,6 +65,13 @@ func SyncCommand() *cli.Command {
 					return config.Set("sync.days", i)
 				},
 			},
+			&cli.StringFlag{
+				Name:    "schedule",
+				Aliases: []string{"cron"},
+				Action: func(ctx context.Context, c *cli.Command, s string) error {
+					return config.Set("sync.schedule", s)
+				},
+			},
 		},
 		Action: func(ctx context.Context, c *cli.Command) error {
 			days := config.Get().Int("sync.days")
@@ -102,6 +111,21 @@ func SyncCommand() *cli.Command {
 			_, err := action.Sync()
 			if err != nil {
 				return err
+			}
+			if schedule := config.Get().String("sync.schedule"); schedule != "" {
+				c := cron.New()
+				log.Info().Str("schedule", schedule).Msg("Starting scheduled sync")
+				id, err := c.AddFunc(schedule, func() { action.Sync() })
+				entry := c.Entry(id)
+				log.Info().Msgf("Next execution: %s", entry.Next)
+				if err != nil {
+					log.Error().Err(err).Msg("Unable to schedule cron")
+					return err
+				}
+				c.Start()
+				for len(c.Entries()) > 0 {
+					time.Tick(time.Minute)
+				}
 			}
 
 			return nil

@@ -61,9 +61,6 @@ func Load(filePath string) {
 		Prefix: "READFLOW_",
 		TransformFunc: func(k, v string) (string, any) {
 			k = strings.ReplaceAll(strings.ToLower(strings.TrimPrefix(k, "READFLOW_")), "_", ".")
-			if strings.Contains(v, " ") {
-				return k, strings.Split(v, " ")
-			}
 			if strings.Contains(v, ",") {
 				return k, strings.Split(v, ",")
 			}

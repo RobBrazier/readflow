@@ -22,8 +22,7 @@ type syncAction struct {
 }
 
 func (a *syncAction) Sync() ([]SyncResult, error) {
-	// if the chapters column doesn't exist in config, fetch the name and store it
-	a.source.Init()
+	log.Info().Msg("Running sync")
 	recentReads, err := a.source.GetRecentReads()
 	var result []SyncResult
 	if err != nil {
